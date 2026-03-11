@@ -11,4 +11,11 @@ Lint : les peluches qui se coincent dans les vêtements. Sur VS Code, cela perme
 imperfections de code et parfois de les corriger automatiquement.
 Pour que la correction se fasse avec l'extension black formatter,
 il faut faire ctrl + s.
+
+Les éléments où il y a inscrit py cache sont déjà en git ignore, ils sont grisés donc on s'en branle.
+Par contre, quand on rendra le projet final, il faudra enlever les pytest_cache.
+
+Lecture du template, revoir les diagrammes et commencer à faire du code.
+
+Mail : clement.valot.pro@gmail.com
 """
