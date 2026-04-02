@@ -1,39 +1,69 @@
-import pandas as pd
 from pathlib import Path
-from.src.Model.Match import Match
-from .src.Model.Sport import Sport
-from .adapters.FootballMatchLoader import FootballMatchLoader
-from .adapters.TennisMatchLoader import TennisMatchLoader
-from .adapters.BasketballMatchLoader import BasketballMatchLoader
-from .adapters.LolMatchLoader import LolMatchLoader
-from .adapters.VolleyballLoader import VolleyballMatchLoader
+import pandas as pd
 
+
+df = pd.read_csv("wta_players_2024.csv")
 
 ROOT = Path("Base_de_données")
-
 sport_1 = "Basketball"
 sport_2 = "Football"
 sport_3 = "Lol"
 sport_4 = "tennis"
 sport_5 = "volleyball"
 
-joueur_femme = ROOT / sport_4 / "wta_players_2024"
+# Tennis
+joueuse_tennis = ROOT / sport_4 / "wta_players_2024.csv"
+joueur_tennis = ROOT / sport_4 / "atp_players_2024.csv"
+matchs_femme_tennis = ROOT / sport_4 / "wta_matches_2024.csv"
+matchs_homme_tennis = ROOT / sport_4 / "atp_matches_2024.csv"
 
-df = pd.read_csv(joueur_femme)
+df_joueuse_tennis = pd.read_csv(joueuse_tennis)
+df_joueur_rennis = pd.read_csv(joueur_tennis)
+df_matchs_femme_tennis = pd.read_csv(matchs_femme_tennis)
+df_matchs_homme_tennis = pd.read_csv(matchs_homme_tennis)
 
+# Basketball
+joueur_basket = ROOT / sport_1 / "player.csv"
+matchs_basket = ROOT / sport_1 / "match.csv"
+equipe_basket = ROOT / sport_1 / "team.csv"
 
-class MatchLoader():
-    def __init__(self, sport: Sport):
-        self.sport = sport
+df_joueur_basket = pd.read_csv(joueur_basket)
+df_matchs_basket = pd.read_csv(matchs_basket)
+df_equipe_basket = pd.read_csv(equipe_basket)
 
-    def load_all_matches(self):
-        if self.sport.name == "tennis":
-            return TennisMatchLoader().load_all_matches()
-        elif self.sport.name == "basketball":
-            return BasketballMatchLoader().load_all_matches()
-        elif self.sport.name == "volleyball":
-            return VolleyballMatchLoader().load_all_matches()
-        elif self.sport.nam == "Lol":
-            return LolMatchLoader().load_all_matches()
-        elif self.sport.name == "football":
-            return FootballMatchLoader().load_all_matches()
+# Football
+pays_foot = ROOT / sport_2 / "country.csv"
+matchs_foot = ROOT / sport_2 / "game.csv"
+ligue_foot = ROOT / sport_2 / "league.csv"
+
+df_pays_foot = pd.read_csv(pays_foot)
+df_matchs_foot = pd.read_csv(matchs_foot)
+df_ligue_foot = pd.read_csv(ligue_foot)
+
+# Lol
+coachs_lol = ROOT / sport_3 / "coach.csv"
+matchs_lol = ROOT / sport_3 / "match.csv"
+joueurs_lol = ROOT / sport_3 / "player.csv"
+equipe_lol = ROOT / sport_3 / "team.csv"
+
+df_coachs_lol = pd.read_csv(coachs_lol)
+df_matchs_lol = pd.read_csv(matchs_lol)
+df_joueurs_lol = pd.read_csv(joueurs_lol)
+df_equipe_lol = pd.read_csv(equipe_lol)
+
+# Volleyball
+coachs_homme_volley = ROOT / sport_5 / "coach_men.csv"
+coachs_femme_volley = ROOT / sport_5 / "coach_women.csv"
+pays_volley = ROOT / sport_5 / "country.csv"
+matchs_homme_volley = ROOT / sport_5 / "match_men.csv"
+matchs_femme_volley = ROOT / sport_5 / "match_women.csv"
+joueurs_femme_volley = ROOT / sport_5 / "player_women.csv"
+joueurs_homme_volley = ROOT / sport_5 / "player_men.csv"
+
+df_coachs_homme_volley = pd.read_csv(coachs_homme_volley)
+df_coachs_femme_volley = pd.read_csv(coachs_femme_volley)
+df_pays_volley = pd.read_csv(pays_volley)
+df_matchs_homme_volley = pd.read_csv(matchs_homme_volley)
+df_matchs_femme_volley = pd.read_csv(matchs_femme_volley)
+df_joueurs_homme_volley = pd.read_csv(joueurs_homme_volley)
+df_joueurs_femme_volley = pd.read_csv(joueurs_femme_volley)
