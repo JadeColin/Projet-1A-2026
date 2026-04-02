@@ -3,7 +3,7 @@ from datetime import date
 
 class Joueur:
 
-    def__init__(self, id_joueur : int, nom_joueur : str, date_naissance : date, nationalite : str, participation : Participation):
+    def__init__(self, id_joueur: int, nom_joueur: str, date_naissance: date, nationalite: str, participation: Participation):
         if isinstance(id_joueur, int):
             self.id_joueur= id_joueur
         else : 
