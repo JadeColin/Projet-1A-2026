@@ -3,7 +3,7 @@ from datetime import date
 
 class Joueur:
 
-    def__init__(self, id_joueur: int, nom_joueur: str, date_naissance: date, nationalite: str, participation: Participation):
+    def__init__(self, id_joueur: int, nom_joueur: str, sexe : str, date_naissance: date, nationalite: str, participation: Participation):
         if isinstance(id_joueur, int):
             self.id_joueur= id_joueur
         else : 
@@ -13,6 +13,12 @@ class Joueur:
             self.nom_joueur= nom_joueur
         else: 
             raise TypeError("le nom du joueur doit etre une chaine de caractère")
+
+        sexes_valides=["Homme", "Femme"]
+        if sexe in sexes_valides:
+            self.sexe=sexe
+        else: 
+            raise ValueError("le sexe doit etre 'Homme' ou 'Femme' ")
 
         if isinstance(date_naissance, date):
             self.date_naissance = date_naissance
