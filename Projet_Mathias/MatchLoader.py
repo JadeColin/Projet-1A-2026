@@ -31,5 +31,5 @@ class MatchLoader():
 Exemple d'utilisation :
 
 loader = MatchLoader(Sport(name="football"))
-mes_matchs: df[Match] = moader.load_all_matches()
+mes_matchs: df[Match] = loader.load_all_matches()
 """
