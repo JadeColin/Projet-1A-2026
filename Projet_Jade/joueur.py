@@ -38,5 +38,3 @@ class Joueur:
     def __str__(self):
         return (f"Joueur(id = {self.id_joueur}, nom = {self.nom_joueur},"
         f"né le {self.date_naissance}, de nationalité {self.nationalite}, participation = {self.participation})")
-        
-

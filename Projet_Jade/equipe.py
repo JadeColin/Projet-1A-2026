@@ -4,6 +4,7 @@ from .participation import Participation
 class Equipe :
 
     def__init__(self,id_equipe : int, nom_equipe : str, type_equipe: str, pays : str, participation : Participation):
+        
         if isinstance(id_equipe, int):
             self.id_equipe= id_equipe
         else :
@@ -28,3 +29,5 @@ class Equipe :
             self.participation= participation
         else:
             raise TypeError("la participation doit etre un objet de Participation")
+
+    
