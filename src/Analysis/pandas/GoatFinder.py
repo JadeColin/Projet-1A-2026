@@ -13,3 +13,5 @@ def find_the_goat_in_df(players: pd.DataFrame) -> Player:
         full_name=the_goat.at["full_name"],
         is_the_goat=the_goat.at["is_the_goat"],
     )
+
+
