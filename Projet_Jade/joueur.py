@@ -36,5 +36,8 @@ class Joueur:
             raise TypeError("la participation doit etre un objet de Participation")
 
     def __str__(self):
+        return self.nom_joueur
+
+    def __repr__(self):
         return (f"Joueur(id = {self.id_joueur}, nom = {self.nom_joueur},"
         f"né le {self.date_naissance}, de nationalité {self.nationalite}, participation = {self.participation})")

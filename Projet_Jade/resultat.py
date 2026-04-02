@@ -27,3 +27,7 @@ class Resultat:
         self.participation= participation
     else:
         raise TypeError("la participation doit etre un objet de Participation")
+
+def __str__(self):
+    return self
+
