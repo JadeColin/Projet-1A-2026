@@ -1,0 +1,156 @@
+name,country_code,height,birth_date,birth_place,nickname,gender
+CAZAUTE Helena,FRA,184,1997-12-17,Narbonne,Caz,F
+BAUER Christina,FRA,196,1988-01-01,Bergen,,F
+SYLVES Amandha,FRA,194,2000-12-29,Baie-mahault,,F
+GELIN Juliette,FRA,162,2001-11-02,Montpellier,Juju,F
+ROTAR Amelie,FRA,188,2000-10-24,,,F
+GIARDINO Amandine,FRA,172,1995-03-30,La Seyne-sur-mer,,F
+OLINGA ANDELA Leandra,FRA,185,1997-08-12,,,F
+RESPAUT Emilie,FRA,176,2003-04-25,Saint-raphael,,F
+STOJILJKOVIC Nina,FRA,180,1996-09-01,Paris,,F
+BAH Halimatou,FRA,185,2003-12-21,Epinay-sous-senart,,F
+GICQUEL Lucille,FRA,189,1997-11-13,Rennes,Lulu,F
+SCHALK Maeva,FRA,185,2005-12-14,,,F
+NDIAYE Iman,FRA,188,2002-01-13,Paris,,F
+ERDEM DUNDAR Eda,TUR,188,1987-06-22,Istanbul,"Edi, Eduska",F
+OZBAY Cansu,TUR,179,1996-10-17,Izmir,,F
+SAHIN Elif,TUR,184,2001-01-19,Ankara,,F
+ORGE Gizem,TUR,172,1993-04-26,Ankara,Minister of Defence,F
+GUNES Zehra,TUR,198,1999-07-07,Istanbul,,F
+ARICI Beyza,TUR,190,1995-07-27,,,F
+KALAC Asli,TUR,185,1995-12-13,Istanbul,,F
+VARGAS Melissa Teresa,TUR,194,1999-10-16,Cienfuegos,Vargas Airlines,F
+KARAKURT Ebrar,TUR,195,2000-01-17,Balikesir,,F
+BALADIN Hande,TUR,187,1997-09-01,K?tahya,,F
+DIKEN Meliha,TUR,182,1993-09-17,Gradacac,Melly,F
+AYDIN Ilkin,TUR,179,2000-01-05,,,F
+CEBECIOGLU Derya,TUR,181,2000-10-24,Mersin,,F
+SIMIYU Loice Masitsa,KEN,182,2001-08-20,,Bouncer,F
+KUNDU Agripina Khayesi,KEN,155,1993-04-24,Kakamega,,F
+ATUKA Trizah,KEN,189,1992-04-14,Kakamega,,F
+OWINO Pamella Adhiambo,KEN,172,2001-09-26,Kisumu County,,F
+KIPRONO Sharon Chepchumba,KEN,183,1998-10-26,,Chumba,F
+MUKUVILANI Edith,KEN,184,1994-07-20,,Wisah,F
+KASAYA Leonida,KEN,168,1993-10-10,Kakamega,,F
+MISOKI Emmanculate Nekesa,KEN,184,2003-06-06,,,F
+MUTINDA Esther Kemene,KEN,176,1999-04-21,,,F
+NAMUTIRA Juliana,KEN,181,1999-05-14,Kakamenga,"Bulldozer, Tila",F
+KAEI Lorine Chebet,KEN,179,1999-10-08,Mt. Elgon,,F
+BARASA Belinda Nanjala,KEN,188,2001-04-28,,,F
+TAPIA CRUZ Alondra Denis,DOM,193,2004-05-19,La Vega,,F
+RODRIGUEZ FUNG Ariana,DOM,184,2005-11-03,,,F
+de la CRUZ de PENA Bethania,DOM,188,1987-05-13,Santo Domingo,"Big Beth, Bethy, Betty",F
+MARTINEZ Brayelin Elizabeth,DOM,201,1996-09-11,Santo Domingo,Brats,F
+CASTILLO Brenda,DOM,167,1992-06-05,Haina,"Chinchin, Shorty, Minor, La Peque",F
+ARIAS PEREZ Candida Estefany,DOM,194,1992-03-11,Yaguate,"Yaguate, Candi",F
+GONZALEZ LOPEZ Gaila Ceneida,DOM,190,1997-06-25,Santo Domingo,Zurda de Oro (Golden Lefty),F
+GONZALEZ Geraldine Sthefany,DOM,200,2002-04-18,,,F
+MARTINEZ Jineiry,DOM,192,1997-12-03,Santo Domingo,La Chiqui,F
+GUILLEN PAREDES Madeline Jazmin,DOM,186,2001-06-04,Manoguayabo,,F
+MARTE FRICA Niverka Dharlenis,DOM,178,1990-10-19,Santo Domingo,"Nive, Clic-Clic, The Chancellor",F
+PENA ISABEL Yonkaira Paola,DOM,190,1993-05-10,Santo Domingo,Yonky,F
+DIAO Linyu,CHN,183,1994-04-07,Huai'an,,F
+DING Xia,CHN,180,1990-01-13,Shijiazhuang,Little Ant,F
+GAO Yi,CHN,195,1998-07-22,Zaozhuang,,F
+GONG Xiangyu,CHN,189,1997-04-21,Lianyungang,Xiao Yuzhou (Little Universe),F
+LI Yingying,CHN,195,2000-02-19,Qiqihar,Meimei (Little Sister),F
+WANG Mengjie,CHN,173,1995-11-14,Jinan,Xiao Ke'ai (Little Cutie),F
+WU Mengjie,CHN,195,2002-09-10,Jiangsu,,F
+YUAN Xinyue,CHN,202,1996-12-21,Chongqing,Little Apple,F
+ZHANG Changning,CHN,195,1995-11-06,Changzhou,Baobao (Baby),F
+ZHUANG Yushan,CHN,184,2003-04-28,,,F
+WANG Yuanyuan,CHN,196,1997-07-14,Jingning County,,F
+ZHENG Yixin,CHN,189,1995-05-06,Zhangzhou,Little Fresh,F
+ZHU Ting,CHN,198,1994-11-29,Zhengzhou,"MVP Harvester, Queen Ting",F
+CARLINI Lauren,USA,185,1995-02-28,"Geneva, Il",LC,F
+DREWS Andrea,USA,191,1993-12-25,"Elkhart, In",Annie,F
+HANCOCK Micha,USA,180,1992-11-10,"Mcalester, Ok",,F
+LARSON Jordan,USA,188,1986-10-16,"Fremont, Ne","Jor, Govnah, The Governor",F
+OGBOGU Chiaka,USA,188,1995-04-15,"Newark, Nj",,F
+PLUMMER Kathryn,USA,198,1998-10-16,"Long Beach, Ca",,F
+POULTER Jordyn,USA,188,1997-07-31,"Naperville, Il",,F
+RETTKE Dana,USA,203,1999-01-21,"Riverside, Il","Dane, Danye",F
+ROBINSON Kelsey,USA,188,1992-06-25,"Elmhurst, Il",Ke$ha,F
+SKINNER Avery,USA,186,1999-04-25,"Katy, Tx",,F
+THOMPSON Jordan,USA,193,1997-05-05,"Edina, Mn",,F
+WASHINGTON Haleigh,USA,190,1995-09-22,"Denver, Co","Hales, Hales Storm",F
+WONG-ORANTES Justine,USA,168,1995-10-06,"Torrance, Ca",,F
+SEKI Nanami,JPN,171,1999-06-12,Funabashi,Sena,F
+ARAKI Ayaka,JPN,184,2001-09-02,Onojo,,F
+WADA Yukiko,JPN,174,2002-01-08,Kyoto,,F
+IWASAKI Koyomi,JPN,175,1989-05-01,Komae,,F
+MIYABE Airi,JPN,182,1998-07-29,Amagasaki,,F
+INOUE Arisa,JPN,178,1995-05-08,Maizuru,Shouma,F
+KOJIMA Manami,JPN,158,1994-11-07,Sendai,,F
+FUKUDOME Satomi,JPN,162,1997-11-23,Kyoto,Sutton,F
+MORIYA Akane,JPN,165,1991-01-08,Suzaka,,F
+YAMADA Nichika,JPN,184,2000-02-24,Toyota,Hana (Flower),F
+ISHIKAWA Mayu,JPN,174,2000-05-14,Okazaki,,F
+HAYASHI Kotona,JPN,173,1999-11-13,Kyoto,Rin,F
+NISHIDA Sarina,JPN,180,1996-05-21,Fukuoka,,F
+ORRO Alessia,ITA,178,1998-07-18,Oristano,,F
+CAMBI Carlotta,ITA,178,1996-05-28,San Miniato,,F
+EGONU Paola Ogechi,ITA,193,1998-12-18,Cittadella,,F
+ANTROPOVA Ekaterina,ITA,202,2003-03-19,Akureyri,,F
+SYLLA Myriam Fatime,ITA,184,1995-01-08,Palermo,Miri,F
+BOSETTI Caterina Chiara,ITA,179,1994-02-02,Tradate,Cate,F
+OMORUYI Oghosasere Loveth,ITA,184,2002-08-25,Lodi,,F
+DANESI Anna,ITA,195,1996-04-20,Brescia,,F
+FAHR Sarah Luisa,ITA,192,2001-09-12,Kulmbach,,F
+LUBIAN Marina,ITA,193,2000-04-11,Moncalieri,,F
+de GENNARO Monica,ITA,174,1987-01-08,Piano Di Sorrento,Moky,F
+SPIRITO Ilaria,ITA,174,1994-02-20,Albisola Superiore,,F
+ALAGIERSKA Klaudia,POL,190,1996-01-02,Milan?wek,Lala,F
+CZYRNIANSKA Martyna,POL,191,2003-10-13,Krynica-zdr?j,Czyrna,F
+JURCZYK Magdalena,POL,183,1995-10-28,Cergowa,,F
+KORNELUK Agnieszka,POL,200,1994-10-17,Poznan,,F
+LUKASIK Martyna,POL,189,1999-11-26,Gdansk,,F
+MEDRZYK Natalia,POL,183,1992-01-13,Lebork,Mama,F
+ROZANSKI Olivia,POL,185,1997-06-05,Albi,,F
+SMARZEK Malwina,POL,191,1996-06-03,Laska,,F
+STENZEL Maria,POL,168,1998-11-25,Koscian,Mery,F
+STYSIAK Magdalena,POL,203,2000-12-03,Turow,Megi,F
+SZCZYGLOWSKA Aleksandra,POL,172,1998-03-22,Elblag,Ola,F
+WENERSKA Katarzyna,POL,180,1993-03-09,Swiecie,Kasia,F
+WOLOSZ Joanna,POL,181,1990-04-07,Elblag,,F
+OLUOCH Veronica Adhiambo,KEN,180,1999-06-05,Ugenya,,F
+ALEKSIC Maja,SRB,188,1997-06-06,Uzice,,F
+BOSKOVIC Tijana,SRB,193,1997-03-08,Trebinje,Tica,F
+BUSA Bianka,SRB,187,1994-07-25,Vrbas,Buki,F
+DRCA Bojana,SRB,186,1988-03-29,Belgrade,Bosha,F
+KURTAGIC Hena,SRB,195,2004-08-27,Novi Pazar,,F
+LAZOVIC Katarina,SRB,182,1999-09-12,Belgrade,Laza,F
+LOZO Sara,SRB,186,1997-04-29,Jagodina,,F
+MILENKOVIC Bojana,SRB,185,1997-03-06,Belgrade,,F
+OGNJENOVIC Maja,SRB,183,1984-08-06,Zrenjanin,,F
+POPOVIC Silvija,SRB,178,1986-03-15,Niksic,,F
+POPOVIC Mina,SRB,187,1994-09-16,Kraljevo,,F
+STEVANOVIC Jovana,SRB,192,1992-06-30,Belgrade,Jole,F
+UZELAC Aleksandra,SRB,188,2004-07-27,Zrenjanin,,F
+da SILVA Ana Carolina,BRA,183,1991-04-08,Belo Horizonte,Carol,F
+MENEZES OLIVEIRA de SOUZA Ana Cris,BRA,192,2004-04-07,Rio De Janeiro,,F
+DUARTE ALECRIM Diana,BRA,194,1999-02-22,,,F
+BRAGA GUIMARAES Gabriela,BRA,180,1994-05-19,Belo Horizonte,Gabi,F
+BERGMANN Julia Isabelle,BRA,191,2001-02-21,Munich,,F
+GERALDO TEIXEIRA Lorenne,BRA,187,1996-01-08,Conselheiro Lafaiete,,F
+SILVA CARNEIRO Macris Fernanda,BRA,178,1989-03-03,Santo Andre,Fada Vegana (Portuguese for Vegan Fairy),F
+ARAUJO Natalia,BRA,162,1997-04-10,Sao Paulo,Natinha,F
+ALEXANDRE COSTA NUNES Nyeme Victor,BRA,175,1998-10-11,Barra Do Corda,Doutora Nyeme,F
+MONTIBELLER Rosamaria,BRA,185,1994-04-09,Nova Trento,,F
+RATZKE Roberta Silva,BRA,185,1990-04-28,Curitiba,,F
+DAHER de MENEZES Thaisa,BRA,196,1987-05-15,Rio De Janeiro,Mama Daher,F
+LEMES SANTOS Tainara,BRA,190,2000-03-09,Jandira,,F
+GIOVANNINI Gaia,ITA,182,2001-12-17,San Giovanni In Persiceto,,F
+van AALEN Sarah,NED,186,2000-01-21,Stogumber,,F
+PLAK Celeste,NED,190,1995-10-26,Tuitjenhorn,,F
+KNOLLEMA Jolien,NED,189,2003-01-05,Groningen,,F
+LOHUIS Juliet,NED,190,1996-09-10,Oldenzaal,,F
+BUIJS Anne,NED,191,1991-12-02,Geleen,,F
+BONGAERTS Britt,NED,185,1996-11-03,Roermond,,F
+BAIJENS Indy,NED,193,2001-02-04,Zaandam,,F
+JASPER Marrit,NED,180,1996-02-28,Sneek,,F
+DAALDEROP Nika,NED,189,1998-11-29,Amsterdam,,F
+TIMMERMAN Eline,NED,192,1998-12-30,Rijssen,,F
+REESINK Florien,NED,174,1998-06-09,Borne,,F
+DAMBRINK Elles,NED,184,2003-06-22,Ouderkerk Aan Den Ijssel,,F
+MARRING Nova,NED,184,2001-09-06,Groningen,,F

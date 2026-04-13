@@ -19,3 +19,13 @@ Lecture du template, revoir les diagrammes et commencer à faire du code.
 
 Mail : clement.valot.pro@gmail.com
 """
+
+"""
+Début de code :
+Lorsque l'on se connecte à VS Code, il faut faire les éléments suivants pour accéder à Claude Code.
+- Installer Claude Code for VS Code
+- Ouvrir l'onglet qui apparaît en haut à droite
+- Copier le lien et l'ouvrir dans une autre page google
+- Copier le code sur la nouvelle page et le coller dans VS Code
+- C'est bon
+"""

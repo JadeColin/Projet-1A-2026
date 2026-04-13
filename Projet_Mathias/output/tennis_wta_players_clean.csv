@@ -1,0 +1,336 @@
+player_id,name_first,name_last,hand,dob,ioc,height,full_name
+200748,Venus,Williams,R,1980-06-17,USA,185.0,Venus Williams
+201427,Alize,Cornet,R,1990-01-22,FRA,173.0,Alize Cornet
+201435,Kateryna,Bondarenko,R,1986-08-08,UKR,175.0,Kateryna Bondarenko
+201458,Victoria,Azarenka,R,1989-07-31,BLR,180.0,Victoria Azarenka
+201478,Varvara,Lepchenko,L,1986-05-21,USA,180.0,Varvara Lepchenko
+201481,Tamira,Paszek,R,1990-12-06,AUT,165.0,Tamira Paszek
+201493,Angelique,Kerber,L,1988-01-18,GER,173.0,Angelique Kerber
+201496,Caroline,Wozniacki,R,1990-07-11,DEN,177.0,Caroline Wozniacki
+201499,Anastasia,Pavlyuchenkova,R,1991-07-03,RUS,177.0,Anastasia Pavlyuchenkova
+201506,Sara,Errani,R,1987-04-29,ITA,164.0,Sara Errani
+201514,Sorana,Cirstea,R,1990-04-07,ROU,176.0,Sorana Cirstea
+201518,Yanina,Wickmayer,R,1989-10-20,BEL,182.0,Yanina Wickmayer
+201533,Shuai,Zhang,R,1989-01-21,CHN,177.0,Shuai Zhang
+201540,Kristina,Mladenovic,R,1993-05-14,FRA,184.0,Kristina Mladenovic
+201545,Anastasija,Sevastova,R,1990-04-13,LAT,169.0,Anastasija Sevastova
+201548,Ajla,Tomljanovic,R,1993-05-07,AUS,180.0,Ajla Tomljanovic
+201549,Petra,Martic,R,1991-01-19,CRO,181.0,Petra Martic
+201551,Arantxa,Rus,L,1990-12-13,NED,180.0,Arantxa Rus
+201585,Sloane,Stephens,R,1993-03-20,USA,170.0,Sloane Stephens
+201586,Heather,Watson,R,1992-05-19,GBR,170.0,Heather Watson
+201593,Irina Camelia,Begu,R,1990-08-26,ROU,181.0,Irina Camelia Begu
+201594,Simona,Halep,R,1991-09-27,ROU,168.0,Simona Halep
+201603,Shelby,Rogers,R,1992-10-13,USA,175.0,Shelby Rogers
+201606,Rebecca,Marino,R,1990-12-16,CAN,183.0,Rebecca Marino
+201610,Zarina,Diyas,R,1993-10-18,KAZ,172.0,Zarina Diyas
+201611,Daria,Saville,R,1994-03-05,AUS,166.0,Daria Saville
+201613,Arina,Rodionova,R,1989-12-15,AUS,168.0,Arina Rodionova
+201614,Caroline,Garcia,R,1993-10-16,FRA,177.0,Caroline Garcia
+201615,Lesia,Tsurenko,R,1989-05-30,UKR,174.0,Lesia Tsurenko
+201616,Lauren,Davis,R,1993-10-09,USA,157.0,Lauren Davis
+201619,Madison,Keys,R,1995-02-17,USA,178.0,Madison Keys
+201621,Mona,Barthel,R,1990-07-11,GER,185.0,Mona Barthel
+201662,Karolina,Pliskova,R,1992-03-21,CZE,184.0,Karolina Pliskova
+201693,Timea,Babos,R,1993-05-10,HUN,179.0,Timea Babos
+201696,Laura,Siegemund,R,1988-03-04,GER,168.0,Laura Siegemund
+201709,Yulia,Putintseva,R,1995-01-07,KAZ,163.0,Yulia Putintseva
+202421,Alison,Van Uytvanck,R,1994-03-26,BEL,173.0,Alison Van Uytvanck
+202429,Camila,Giorgi,R,1991-12-30,ITA,168.0,Camila Giorgi
+202434,Aleksandra,Krunic,R,1993-03-15,SRB,163.0,Aleksandra Krunic
+202453,Saisai,Zheng,R,1994-02-05,CHN,170.0,Saisai Zheng
+202460,Ons,Jabeur,R,1994-08-28,TUN,167.0,Ons Jabeur
+202468,Jessica,Pegula,R,1994-02-24,USA,170.0,Jessica Pegula
+202492,Qiang,Wang,R,1992-01-14,CHN,172.0,Qiang Wang
+202494,Elina,Svitolina,R,1994-09-12,UKR,174.0,Elina Svitolina
+202499,Donna,Vekic,R,1996-06-28,CRO,179.0,Donna Vekic
+202505,Belinda,Bencic,R,1997-03-10,SUI,175.0,Belinda Bencic
+202506,Margarita,Gasparyan,R,1994-09-01,RUS,183.0,Margarita Gasparyan
+202536,Ana,Bogdan,R,1992-11-25,ROU,171.0,Ana Bogdan
+202580,Federica,Di Sarra,R,1990-05-16,ITA,,Federica Di Sarra
+202600,Viktoriya,Tomova,R,1995-02-25,BUL,170.0,Viktoriya Tomova
+202662,Camilla,Rosatello,R,1995-05-28,ITA,,Camilla Rosatello
+202663,Magda,Linette,R,1992-02-12,POL,171.0,Magda Linette
+202671,Cristina Andreea,Mitu,R,1991-09-22,ROU,175.0,Cristina Andreea Mitu
+202684,Lin,Zhu,R,1994-01-28,CHN,173.0,Lin Zhu
+203288,Jia Jing,Lu,R,1989-11-18,CHN,173.0,Jia Jing Lu
+203354,Martina,Trevisan,L,1993-11-03,ITA,160.0,Martina Trevisan
+203379,Marina,Melnikova,R,1989-02-05,RUS,173.0,Marina Melnikova
+203389,Danielle,Collins,R,1993-12-13,USA,178.0,Danielle Collins
+203462,Kateryna,Baindl,R,1994-02-20,UKR,175.0,Kateryna Baindl
+203463,Nuria,Parrizas Diaz,R,1991-07-15,ESP,167.0,Nuria Parrizas Diaz
+203475,Carol,Zhao,R,1995-06-20,CAN,165.0,Carol Zhao
+203500,Sachia,Vickery,R,1995-05-11,USA,162.0,Sachia Vickery
+203501,Taylor,Townsend,L,1996-04-16,USA,170.0,Taylor Townsend
+203513,Robin,Anderson,R,1993-04-12,USA,160.0,Robin Anderson
+203514,Katarzyna,Kawa,R,1992-11-17,POL,178.0,Katarzyna Kawa
+203530,Viktorija,Golubic,R,1992-10-16,SUI,169.0,Viktorija Golubic
+203533,Anna Karolina,Schmiedlova,R,1994-09-13,SVK,176.0,Anna Karolina Schmiedlova
+203564,Chloe,Paquet,R,1994-07-01,FRA,179.0,Chloe Paquet
+203575,Danka,Kovinic,R,1994-11-18,MNE,169.0,Danka Kovinic
+203578,Fangzhou,Liu,R,1995-12-12,CHN,180.0,Fangzhou Liu
+204294,Su Jeong,Jang,R,1995-03-13,KOR,,Su Jeong Jang
+204411,Storm,Hunter,L,1994-08-11,AUS,166.0,Storm Hunter
+204419,Ana Sofia,Sanchez,L,1994-04-13,MEX,,Ana Sofia Sanchez
+204420,Marcela,Zacarias,R,1994-03-26,MEX,,Marcela Zacarias
+204427,Sara,Sorribes Tormo,R,1996-10-08,ESP,176.0,Sara Sorribes Tormo
+204431,Anna Lena,Friedsam,R,1994-02-01,GER,,Anna Lena Friedsam
+205892,Giuliana,Olmos,R,1993-03-04,MEX,170.0,Giuliana Olmos
+205925,Aliaksandra,Sasnovich,R,1994-03-22,BLR,174.0,Aliaksandra Sasnovich
+206007,Laura,Pigossi,R,1994-08-02,BRA,164.0,Laura Pigossi
+206037,Daniela,Seguel,U,1992-11-15,CHI,171.0,Daniela Seguel
+206124,Tereza,Martincova,R,1994-10-24,CZE,178.0,Tereza Martincova
+206219,Oceane,Dodin,R,1996-10-24,FRA,,Oceane Dodin
+206242,Beatriz,Haddad Maia,L,1996-05-30,BRA,185.0,Beatriz Haddad Maia
+206252,Barbora,Krejcikova,R,1995-12-18,CZE,178.0,Barbora Krejcikova
+206289,Maria,Sakkari,R,1995-07-25,GRE,172.0,Maria Sakkari
+206292,Astra,Sharma,R,1995-09-11,AUS,178.0,Astra Sharma
+206294,Yue,Yuan,R,1998-09-25,CHN,184.0,Yue Yuan
+206345,Victoria,Bosio,R,1994-10-03,ARG,,Victoria Bosio
+206363,Anna,Danilina,R,1995-08-20,KAZ,,Anna Danilina
+206368,Veronika,Kudermetova,R,1997-04-24,RUS,175.0,Veronika Kudermetova
+206374,Yafan,Wang,R,1994-04-30,CHN,170.0,Yafan Wang
+206408,Nadia,Podoroska,R,1997-02-10,ARG,170.0,Nadia Podoroska
+206417,Leolia,Jeanjean,R,1995-08-14,FRA,,Leolia Jeanjean
+206420,Ekaterina,Alexandrova,R,1994-11-15,RUS,175.0,Ekaterina Alexandrova
+206430,Carolina,Alves,U,1996-04-23,BRA,,Carolina Alves
+210303,Kathinka,Von Deichmann,R,1994-05-16,LIE,176.0,Kathinka Von Deichmann
+210337,Natalija,Stevanovic,R,1994-07-25,SRB,,Natalija Stevanovic
+210705,Irina,Bara,R,1995-03-18,ROU,,Irina Bara
+210722,Elise,Mertens,R,1995-11-17,BEL,179.0,Elise Mertens
+210886,Mayar,Sherif,R,1996-05-05,EGY,180.0,Mayar Sherif
+211063,Valeriya,Strakhova,R,1995-06-09,UKR,,Valeriya Strakhova
+211095,Bernarda,Pera,L,1994-12-03,USA,175.0,Bernarda Pera
+211107,Katie,Boulter,R,1996-08-01,GBR,180.0,Katie Boulter
+211148,Jasmine,Paolini,R,1996-01-04,ITA,160.0,Jasmine Paolini
+211260,Marie,Benoit,L,1995-03-16,BEL,,Marie Benoit
+211269,Eudice Wong,Chong,U,1996-04-22,HKG,,Eudice Wong Chong
+211279,Harriet,Dart,R,1996-07-28,GBR,175.0,Harriet Dart
+211316,Jessika,Ponchet,R,1996-09-26,FRA,,Jessika Ponchet
+211337,Tamara,Korpatsch,R,1995-05-12,GER,170.0,Tamara Korpatsch
+211342,Gabriela,Lee,L,1995-08-23,ROU,,Gabriela Lee
+211411,Nina,Stojanovic,R,1996-07-30,SRB,176.0,Nina Stojanovic
+211533,Jelena,Ostapenko,R,1997-06-08,LAT,177.0,Jelena Ostapenko
+211539,Fiona,Ferro,R,1997-03-12,FRA,170.0,Fiona Ferro
+211635,Louisa,Chirico,R,1996-05-16,USA,175.0,Louisa Chirico
+211651,Paula,Badosa,R,1997-11-15,ESP,180.0,Paula Badosa
+211684,Magdalena,Frech,R,1997-12-15,POL,171.0,Magdalena Frech
+211685,Rebecca,Sramkova,R,1996-10-19,SVK,,Rebecca Sramkova
+211701,Katerina,Siniakova,R,1996-05-10,CZE,174.0,Katerina Siniakova
+211702,Nao,Hibino,R,1994-11-28,JPN,163.0,Nao Hibino
+211713,Jaqueline,Cristian,R,1998-06-05,ROU,180.0,Jaqueline Cristian
+211765,Emina,Bektas,R,1993-03-30,USA,,Emina Bektas
+211768,Naomi,Osaka,R,1997-10-16,JPN,180.0,Naomi Osaka
+211814,Julia,Grabher,R,1996-07-02,AUT,170.0,Julia Grabher
+211817,Elena Gabriela,Ruse,R,1997-11-06,ROU,,Elena Gabriela Ruse
+211843,Anhelina,Kalinina,R,1997-02-07,UKR,179.0,Anhelina Kalinina
+211846,Kyoka,Okamura,R,1995-10-06,JPN,,Kyoka Okamura
+211874,Victoria,Rodriguez,U,1995-04-22,MEX,170.0,Victoria Rodriguez
+211880,Priscilla,Hon,R,1998-05-10,AUS,171.0,Priscilla Hon
+211920,Martina,Capurro Taborda,L,1997-12-04,ARG,,Martina Capurro Taborda
+213525,Jil,Teichmann,L,1997-07-15,SUI,170.0,Jil Teichmann
+213544,Jana,Fett,R,1996-11-02,CRO,168.0,Jana Fett
+213550,Sofia,Kenin,R,1998-11-14,USA,170.0,Sofia Kenin
+213576,Iryna,Shymanovich,R,1997-06-30,BLR,,Iryna Shymanovich
+213583,Tatjana,Maria,R,1987-08-08,GER,172.0,Tatjana Maria
+213631,Marie,Bouzkova,R,1998-07-21,CZE,180.0,Marie Bouzkova
+213646,Dalma,Galfi,R,1998-08-13,HUN,178.0,Dalma Galfi
+213706,Irene,Burillo Escorihuela,R,1997-07-23,ESP,,Irene Burillo Escorihuela
+213710,Cristina,Bucsa,R,1998-01-01,ESP,,Cristina Bucsa
+213779,Raluka,Serban,R,1997-06-17,CYP,,Raluka Serban
+213821,Wushuang,Zheng,U,1998-11-29,CHN,,Wushuang Zheng
+213849,Nicole,Fossa Huergo,U,1995-05-26,ITA,,Nicole Fossa Huergo
+213887,Renata,Zarazua,R,1997-09-30,MEX,,Renata Zarazua
+213889,Greet,Minnen,R,1997-08-14,BEL,,Greet Minnen
+213908,Yuriko,Miyazaki,R,1995-11-11,GBR,165.0,Yuriko Miyazaki
+214032,Chiraz,Bechri,R,1998-07-23,TUN,,Chiraz Bechri
+214040,Kimberly,Birrell,R,1998-04-29,AUS,170.0,Kimberly Birrell
+214060,Yuliana,Monroy,U,1998-09-20,COL,,Yuliana Monroy
+214082,Daria,Kasatkina,R,1997-05-07,RUS,170.0,Daria Kasatkina
+214096,Karolina,Muchova,R,1996-08-21,CZE,178.0,Karolina Muchova
+214119,Rebeka,Masarova,R,1999-08-06,ESP,186.0,Rebeka Masarova
+214149,Viktoria,Hruncakova,R,1998-05-11,SVK,,Viktoria Hruncakova
+214236,Angela,Fita Boluda,U,1999-07-12,ESP,,Angela Fita Boluda
+214262,Ena,Shibahara,R,1998-02-12,JPN,170.0,Ena Shibahara
+214386,Xinyu,Gao,R,1997-11-21,CHN,,Xinyu Gao
+214388,Anna,Bondar,R,1997-05-27,HUN,,Anna Bondar
+214452,Caroline,Dolehide,R,1998-09-05,USA,178.0,Caroline Dolehide
+214459,Lucia,Bronzetti,R,1998-12-10,ITA,,Lucia Bronzetti
+214461,Tamara,Zidansek,R,1997-12-26,SLO,168.0,Tamara Zidansek
+214480,Miriam Bianca,Bulgaru,R,1998-10-08,ROU,,Miriam Bianca Bulgaru
+214507,Berfu,Cengiz,R,1999-10-18,TUR,,Berfu Cengiz
+214521,Lea,Boskovic,R,1999-09-22,CRO,,Lea Boskovic
+214541,Fanny,Stollar,R,1998-11-12,HUN,172.0,Fanny Stollar
+214544,Aryna,Sabalenka,R,1998-05-05,BLR,182.0,Aryna Sabalenka
+214593,Lucrezia,Stefanini,R,1998-05-15,ITA,,Lucrezia Stefanini
+214604,Maria Lourdes,Carle,R,2000-02-10,ARG,,Maria Lourdes Carle
+214643,Liudmila,Samsonova,R,1998-11-11,RUS,180.0,Liudmila Samsonova
+214646,Xiaodi,You,U,1996-05-12,CHN,,Xiaodi You
+214782,Fernanda,Contreras Gomez,R,1997-10-08,MEX,,Fernanda Contreras Gomez
+214839,Jodie,Burrage,R,1999-05-28,GBR,,Jodie Burrage
+214906,Claire,Liu,R,2000-05-25,USA,170.0,Claire Liu
+214935,Malene,Helgo,U,1999-08-26,NOR,,Malene Helgo
+214939,Anna,Kalinskaya,R,1998-12-02,RUS,175.0,Anna Kalinskaya
+214954,Marketa,Vondrousova,L,1999-06-28,CZE,173.0,Marketa Vondrousova
+214981,Elena,Rybakina,R,1999-06-17,KAZ,184.0,Elena Rybakina
+215018,Destanee,Aiava,R,2000-05-10,AUS,175.0,Destanee Aiava
+215020,Anna,Blinkova,R,1998-09-10,RUS,179.0,Anna Blinkova
+215035,Dayana,Yastremska,R,2000-05-15,UKR,175.0,Dayana Yastremska
+215037,Kayla,Day,L,1999-09-28,USA,173.0,Kayla Day
+215138,Lulu,Sun,L,2001-04-14,NZL,,Lulu Sun
+215151,Lina,Glushko,U,2000-01-12,ISR,,Lina Glushko
+215219,Kaja,Juvan,R,2000-11-25,SLO,170.0,Kaja Juvan
+215290,Katarina,Zavatska,R,2000-02-05,UKR,173.0,Katarina Zavatska
+215306,Emiliana,Arango,R,2000-11-28,COL,,Emiliana Arango
+215314,En Shuo,Liang,U,2000-10-02,TPE,,En Shuo Liang
+215337,Olga,Danilovic,L,2001-01-23,SRB,,Olga Danilovic
+215370,Bianca,Andreescu,R,2000-06-16,CAN,170.0,Bianca Andreescu
+215372,Ksenia,Laskutova,R,1996-08-29,RUS,,Ksenia Laskutova
+215431,Emily,Appleton,R,1999-09-01,GBR,,Emily Appleton
+215453,Marina,Bassols Ribera,R,1999-12-13,ESP,165.0,Marina Bassols Ribera
+215480,Suzan,Lamens,R,1999-07-05,NED,,Suzan Lamens
+215566,Gergana,Topalova,R,2000-02-22,BUL,,Gergana Topalova
+215571,Guiomar,Maristany Zuleta De Reales,U,1999-02-19,ESP,,Guiomar Maristany Zuleta De Reales
+215572,Nuria,Brancaccio,R,2000-06-24,ITA,,Nuria Brancaccio
+215613,Emma,Navarro,R,2001-05-18,USA,,Emma Navarro
+215614,Mei,Yamaguchi,U,1999-06-14,JPN,152.0,Mei Yamaguchi
+215713,Anastasia,Potapova,R,2001-03-30,RUS,175.0,Anastasia Potapova
+215785,Camila,Osorio,R,2001-12-22,COL,162.0,Camila Osorio
+215806,Alice,Robbe,U,2000-05-10,FRA,,Alice Robbe
+215872,Kamilla,Rakhimova,R,2001-08-28,RUS,,Kamilla Rakhimova
+215898,Jule,Niemeier,R,1999-08-12,GER,178.0,Jule Niemeier
+215899,Simona,Waltert,R,2000-12-13,SUI,,Simona Waltert
+215910,Panna,Udvardy,R,1998-09-28,HUN,170.0,Panna Udvardy
+215936,Francesca,Jones,R,2000-09-19,GBR,,Francesca Jones
+215946,Ye Xin,Ma,U,1999-06-10,CHN,,Ye Xin Ma
+215983,Ann,Li,R,2000-06-26,USA,170.0,Ann Li
+215988,Mai,Hontama,R,1999-08-30,JPN,,Mai Hontama
+215996,Arianne,Hartono,R,1996-04-21,NED,,Arianne Hartono
+216016,Xiyu,Wang,L,2001-03-28,CHN,,Xiyu Wang
+216055,Francisca,Jorge,U,2000-04-21,POR,,Francisca Jorge
+216062,Meiling,Wang,U,2000-02-22,CHN,,Meiling Wang
+216081,Maja,Chwalinska,L,2001-10-11,POL,,Maja Chwalinska
+216083,Caty,Mcnally,R,2001-11-20,USA,,Caty Mcnally
+216097,Elizabeth,Mandlik,R,2001-05-19,USA,,Elizabeth Mandlik
+216133,Xin Yu,Wang,R,2001-09-26,CHN,182.0,Xin Yu Wang
+216146,Marta,Kostyuk,R,2002-06-28,UKR,175.0,Marta Kostyuk
+216153,Amanda,Anisimova,R,2001-08-31,USA,180.0,Amanda Anisimova
+216213,Sohyun,Park,U,2002-07-02,KOR,,Sohyun Park
+216262,Clara,Burel,R,2001-03-24,FRA,176.0,Clara Burel
+216265,Olivia,Gadecki,R,2002-04-24,AUS,,Olivia Gadecki
+216347,Iga,Swiatek,R,2001-05-31,POL,176.0,Iga Swiatek
+216566,Mananchaya,Sawangkaew,R,2002-07-10,THA,,Mananchaya Sawangkaew
+216587,Hong Yi Cody,Wong,U,2002-03-14,HKG,,Hong Yi Cody Wong
+219875,Varvara,Gracheva,R,2000-08-02,FRA,,Varvara Gracheva
+219917,Alycia,Parks,R,2000-12-31,USA,185.0,Alycia Parks
+220309,Zeynep,Sonmez,R,2002-04-30,TUR,,Zeynep Sonmez
+220332,Eva,Lys,R,2002-01-12,GER,165.0,Eva Lys
+220348,Diane,Parry,R,2002-09-01,FRA,170.0,Diane Parry
+220367,Leylah,Fernandez,L,2002-09-06,CAN,168.0,Leylah Fernandez
+220416,Moyuka,Uchijima,R,2001-08-11,JPN,171.0,Moyuka Uchijima
+220432,Dayeon,Back,U,2002-01-24,KOR,,Dayeon Back
+220435,Anastasia,Zakharova,R,2002-01-18,RUS,,Anastasia Zakharova
+220440,Alexa,Noel,R,2002-09-06,USA,168.0,Alexa Noel
+220446,Jazmin,Ortenzi,R,2001-11-20,ARG,,Jazmin Ortenzi
+220454,Yeon Woo,Ku,U,2003-03-15,KOR,,Yeon Woo Ku
+220465,Katie,Volynets,R,2001-12-31,USA,,Katie Volynets
+220520,Mccartney,Kessler,R,1999-07-08,USA,,Mccartney Kessler
+220548,Peyton,Stearns,R,2001-10-08,USA,,Peyton Stearns
+220589,Elina,Avanesyan,R,2002-09-17,ARM,,Elina Avanesyan
+220597,Thasaporn,Naklo,R,2001-08-20,THA,,Thasaporn Naklo
+220662,Veronika,Erjavec,R,1999-12-30,SLO,,Veronika Erjavec
+220699,Julia,Riera,R,2002-05-29,ARG,,Julia Riera
+220704,Clara,Tauson,R,2002-12-21,DEN,182.0,Clara Tauson
+220714,Elisabetta,Cocciaretto,R,2001-01-25,ITA,,Elisabetta Cocciaretto
+220722,Elvina,Kalieva,R,2003-07-27,USA,,Elvina Kalieva
+220733,Carole,Monnet,L,2001-12-01,FRA,,Carole Monnet
+220742,Leyre,Romero Gormaz,L,2002-04-06,ESP,,Leyre Romero Gormaz
+220750,Daria,Snigur,R,2002-03-27,UKR,,Daria Snigur
+220770,Eva,Vedder,R,1999-11-23,NED,,Eva Vedder
+221004,Amarissa Kiara,Toth,U,2003-02-10,HUN,,Amarissa Kiara Toth
+221012,Qinwen,Zheng,R,2002-10-08,CHN,,Qinwen Zheng
+221024,Hailey,Baptiste,R,2001-11-03,USA,,Hailey Baptiste
+221039,Elsa,Jacquemot,R,2003-05-03,FRA,,Elsa Jacquemot
+221054,Emma,Raducanu,R,2002-11-13,GBR,175.0,Emma Raducanu
+221073,Anastasia,Tikhonova,R,2001-01-21,RUS,,Anastasia Tikhonova
+221096,Sijia,Wei,R,2003-12-05,CHN,,Sijia Wei
+221103,Coco,Gauff,R,2004-03-13,USA,175.0,Coco Gauff
+221187,Priska Madelyn,Nugroho,R,2003-05-29,INA,,Priska Madelyn Nugroho
+221236,Polina,Kudermetova,R,2003-06-04,RUS,,Polina Kudermetova
+221237,Maria,Timofeeva,R,2003-11-18,RUS,,Maria Timofeeva
+221247,Ekaterina,Makarova,R,1996-02-15,RUS,,Ekaterina Makarova
+221257,Sinja,Kraus,R,2002-04-29,AUT,,Sinja Kraus
+221333,Solana,Sierra,R,2004-06-17,ARG,,Solana Sierra
+221354,Lisa,Pigato,R,2003-06-21,ITA,,Lisa Pigato
+221407,Oksana,Selekhmeteva,L,2003-01-13,RUS,,Oksana Selekhmeteva
+221434,Aliona,Falei,U,2004-03-29,BLR,,Aliona Falei
+221512,Katrina,Scott,R,2004-06-11,USA,180.0,Katrina Scott
+221905,Robin,Montgomery,L,2004-09-05,USA,,Robin Montgomery
+221909,Ashlyn,Krueger,R,2004-05-07,USA,185.0,Ashlyn Krueger
+221911,Selena,Janicijevic,R,2002-07-23,FRA,183.0,Selena Janicijevic
+221945,Amelia,Rajecki,R,2002-06-03,GBR,,Amelia Rajecki
+221985,Darja,Semenistaja,L,2002-09-16,LAT,,Darja Semenistaja
+222045,Antonia,Ruzic,R,2003-01-20,CRO,,Antonia Ruzic
+222080,Hina,Inoue,R,2003-06-01,USA,,Hina Inoue
+222233,Marina,Stakusic,R,2004-11-27,CAN,,Marina Stakusic
+222258,Linda,Fruhvirtova,R,2005-05-01,CZE,,Linda Fruhvirtova
+222259,Natalia,Szabanin,L,2003-10-11,HUN,,Natalia Szabanin
+222290,Lanlana,Tararudee,R,2004-07-07,THA,,Lanlana Tararudee
+222296,Zhuoxuan,Bai,R,2002-11-16,CHN,,Zhuoxuan Bai
+222328,Linda,Noskova,R,2004-11-17,CZE,,Linda Noskova
+222506,Anastasiya,Soboleva,U,2004-04-23,UKR,,Anastasiya Soboleva
+222559,Han,Shi,R,2005-05-30,CHN,,Han Shi
+222601,Jessica,Bouzas Maneiro,R,2002-09-24,ESP,,Jessica Bouzas Maneiro
+222661,Sonay,Kartal,R,2001-10-28,GBR,,Sonay Kartal
+222667,Monique,Barry,L,2002-06-21,NZL,,Monique Barry
+222866,Katherine,Hui,R,2005-01-29,USA,,Katherine Hui
+222919,Julia,Avdeeva,R,2002-07-06,RUS,,Julia Avdeeva
+222965,Erika,Andreeva,R,2004-06-24,RUS,,Erika Andreeva
+222966,Dominika,Salkova,R,2004-06-28,CZE,,Dominika Salkova
+223087,Tara,Wurth,R,2002-09-30,CRO,,Tara Wurth
+223194,Taylah,Preston,R,2005-10-27,AUS,,Taylah Preston
+223253,Alexandra,Eala,L,2005-05-23,PHI,173.0,Alexandra Eala
+223286,Victoria,Jimenez Kasintseva,L,2005-08-09,AND,,Victoria Jimenez Kasintseva
+223308,Ela Nala,Milic,U,2006-01-01,SLO,,Ela Nala Milic
+223321,Sofia,Costoulas,U,2005-04-02,BEL,,Sofia Costoulas
+223323,Barbora,Palicova,R,2004-03-11,CZE,,Barbora Palicova
+223331,Anca Alexia,Todoni,R,2004-10-10,ROU,,Anca Alexia Todoni
+223333,Noma,Noha Akugue,L,2003-12-02,GER,170.0,Noma Noha Akugue
+223410,Georgia,Pedone,R,2004-08-31,ITA,,Georgia Pedone
+223670,Diana,Shnaider,L,2004-04-02,RUS,,Diana Shnaider
+223671,Aya,El Aouni,U,2005-07-06,MAR,,Aya El Aouni
+230870,Ella,Seidel,R,2005-02-14,GER,,Ella Seidel
+232447,Celine,Naef,R,2005-06-25,SUI,,Celine Naef
+233741,Maya,Joint,R,2006-04-16,AUS,,Maya Joint
+234222,Liv,Hovde,U,2005-10-25,USA,,Liv Hovde
+236955,Tatiana,Prozorova,U,2003-10-10,RUS,,Tatiana Prozorova
+236956,Yasmine,Kabbaj,U,2004-01-15,MAR,,Yasmine Kabbaj
+236957,Lola,Radivojevic,U,2005-01-02,SRB,,Lola Radivojevic
+236958,Julia,Caffarena,U,2006-02-04,ARG,,Julia Caffarena
+236972,Luisina,Giovannini,U,2006-11-08,ARG,,Luisina Giovannini
+238064,Clervie,Ngounoue,R,2006-07-19,USA,,Clervie Ngounoue
+239156,Lucija,Ciric Bagaric,R,2004-01-09,CRO,,Lucija Ciric Bagaric
+239383,Sara,Bejlek,L,2006-01-31,CZE,,Sara Bejlek
+239389,Elena,Pridankina,R,2005-08-30,RUS,,Elena Pridankina
+239392,Mia,Ristic,U,2006-05-17,SRB,,Mia Ristic
+243420,Hanne,Vandewinkel,U,2004-05-21,BEL,,Hanne Vandewinkel
+246476,Mariana Isabel,Higuita Barraza,U,2007-06-14,COL,,Mariana Isabel Higuita Barraza
+252499,Alina,Korneeva,U,2007-06-23,RUS,,Alina Korneeva
+252587,Xinxin,Yao,L,2003-10-20,CHN,,Xinxin Yao
+256684,Aoi,Ito,U,2004-05-21,JPN,,Aoi Ito
+259104,Brenda,Fruhvirtova,R,2007-04-02,CZE,,Brenda Fruhvirtova
+259753,Malak,El Allami,U,2006-07-28,MAR,,Malak El Allami
+259799,Mirra,Andreeva,R,2007-04-29,RUS,,Mirra Andreeva
+259857,Akasha,Urhobo,R,2007-01-19,USA,,Akasha Urhobo
+259967,Sayaka,Ishii,U,2005-08-31,JPN,,Sayaka Ishii
+260170,Sara,Saito,R,2006-10-03,JPN,,Sara Saito
+260300,Iva,Jovic,R,2007-12-06,USA,,Iva Jovic
+260510,Vittoria,Paganetti,U,,ITA,,Vittoria Paganetti
+260672,Johanne Christine,Svendsen,R,2004-05-15,DEN,,Johanne Christine Svendsen
+260761,Renata,Jamrichova,U,2007-06-20,SVK,,Renata Jamrichova
+260847,Julia,Stusek,R,2008-06-23,GER,,Julia Stusek
+260848,Valentina,Mediorreal Arias,U,,COL,,Valentina Mediorreal Arias
+260913,Yufei,Ren,R,2006-04-11,CHN,,Yufei Ren
+261963,Mika,Stojsavljevic,R,2008-12-15,GBR,,Mika Stojsavljevic
+263857,Yuliia,Starodubtseva,R,2000-02-17,UKR,,Yuliia Starodubtseva
+266671,Laura,Samson,R,2008-03-10,CZE,,Laura Samson
