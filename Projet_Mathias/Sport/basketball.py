@@ -3,7 +3,7 @@ from pathlib import Path
 import pandas as pd
 
 
-ROOT = Path(__file__).parent.parent / "Base_de_données" / "Basketball"
+ROOT = Path(__file__).parent.parent.parent / "Base_de_données" / "Basketball"
 
 
 # ---------------------------------------------------------------------------
