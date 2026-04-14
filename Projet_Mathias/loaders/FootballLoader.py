@@ -60,4 +60,8 @@ class FootballLoader:
         Renvoie :
             countries, leagues, games
         """
-        return self.load_countries(), self.load_leagues(), self.load_games()
+        return (
+            self.load_countries(),
+            self.load_leagues(),
+            self.load_games()
+        )
