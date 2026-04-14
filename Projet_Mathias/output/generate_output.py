@@ -1,8 +1,13 @@
 from Projet_Mathias.loaders import (
-    TennisLoader,
+    BadmintonLoader,
     BasketballLoader,
+    ChessLoader,
+    Cs2Loader,
     FootballLoader,
+    FootballChampionsLeagueLoader,
     LolLoader,
+    Starcraft2Loader,
+    TennisLoader,
     VolleyballLoader,
 )
 
@@ -82,6 +87,44 @@ def generer_volleyball() -> None:
     sauvegarder(loader.load_matches_women(), "volleyball_matches_women_clean.csv")
 
 
+def generer_badminton() -> None:
+    print("Badminton...")
+    loader = BadmintonLoader()
+    sauvegarder(loader.load_players(), "badminton_players_clean.csv")
+    sauvegarder(loader.load_matches(), "badminton_matches_clean.csv")
+
+
+def generer_chess() -> None:
+    print("Chess...")
+    loader = ChessLoader()
+    sauvegarder(loader.load_players(), "chess_players_clean.csv")
+    sauvegarder(loader.load_matches(), "chess_matches_clean.csv")
+
+
+def generer_cs2() -> None:
+    print("CS2...")
+    loader = Cs2Loader()
+    sauvegarder(loader.load_players(), "cs2_players_clean.csv")
+    sauvegarder(loader.load_coaches(), "cs2_coaches_clean.csv")
+    sauvegarder(loader.load_teams(), "cs2_teams_clean.csv")
+    sauvegarder(loader.load_matches(), "cs2_matches_clean.csv")
+
+
+def generer_football_champions_league() -> None:
+    print("Football Champions League...")
+    loader = FootballChampionsLeagueLoader()
+    sauvegarder(loader.load_players(), "football_champions_league_players_clean.csv")
+    sauvegarder(loader.load_teams(), "football_champions_league_teams_clean.csv")
+    sauvegarder(loader.load_matches(), "football_champions_league_matches_clean.csv")
+
+
+def generer_starcraft2() -> None:
+    print("StarCraft 2...")
+    loader = Starcraft2Loader()
+    sauvegarder(loader.load_players(), "starcraft2_players_clean.csv")
+    sauvegarder(loader.load_matches(), "starcraft2_matches_clean.csv")
+
+
 if __name__ == "__main__":
     print(f"Génération des CSV dans : {OUTPUT}\n")
     generer_tennis()
@@ -89,4 +132,9 @@ if __name__ == "__main__":
     generer_football()
     generer_lol()
     generer_volleyball()
+    generer_badminton()
+    generer_chess()
+    generer_cs2()
+    generer_football_champions_league()
+    generer_starcraft2()
     print("\nTerminé.")

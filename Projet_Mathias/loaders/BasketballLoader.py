@@ -10,8 +10,8 @@ class BasketballLoader:
     Fichiers sources :
         - player.csv  : joueurs NBA (431 joueurs)
         - team.csv    : franchises NBA (30 équipes)
-        - match.csv   : matchs (attention : contient des données de football
-                        européen mal placées dans ce dossier)
+        - game.csv    : matchs NBA (saison 2022-2023, statistiques complètes
+                        par équipe : points, rebonds, passes, etc.)
 
     Exemple d'utilisation :
         loader = BasketballLoader()
@@ -50,27 +50,25 @@ class BasketballLoader:
 
     def load_matches(self) -> pd.DataFrame:
         """
-        Charge le fichier match.csv.
+        Charge le fichier game.csv.
 
-        ATTENTION : ce fichier contient des données de football européen
-        (saisons 2008-2016, 11 joueurs par équipe) et non du basketball NBA.
-        Les colonnes home_team_goal / away_team_goal correspondent à des buts.
+        Données NBA saison 2022-2023 (Regular Season) avec les statistiques
+        complètes par équipe : points, rebonds, passes décisives, etc.
 
         Colonnes ajoutées :
-            - date : converti en datetime
+            - game_date : converti en datetime
         """
         df = pd.read_csv(
-            self.ROOT / "match.csv",
+            self.ROOT / "game.csv",
             dtype={
-                "id": int,
-                "country_id": "Int64",
-                "league_id": "Int64",
-                "stage": "Int64",
-                "home_team_goal": "Int64",
-                "away_team_goal": "Int64",
+                "game_id": int,
+                "team_id_home": int,
+                "team_id_away": int,
+                "pts_home": "Int64",
+                "pts_away": "Int64",
             },
         )
-        df["date"] = pd.to_datetime(df["date"], errors="coerce")
+        df["game_date"] = pd.to_datetime(df["game_date"], errors="coerce")
         return df
 
     def load_all(self) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
