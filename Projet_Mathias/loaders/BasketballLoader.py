@@ -82,6 +82,42 @@ class BasketballLoader:
         """
         return self.load_players(), self.load_teams(), self.load_matches()
 
+    def get_team_roster(
+        self, players: pd.DataFrame, teams: pd.DataFrame, team_name: str
+    ) -> pd.DataFrame:
+        """
+        Retourne les joueurs d'une équipe à partir de son nom complet, abréviation ou surnom.
+
+        Exemple :
+            loader = BasketballLoader()
+            players, teams, _ = loader.load_all()
+            roster = loader.get_team_roster(players, teams, "Lakers")
+        """
+        mask = (
+            teams["full_name"].str.contains(team_name, case=False, na=False)
+            | teams["abbreviation"].str.contains(team_name, case=False, na=False)
+            | teams["nickname"].str.contains(team_name, case=False, na=False)
+        )
+        matched = teams[mask]
+        if matched.empty:
+            raise ValueError(f"Aucune équipe trouvée pour : '{team_name}'")
+        team_id = matched.iloc[0]["id"]
+        return players[players["team_id"] == team_id].reset_index(drop=True)
+
+    @staticmethod
+    def players_with_team(players: pd.DataFrame, teams: pd.DataFrame) -> pd.DataFrame:
+        """
+        Joint les joueurs avec leur équipe.
+
+        Retourne un DataFrame enrichi avec les colonnes de l'équipe
+        (full_name de l'équipe renommée en team_name, abbreviation, city…).
+        """
+        return players.merge(
+            teams.rename(columns={"full_name": "team_name", "id": "team_id"}),
+            on="team_id",
+            how="left",
+        )
+
     @staticmethod
     def _height_to_cm(height_str: str) -> float | None:
         """Convertit le format pieds-pouces '6-8' en centimètres."""
