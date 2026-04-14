@@ -105,7 +105,8 @@ class VolleyballLoader:
         df = pd.read_csv(self.ROOT / "match_men.csv")
         df["date"] = pd.to_datetime(df["date"], errors="coerce")
         df["winner"] = df.apply(
-            lambda r: r["country_code_1"] if r["set_country_1"] > r["set_country_2"] else r["country_code_2"],
+            lambda r: r["country_code_1"] if r["set_country_1"] > r[
+                "set_country_2"] else r["country_code_2"],
             axis=1,
         )
         return df
@@ -129,7 +130,8 @@ class VolleyballLoader:
         df = df.rename(columns={"country_1": "country_code_1", "country_2": "country_code_2"})
         df["date"] = pd.to_datetime(df["date"], errors="coerce")
         df["winner"] = df.apply(
-            lambda r: r["country_code_1"] if r["set_country_1"] > r["set_country_2"] else r["country_code_2"],
+            lambda r: r["country_code_1"] if r["set_country_1"] > r[
+                "set_country_2"] else r["country_code_2"],
             axis=1,
         )
         return df

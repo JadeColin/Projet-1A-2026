@@ -1,3 +1,18 @@
+from Projet_Mathias.loaders import (
+    TennisLoader,
+    BasketballLoader,
+    FootballLoader,
+    LolLoader,
+    VolleyballLoader,
+)
+
+from pathlib import Path  # noqa: E402
+import sys  # noqa: E402
+
+# Permet d'importer les loaders quel que soit le répertoire de lancement
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))  # noqa: F821
+
+
 """
 Génère tous les fichiers CSV nettoyés dans le dossier output/.
 
@@ -10,19 +25,6 @@ Utilisation :
     python Projet-1A-2026/Projet_Mathias/output/generate_output.py
 """
 
-from pathlib import Path
-import sys
-
-# Permet d'importer les loaders quel que soit le répertoire de lancement
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-
-from Projet_Mathias.loaders import (
-    TennisLoader,
-    BasketballLoader,
-    FootballLoader,
-    LolLoader,
-    VolleyballLoader,
-)
 
 OUTPUT = Path(__file__).parent
 
