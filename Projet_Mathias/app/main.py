@@ -12,43 +12,44 @@ from tkinter import ttk, messagebox
 import threading
 
 # ── Palette de couleurs ──────────────────────────────────────────────────────
-BG_DARK   = "#1e1e2e"
-BG_PANEL  = "#2a2a3e"
-BG_CARD   = "#313145"
-FG_TEXT   = "#cdd6f4"
-FG_MUTED  = "#6c7086"
-ACCENT    = "#89b4fa"
-ACCENT2   = "#cba6f7"
-SUCCESS   = "#a6e3a1"
-WARNING   = "#f9e2af"
-DANGER    = "#f38ba8"
+BG_DARK = "#1e1e2e"
+BG_PANEL = "#2a2a3e"
+BG_CARD = "#313145"
+FG_TEXT = "#cdd6f4"
+FG_MUTED = "#6c7086"
+ACCENT = "#89b4fa"
+ACCENT2 = "#cba6f7"
+SUCCESS = "#a6e3a1"
+WARNING = "#f9e2af"
+DANGER = "#f38ba8"
 
 SPORT_COLORS = {
-    "Basketball":            "#f9a825",
-    "League of Legends":     "#8e24aa",
+    "Basketball": "#f9a825",
+    "League of Legends": "#8e24aa",
     "Football Champions L.": "#1565c0",
-    "Tennis":                "#2e7d32",
-    "Échecs":                "#4e342e",
-    "Volleyball":            "#d84315",
+    "Tennis": "#2e7d32",
+    "Échecs": "#4e342e",
+    "Volleyball": "#d84315",
 }
 
-FONT_TITLE  = ("Segoe UI", 16, "bold")
-FONT_SPORT  = ("Segoe UI", 11, "bold")
-FONT_BTN    = ("Segoe UI", 10)
-FONT_BODY   = ("Segoe UI", 10)
-FONT_SMALL  = ("Segoe UI", 9)
+FONT_TITLE = ("Segoe UI", 16, "bold")
+FONT_SPORT = ("Segoe UI", 11, "bold")
+FONT_BTN = ("Segoe UI", 10)
+FONT_BODY = ("Segoe UI", 10)
+FONT_SMALL = ("Segoe UI", 9)
 
 
 # ── Configuration des sports ─────────────────────────────────────────────────
 
+
 def _make_sports_config():
     """Retourne la configuration complète de chaque sport."""
-    import Projet_Mathias.app.sports.basketball  as bk
-    import Projet_Mathias.app.sports.lol         as lol
+    import Projet_Mathias.app.sports.basketball as bk
+    import Projet_Mathias.app.sports.lol as lol
     import Projet_Mathias.app.sports.football_cl as fcl
-    import Projet_Mathias.app.sports.tennis      as tn
-    import Projet_Mathias.app.sports.chess       as ch
-    import Projet_Mathias.app.sports.volleyball  as vb
+    import Projet_Mathias.app.sports.tennis as tn
+    import Projet_Mathias.app.sports.chess as ch
+    import Projet_Mathias.app.sports.volleyball as vb
 
     return {
         "Basketball": {
@@ -221,12 +222,16 @@ def _make_sports_config():
                 {
                     "label": "Joueurs d'un pays (H)",
                     "fn": lambda code: vb.stats_joueurs_par_pays(code, "hommes"),
-                    "inputs": [{"key": "country_code", "label": "Code pays (ex : FRA)"}],
+                    "inputs": [
+                        {"key": "country_code", "label": "Code pays (ex : FRA)"}
+                    ],
                 },
                 {
                     "label": "Joueuses d'un pays (F)",
                     "fn": lambda code: vb.stats_joueurs_par_pays(code, "femmes"),
-                    "inputs": [{"key": "country_code", "label": "Code pays (ex : FRA)"}],
+                    "inputs": [
+                        {"key": "country_code", "label": "Code pays (ex : FRA)"}
+                    ],
                 },
             ]
         },
@@ -235,13 +240,14 @@ def _make_sports_config():
 
 # ── Widgets utilitaires ───────────────────────────────────────────────────────
 
+
 class ScrollableTreeview(tk.Frame):
     """Treeview avec scrollbars horizontal et vertical."""
 
     def __init__(self, parent, **kwargs):
         super().__init__(parent, bg=BG_DARK)
         self.tree = ttk.Treeview(self, **kwargs)
-        vsb = ttk.Scrollbar(self, orient="vertical",   command=self.tree.yview)
+        vsb = ttk.Scrollbar(self, orient="vertical", command=self.tree.yview)
         hsb = ttk.Scrollbar(self, orient="horizontal", command=self.tree.xview)
         self.tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
 
@@ -270,8 +276,8 @@ class ScrollableTreeview(tk.Frame):
 
 # ── Application principale ───────────────────────────────────────────────────
 
-class App(tk.Tk):
 
+class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Stats Sports")
@@ -281,7 +287,7 @@ class App(tk.Tk):
 
         self._sports_config = None
         self._current_sport = None
-        self._current_stat  = None
+        self._current_stat = None
 
         self._apply_styles()
         self._build_ui()
@@ -292,18 +298,25 @@ class App(tk.Tk):
         style = ttk.Style(self)
         style.theme_use("clam")
 
-        style.configure("Treeview",
-            background=BG_CARD, foreground=FG_TEXT,
-            fieldbackground=BG_CARD, rowheight=24,
+        style.configure(
+            "Treeview",
+            background=BG_CARD,
+            foreground=FG_TEXT,
+            fieldbackground=BG_CARD,
+            rowheight=24,
             font=FONT_SMALL,
         )
-        style.configure("Treeview.Heading",
-            background=BG_PANEL, foreground=ACCENT,
+        style.configure(
+            "Treeview.Heading",
+            background=BG_PANEL,
+            foreground=ACCENT,
             font=("Segoe UI", 9, "bold"),
         )
         style.map("Treeview", background=[("selected", ACCENT)])
-        style.configure("Vertical.TScrollbar",   background=BG_PANEL, troughcolor=BG_DARK)
-        style.configure("Horizontal.TScrollbar", background=BG_PANEL, troughcolor=BG_DARK)
+        style.configure("Vertical.TScrollbar", background=BG_PANEL, troughcolor=BG_DARK)
+        style.configure(
+            "Horizontal.TScrollbar", background=BG_PANEL, troughcolor=BG_DARK
+        )
 
     # ── Construction de l'interface ───────────────────────────────────────────
 
@@ -312,8 +325,11 @@ class App(tk.Tk):
         header = tk.Frame(self, bg=BG_PANEL, height=50)
         header.pack(fill="x", side="top")
         tk.Label(
-            header, text="  Stats Sports",
-            bg=BG_PANEL, fg=ACCENT, font=FONT_TITLE,
+            header,
+            text="  Stats Sports",
+            bg=BG_PANEL,
+            fg=ACCENT,
+            font=FONT_TITLE,
         ).pack(side="left", padx=16, pady=10)
 
         # Corps principal : sidebar + contenu
@@ -326,20 +342,33 @@ class App(tk.Tk):
         self._sidebar.pack_propagate(False)
 
         tk.Label(
-            self._sidebar, text="Sports",
-            bg=BG_PANEL, fg=FG_MUTED, font=("Segoe UI", 9, "bold"),
+            self._sidebar,
+            text="Sports",
+            bg=BG_PANEL,
+            fg=FG_MUTED,
+            font=("Segoe UI", 9, "bold"),
         ).pack(pady=(16, 4), padx=12, anchor="w")
 
         self._sport_buttons = {}
         for sport in [
-            "Basketball", "League of Legends", "Football Champions L.",
-            "Tennis", "Échecs", "Volleyball"
+            "Basketball",
+            "League of Legends",
+            "Football Champions L.",
+            "Tennis",
+            "Échecs",
+            "Volleyball",
         ]:
             btn = tk.Button(
-                self._sidebar, text=sport,
-                bg=BG_PANEL, fg=FG_TEXT, font=FONT_SPORT,
-                relief="flat", anchor="w", padx=14,
-                activebackground=BG_CARD, activeforeground=ACCENT,
+                self._sidebar,
+                text=sport,
+                bg=BG_PANEL,
+                fg=FG_TEXT,
+                font=FONT_SPORT,
+                relief="flat",
+                anchor="w",
+                padx=14,
+                activebackground=BG_CARD,
+                activeforeground=ACCENT,
                 cursor="hand2",
                 command=lambda s=sport: self._select_sport(s),
             )
@@ -358,11 +387,19 @@ class App(tk.Tk):
         self._clear_content()
         frame = tk.Frame(self._content, bg=BG_DARK)
         frame.place(relx=0.5, rely=0.5, anchor="center")
-        tk.Label(frame, text="Bienvenue", bg=BG_DARK, fg=ACCENT, font=("Segoe UI", 28, "bold")).pack()
+        tk.Label(
+            frame,
+            text="Bienvenue",
+            bg=BG_DARK,
+            fg=ACCENT,
+            font=("Segoe UI", 28, "bold"),
+        ).pack()
         tk.Label(
             frame,
             text="Sélectionnez un sport dans la barre latérale\npour accéder aux statistiques.",
-            bg=BG_DARK, fg=FG_MUTED, font=("Segoe UI", 13),
+            bg=BG_DARK,
+            fg=FG_MUTED,
+            font=("Segoe UI", 13),
             justify="center",
         ).pack(pady=12)
 
@@ -378,7 +415,7 @@ class App(tk.Tk):
                 btn.configure(bg=BG_PANEL, fg=FG_TEXT)
 
         self._current_sport = sport
-        self._current_stat  = None
+        self._current_stat = None
 
         # Charger la config au premier accès
         if self._sports_config is None:
@@ -391,14 +428,17 @@ class App(tk.Tk):
     def _build_sport_view(self, sport: str):
         self._clear_content()
         config = self._sports_config[sport]
-        color  = SPORT_COLORS.get(sport, ACCENT)
+        color = SPORT_COLORS.get(sport, ACCENT)
 
         # En-tête du sport
         header = tk.Frame(self._content, bg=BG_PANEL)
         header.pack(fill="x")
         tk.Label(
-            header, text=f"  {sport}",
-            bg=BG_PANEL, fg=color, font=FONT_TITLE,
+            header,
+            text=f"  {sport}",
+            bg=BG_PANEL,
+            fg=color,
+            font=FONT_TITLE,
         ).pack(side="left", padx=16, pady=10)
 
         # Barre de stats (boutons horizontaux)
@@ -408,10 +448,16 @@ class App(tk.Tk):
         self._stat_buttons = {}
         for stat in config["stats"]:
             btn = tk.Button(
-                stat_bar, text=stat["label"],
-                bg=BG_CARD, fg=FG_TEXT, font=FONT_BTN,
-                relief="flat", padx=10, pady=8,
-                activebackground=BG_PANEL, activeforeground=color,
+                stat_bar,
+                text=stat["label"],
+                bg=BG_CARD,
+                fg=FG_TEXT,
+                font=FONT_BTN,
+                relief="flat",
+                padx=10,
+                pady=8,
+                activebackground=BG_PANEL,
+                activeforeground=color,
                 cursor="hand2",
                 command=lambda s=stat: self._select_stat(s, color),
             )
@@ -432,8 +478,11 @@ class App(tk.Tk):
         # Label de statut
         self._status_var = tk.StringVar(value="← Choisissez une statistique")
         self._status_lbl = tk.Label(
-            self._content, textvariable=self._status_var,
-            bg=BG_DARK, fg=FG_MUTED, font=FONT_SMALL,
+            self._content,
+            textvariable=self._status_var,
+            bg=BG_DARK,
+            fg=FG_MUTED,
+            font=FONT_SMALL,
         )
         self._status_lbl.pack(pady=4)
 
@@ -466,23 +515,36 @@ class App(tk.Tk):
         self._entries = {}
         for inp in stat["inputs"]:
             tk.Label(
-                self._input_frame, text=inp["label"] + " :",
-                bg=BG_DARK, fg=FG_TEXT, font=FONT_BODY,
+                self._input_frame,
+                text=inp["label"] + " :",
+                bg=BG_DARK,
+                fg=FG_TEXT,
+                font=FONT_BODY,
             ).pack(side="left", padx=(0, 6))
 
             entry = tk.Entry(
                 self._input_frame,
-                bg=BG_CARD, fg=FG_TEXT, font=FONT_BODY,
-                insertbackground=FG_TEXT, relief="flat", width=24,
+                bg=BG_CARD,
+                fg=FG_TEXT,
+                font=FONT_BODY,
+                insertbackground=FG_TEXT,
+                relief="flat",
+                width=24,
             )
             entry.pack(side="left", padx=(0, 10))
             entry.bind("<Return>", lambda e, s=stat: self._run_stat_from_ui(s))
             self._entries[inp["key"]] = entry
 
         tk.Button(
-            self._input_frame, text="Rechercher",
-            bg=color, fg=BG_DARK, font=("Segoe UI", 10, "bold"),
-            relief="flat", padx=12, pady=4, cursor="hand2",
+            self._input_frame,
+            text="Rechercher",
+            bg=color,
+            fg=BG_DARK,
+            font=("Segoe UI", 10, "bold"),
+            relief="flat",
+            padx=12,
+            pady=4,
+            cursor="hand2",
             command=lambda s=stat: self._run_stat_from_ui(s),
         ).pack(side="left")
 
@@ -491,7 +553,9 @@ class App(tk.Tk):
     def _run_stat_from_ui(self, stat: dict):
         kwargs = {key: entry.get().strip() for key, entry in self._entries.items()}
         if any(not v for v in kwargs.values()):
-            messagebox.showwarning("Saisie manquante", "Veuillez remplir tous les champs.")
+            messagebox.showwarning(
+                "Saisie manquante", "Veuillez remplir tous les champs."
+            )
             return
         self._run_stat(stat, kwargs)
 
@@ -526,6 +590,7 @@ class App(tk.Tk):
 
 
 # ── Point d'entrée ───────────────────────────────────────────────────────────
+
 
 def main():
     app = App()
