@@ -1,10 +1,4 @@
-from src.Model.Sport import Sport
-from src.Analysis.display import (
-    display_all_competitions,
-    display_all_events,
-    display_all_matches,
-    display_all_players,
-)
+from Sports import Sport
 
 supported_sports = [
     Sport(name="basketball", team_sport=True),

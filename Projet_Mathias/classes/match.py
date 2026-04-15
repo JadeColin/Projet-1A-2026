@@ -69,21 +69,21 @@ class Match:
         return pd.Timestamp(val)
 
     @property
-    def equipe1(self):
+    def equipe_1(self):
         """Identifiant ou nom de l'équipe 1 (domicile / bleue / winner selon sport)."""
         if self._col_equipe1 is None:
             return None
         return self._data.get(self._col_equipe1)
 
     @property
-    def equipe2(self):
+    def equipe_2(self):
         """Identifiant ou nom de l'équipe 2 (extérieur / rouge / loser selon sport)."""
         if self._col_equipe2 is None:
             return None
         return self._data.get(self._col_equipe2)
 
     @property
-    def score1(self):
+    def score_1(self):
         """Score/points de l'équipe 1."""
         if self._col_score1 is None:
             return None
@@ -91,7 +91,7 @@ class Match:
         return None if pd.isna(val) else val
 
     @property
-    def score2(self):
+    def score_2(self):
         """Score/points de l'équipe 2."""
         if self._col_score2 is None:
             return None
