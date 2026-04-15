@@ -9,6 +9,10 @@ from src.Analysis.display import (
 supported_sports = [
     Sport(name="basketball", team_sport=True),
     Sport(name="tennis",     team_sport=False),
+    Sport(name="football",     team_sport=True),
+    Sport(name="chess",     team_sport=False),
+    Sport(name="lol",     team_sport=True),
+    Sport(name="volleyball",     team_sport=True),
 ]
 
 
