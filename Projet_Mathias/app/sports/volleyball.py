@@ -53,7 +53,8 @@ def classement(genre: str = "hommes") -> pd.DataFrame:
     )
     victoires = m["winner"].value_counts().rename("Victoires")
 
-    classement_df = pd.DataFrame({"Victoires": victoires, "Matchs joués": total}).fillna(0).astype(int)
+    classement_df = pd.DataFrame({"Victoires": victoires, "Matchs joués": total}).fillna(
+        0).astype(int)
     classement_df["Défaites"] = classement_df["Matchs joués"] - classement_df["Victoires"]
 
     # Enrichir avec le nom complet du pays
@@ -62,15 +63,18 @@ def classement(genre: str = "hommes") -> pd.DataFrame:
 
     sets_gagnes = (
         pd.concat([
-            m[["country_code_1", "set_country_1"]].rename(columns={"country_code_1": "code", "set_country_1": "sets"}),
-            m[["country_code_2", "set_country_2"]].rename(columns={"country_code_2": "code", "set_country_2": "sets"}),
+            m[["country_code_1", "set_country_1"]].rename(columns={
+                "country_code_1": "code", "set_country_1": "sets"}),
+            m[["country_code_2", "set_country_2"]].rename(columns={
+                "country_code_2": "code", "set_country_2": "sets"}),
         ])
         .groupby("code")["sets"]
         .sum()
         .rename("Sets gagnés")
     )
     classement_df = classement_df.join(sets_gagnes)
-    classement_df = classement_df.sort_values(["Victoires", "Sets gagnés"], ascending=False).reset_index(drop=True)
+    classement_df = classement_df.sort_values([
+        "Victoires", "Sets gagnés"], ascending=False).reset_index(drop=True)
     classement_df.index += 1
     return classement_df[["Pays", "Victoires", "Défaites", "Matchs joués", "Sets gagnés"]]
 
@@ -131,6 +135,10 @@ def stats_joueurs_par_pays(country_code: str, genre: str = "hommes") -> pd.DataF
     squad = squad.sort_values("name").reset_index(drop=True)
     squad.index += 1
     cols = ["name", "height", "birth_date", "nickname"]
-    labels = {"name": "Joueur", "height": "Taille (cm)", "birth_date": "Date de naissance", "nickname": "Surnom"}
+    labels = {
+        "name": "Joueur",
+        "height": "Taille (cm)",
+        "birth_date": "Date de naissance",
+        "nickname": "Surnom"}
     existing = [c for c in cols if c in squad.columns]
     return squad[existing].rename(columns=labels)

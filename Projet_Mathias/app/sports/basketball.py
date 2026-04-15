@@ -43,7 +43,8 @@ def classement_equipes() -> pd.DataFrame:
     classement = pd.DataFrame({"Victoires": victoires, "Matchs joués": matchs_joues}).fillna(0)
     classement["Défaites"] = classement["Matchs joués"] - classement["Victoires"]
     classement = classement.astype(int)
-    classement["% Victoires"] = (classement["Victoires"] / classement["Matchs joués"] * 100).round(1)
+    classement[
+        "% Victoires"] = (classement["Victoires"] / classement["Matchs joués"] * 100).round(1)
 
     # Joindre les noms d'équipes
     teams_idx = _teams.set_index("id")[["full_name", "abbreviation"]]
@@ -64,8 +65,10 @@ def top_equipes_offensives(n: int = 10) -> pd.DataFrame:
     _load()
     m = _matches.copy()
 
-    home = m[["team_id_home", "pts_home"]].rename(columns={"team_id_home": "team_id", "pts_home": "pts"})
-    away = m[["team_id_away", "pts_away"]].rename(columns={"team_id_away": "team_id", "pts_away": "pts"})
+    home = m[["team_id_home", "pts_home"]].rename(columns={
+        "team_id_home": "team_id", "pts_home": "pts"})
+    away = m[["team_id_away", "pts_away"]].rename(columns={
+        "team_id_away": "team_id", "pts_away": "pts"})
     all_pts = pd.concat([home, away])
 
     moy = all_pts.groupby("team_id")["pts"].mean().round(1).sort_values(ascending=False).head(n)
@@ -105,7 +108,8 @@ def stats_equipe(team_name: str) -> pd.DataFrame:
     )
     combined = pd.concat([home, away])
 
-    stat_cols = ["pts", "fgm", "fga", "fg3m", "fg3a", "ftm", "fta", "reb", "ast", "stl", "blk", "tov"]
+    stat_cols = [
+        "pts", "fgm", "fga", "fg3m", "fg3a", "ftm", "fta", "reb", "ast", "stl", "blk", "tov"]
     existing = [c for c in stat_cols if c in combined.columns]
     moyennes = combined[existing].mean().round(2)
 

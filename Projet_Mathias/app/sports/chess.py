@@ -29,7 +29,9 @@ def classement_elo(mode: str = "standard", n: int = 20) -> pd.DataFrame:
     df = _players[["name", "federation", "fide_title", col]].copy()
     df = df.dropna(subset=[col]).sort_values(col, ascending=False).head(n).reset_index(drop=True)
     df.index += 1
-    labels = {col: f"Elo {mode.capitalize()}", "name": "Joueur", "federation": "Fédération", "fide_title": "Titre"}
+    labels = {
+        col: f"Elo {mode.capitalize()}",
+        "name": "Joueur", "federation": "Fédération", "fide_title": "Titre"}
     return df.rename(columns=labels)
 
 

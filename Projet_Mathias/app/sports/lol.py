@@ -31,7 +31,8 @@ def classement_emea() -> pd.DataFrame:
     victoires = _matches["winner"].value_counts().rename("Victoires")
     classement = pd.DataFrame({"Victoires": victoires, "Matchs joués": total}).fillna(0).astype(int)
     classement["Défaites"] = classement["Matchs joués"] - classement["Victoires"]
-    classement["% Victoires"] = (classement["Victoires"] / classement["Matchs joués"] * 100).round(1)
+    classement["% Victoires"] = (
+        classement["Victoires"] / classement["Matchs joués"] * 100).round(1)
     classement = classement.sort_values("Victoires", ascending=False).reset_index()
     classement = classement.rename(columns={"index": "Équipe"})
     classement.index += 1
@@ -56,7 +57,9 @@ def stats_equipe(team_name: str) -> pd.DataFrame:
     if matches_team.empty:
         raise ValueError(f"Aucune équipe trouvée pour : '{team_name}'")
 
-    team_label = matches_team.iloc[0]["team_blue"] if team_name.lower() in matches_team.iloc[0]["team_blue"].lower() else matches_team.iloc[0]["team_red"]
+    team_label = matches_team.iloc[
+        0]["team_blue"] if team_name.lower() in matches_team.iloc[0][
+            "team_blue"].lower() else matches_team.iloc[0]["team_red"]
 
     blue = matches_team[matches_team["team_blue"] == team_label].rename(
         columns={c: c.replace("_team_blue", "") for c in matches_team.columns}
@@ -116,12 +119,14 @@ def duree_moyenne_parties() -> pd.DataFrame:
     for team in sorted(all_teams):
         mask = (_matches["team_blue"] == team) | (_matches["team_red"] == team)
         moy_s = _matches.loc[mask, "duration_s"].mean()
-        rows.append({"Équipe": team, "Durée moy. (min)": round(moy_s / 60, 1) if pd.notna(moy_s) else None})
+        rows.append({"Équipe": team, "Durée moy. (min)": round(
+            moy_s / 60, 1) if pd.notna(moy_s) else None})
 
     result = pd.DataFrame(rows).sort_values("Durée moy. (min)").reset_index(drop=True)
     result.index += 1
 
     # Ligne globale
     global_moy = _matches["duration_s"].mean()
-    global_row = pd.DataFrame([{"Équipe": "TOUTES ÉQUIPES", "Durée moy. (min)": round(global_moy / 60, 1)}])
+    global_row = pd.DataFrame([{"Équipe": "TOUTES ÉQUIPES", "Durée moy. (min)": round(
+        global_moy / 60, 1)}])
     return pd.concat([global_row, result], ignore_index=True)

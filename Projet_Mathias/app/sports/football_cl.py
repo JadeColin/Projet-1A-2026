@@ -25,7 +25,8 @@ def meilleurs_buteurs(n: int = 10) -> pd.DataFrame:
     df = _players[["player_name", "club", "position", "goals"]].copy()
     df = df.sort_values("goals", ascending=False).head(n).reset_index(drop=True)
     df.index += 1
-    return df.rename(columns={"player_name": "Joueur", "club": "Club", "position": "Poste", "goals": "Buts"})
+    return df.rename(columns={
+        "player_name": "Joueur", "club": "Club", "position": "Poste", "goals": "Buts"})
 
 
 # ---------------------------------------------------------------------------
@@ -38,7 +39,8 @@ def meilleurs_passeurs(n: int = 10) -> pd.DataFrame:
     df = _players[["player_name", "club", "position", "assists"]].copy()
     df = df.sort_values("assists", ascending=False).head(n).reset_index(drop=True)
     df.index += 1
-    return df.rename(columns={"player_name": "Joueur", "club": "Club", "position": "Poste", "assists": "Passes déc."})
+    return df.rename(columns={
+        "player_name": "Joueur", "club": "Club", "position": "Poste", "assists": "Passes déc."})
 
 
 # ---------------------------------------------------------------------------
@@ -82,5 +84,6 @@ def resultats_par_phase() -> pd.DataFrame:
         Buts_total=("buts_total", "sum"),
         Moy_buts=("buts_total", "mean"),
     ).round({"Moy_buts": 2}).reset_index()
-    grouped = grouped.rename(columns={"phase": "Phase", "Buts_total": "Buts totaux", "Moy_buts": "Moy. buts/match"})
+    grouped = grouped.rename(columns={
+        "phase": "Phase", "Buts_total": "Buts totaux", "Moy_buts": "Moy. buts/match"})
     return grouped
