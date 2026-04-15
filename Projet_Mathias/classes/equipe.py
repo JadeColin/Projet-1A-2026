@@ -1,4 +1,4 @@
-"""
+s"""
 Classes génériques pour représenter une équipe et une collection d'équipes.
 
 Conçues pour être compatibles avec tous les sports du projet :

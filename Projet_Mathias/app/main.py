@@ -11,6 +11,8 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import threading
 
+from Projet_Mathias.classes.sport import SPORTS, TypeSport, CategorieSport
+
 # ── Palette de couleurs ──────────────────────────────────────────────────────
 BG_DARK = "#1e1e2e"
 BG_PANEL = "#2a2a3e"
@@ -23,14 +25,7 @@ SUCCESS = "#a6e3a1"
 WARNING = "#f9e2af"
 DANGER = "#f38ba8"
 
-SPORT_COLORS = {
-    "Basketball": "#f9a825",
-    "League of Legends": "#8e24aa",
-    "Football Champions L.": "#1565c0",
-    "Tennis": "#2e7d32",
-    "Échecs": "#4e342e",
-    "Volleyball": "#d84315",
-}
+SPORT_COLORS = {s.nom: s.couleur for s in SPORTS}
 
 FONT_TITLE = ("Segoe UI", 16, "bold")
 FONT_SPORT = ("Segoe UI", 11, "bold")
@@ -341,26 +336,89 @@ class App(tk.Tk):
         self._sidebar.pack(fill="y", side="left")
         self._sidebar.pack_propagate(False)
 
+        # ── Filtre individuel / collectif ─────────────────────────────────────
+        tk.Label(
+            self._sidebar,
+            text="Format",
+            bg=BG_PANEL,
+            fg=FG_MUTED,
+            font=("Segoe UI", 9, "bold"),
+        ).pack(pady=(16, 4), padx=12, anchor="w")
+
+        self._filtre_type = None       # None = tous
+        self._filtre_categorie = None  # None = tous
+
+        filtre_type_frame = tk.Frame(self._sidebar, bg=BG_PANEL)
+        filtre_type_frame.pack(fill="x", padx=8, pady=(0, 6))
+
+        self._filtre_type_buttons = {}
+        for label, valeur in [
+            ("Tous",        None),
+            ("Collectif",   TypeSport.COLLECTIF),
+            ("Individuel",  TypeSport.INDIVIDUEL),
+        ]:
+            btn = tk.Button(
+                filtre_type_frame,
+                text=label,
+                bg=ACCENT if valeur is None else BG_CARD,
+                fg=BG_DARK if valeur is None else FG_MUTED,
+                font=("Segoe UI", 8, "bold"),
+                relief="flat",
+                padx=6,
+                pady=3,
+                cursor="hand2",
+                command=lambda v=valeur: self._appliquer_filtre_type(v),
+            )
+            btn.pack(side="left", padx=2)
+            self._filtre_type_buttons[label] = btn
+
+        # ── Filtre sport / e-sport ────────────────────────────────────────────
+        tk.Label(
+            self._sidebar,
+            text="Discipline",
+            bg=BG_PANEL,
+            fg=FG_MUTED,
+            font=("Segoe UI", 9, "bold"),
+        ).pack(pady=(4, 4), padx=12, anchor="w")
+
+        filtre_cat_frame = tk.Frame(self._sidebar, bg=BG_PANEL)
+        filtre_cat_frame.pack(fill="x", padx=8, pady=(0, 8))
+
+        self._filtre_cat_buttons = {}
+        for label, valeur in [
+            ("Tous",    None),
+            ("Sport",   CategorieSport.SPORT),
+            ("E-sport", CategorieSport.ESPORT),
+        ]:
+            btn = tk.Button(
+                filtre_cat_frame,
+                text=label,
+                bg=ACCENT if valeur is None else BG_CARD,
+                fg=BG_DARK if valeur is None else FG_MUTED,
+                font=("Segoe UI", 8, "bold"),
+                relief="flat",
+                padx=6,
+                pady=3,
+                cursor="hand2",
+                command=lambda v=valeur: self._appliquer_filtre_categorie(v),
+            )
+            btn.pack(side="left", padx=2)
+            self._filtre_cat_buttons[label] = btn
+
+        # ── Liste des sports ──────────────────────────────────────────────────
         tk.Label(
             self._sidebar,
             text="Sports",
             bg=BG_PANEL,
             fg=FG_MUTED,
             font=("Segoe UI", 9, "bold"),
-        ).pack(pady=(16, 4), padx=12, anchor="w")
+        ).pack(pady=(4, 4), padx=12, anchor="w")
 
         self._sport_buttons = {}
-        for sport in [
-            "Basketball",
-            "League of Legends",
-            "Football Champions L.",
-            "Tennis",
-            "Échecs",
-            "Volleyball",
-        ]:
+        for sport in SPORTS:
             btn = tk.Button(
                 self._sidebar,
-                text=sport,
+                text=sport.nom,
                 bg=BG_PANEL,
                 fg=FG_TEXT,
                 font=FONT_SPORT,
@@ -370,10 +428,10 @@ class App(tk.Tk):
                 activebackground=BG_CARD,
                 activeforeground=ACCENT,
                 cursor="hand2",
-                command=lambda s=sport: self._select_sport(s),
+                command=lambda s=sport.nom: self._select_sport(s),
             )
             btn.pack(fill="x", pady=1)
-            self._sport_buttons[sport] = btn
+            self._sport_buttons[sport.nom] = btn
 
         # Zone de contenu
         self._content = tk.Frame(body, bg=BG_DARK)
@@ -402,6 +460,54 @@ class App(tk.Tk):
             font=("Segoe UI", 13),
             justify="center",
         ).pack(pady=12)
+
+    # ── Filtres ───────────────────────────────────────────────────────────────
+
+    def _appliquer_filtre_type(self, type_sport):
+        """Filtre par format : individuel / collectif / tous."""
+        self._filtre_type = type_sport
+        labels = {None: "Tous", TypeSport.COLLECTIF: "Collectif", TypeSport.INDIVIDUEL: "Individuel"}
+        for label, btn in self._filtre_type_buttons.items():
+            actif = (label == labels[type_sport])
+            btn.configure(bg=ACCENT if actif else BG_CARD, fg=BG_DARK if actif else FG_MUTED)
+        self._update_sport_visibility()
+
+    def _appliquer_filtre_categorie(self, categorie):
+        """Filtre par discipline : sport / e-sport / tous."""
+        self._filtre_categorie = categorie
+        labels = {None: "Tous", CategorieSport.SPORT: "Sport", CategorieSport.ESPORT: "E-sport"}
+        for label, btn in self._filtre_cat_buttons.items():
+            actif = (label == labels[categorie])
+            btn.configure(bg=ACCENT if actif else BG_CARD, fg=BG_DARK if actif else FG_MUTED)
+        self._update_sport_visibility()
+
+    def _update_sport_visibility(self):
+        """Affiche ou masque les boutons de sport selon les deux filtres actifs."""
+        from Projet_Mathias.classes.sport import get_sport
+        for sport in SPORTS:
+            btn = self._sport_buttons[sport.nom]
+            type_ok = (self._filtre_type is None) or (sport.type_sport == self._filtre_type)
+            cat_ok = (self._filtre_categorie is None) or (sport.categorie == self._filtre_categorie)
+            if type_ok and cat_ok:
+                btn.pack(fill="x", pady=1)
+            else:
+                btn.pack_forget()
+
+        # Si le sport sélectionné est maintenant masqué, revenir à l'accueil
+        if self._current_sport is not None:
+            sport_obj = get_sport(self._current_sport)
+            if sport_obj:
+                type_ok = (self._filtre_type is None) or (sport_obj.type_sport == self._filtre_type)
+                cat_ok = (
+                    self._filtre_categorie is None
+                    or sport_obj.categorie == self._filtre_categorie
+                )
+                if not (type_ok and cat_ok):
+                    self._current_sport = None
+                    self._current_stat = None
+                    for btn in self._sport_buttons.values():
+                        btn.configure(bg=BG_PANEL, fg=FG_TEXT)
+                    self._show_welcome()
 
     # ── Sélection d'un sport ──────────────────────────────────────────────────
 
@@ -567,10 +673,10 @@ class App(tk.Tk):
             try:
                 df = stat["fn"](**kwargs)
                 self.after(0, lambda: self._display_result(df, stat["label"]))
-            except ValueError as e:
-                self.after(0, lambda: self._show_error(str(e)))
-            except Exception as e:
-                self.after(0, lambda: self._show_error(f"Erreur : {e}"))
+            except ValueError as err:
+                self.after(0, lambda msg=str(err): self._show_error(msg))
+            except Exception as err:
+                self.after(0, lambda msg=str(err): self._show_error(f"Erreur : {msg}"))
 
         threading.Thread(target=worker, daemon=True).start()
 
@@ -579,7 +685,7 @@ class App(tk.Tk):
         self._status_var.set(f"{label}  —  {len(df)} ligne(s)")
 
     def _show_error(self, msg: str):
-        self._status_var.set(f"Erreur")
+        self._status_var.set("Erreur")
         messagebox.showerror("Erreur", msg)
 
     # ── Utilitaires ───────────────────────────────────────────────────────────

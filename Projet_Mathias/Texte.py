@@ -29,3 +29,15 @@ Lorsque l'on se connecte à VS Code, il faut faire les éléments suivants pour 
 - Copier le code sur la nouvelle page et le coller dans VS Code
 - C'est bon
 """
+
+"""
+Dictionnaire :
+Si l'on souhaite changer le nom de variables de manières permanentes avec des options de changement
+du nom de variables facilement, il est possible de faire la chose suivante :
+
+bibliothèque = {
+    "football" : FootballMatchLoader,
+    "tennis" : TennisMatchLoader
+    }
+
+"""
