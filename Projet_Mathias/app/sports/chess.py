@@ -100,3 +100,65 @@ def stats_par_titre() -> pd.DataFrame:
     grouped = grouped.sort_values("Elo moy. Standard", ascending=False).reset_index(drop=True)
     grouped.index += 1
     return grouped
+
+# ---------------------------------------------------------------------------
+# 4. Statistiques globales des joueurs
+# ---------------------------------------------------------------------------
+
+def stats_globales_joueurs() -> pd.DataFrame:
+    """Renvoie les informations globales de tous les joueurs."""
+    _load()
+    
+    # On définit les colonnes qu'on veut afficher (selon ta liste de tâches)
+    # Note: On utilise les noms de colonnes anglais que ton équipe semble utiliser
+    colonnes_souhaitees = [
+        "name",             # nom
+        "sex",              # sexe (à vérifier si c'est 'sex' ou 'gender' dans vos données)
+        "birthday",         # date de naissance (à vérifier si c'est 'birthday' ou 'dob')
+        "federation",       # fédération
+        "fide_id",          # numéro fide
+        "fide_title",       # titre
+        "rating_standard",  # elo
+        "rating_blitz",     # elo blitz
+        "rating_rapid"      # elo rapide
+    ]
+    
+    # On filtre pour ne garder que les colonnes qui existent vraiment 
+    # (au cas où le nom des colonnes diffère un peu dans votre CSV)
+    colonnes_existantes = [col for col in colonnes_souhaitees if col in _players.columns]
+    
+    # On crée le tableau final
+    df = _players[colonnes_existantes].copy()
+    
+    # On renomme proprement en français pour l'affichage
+    labels_francais = {
+        "name": "Nom",
+        "sex": "Sexe",
+        "birthday": "Date de Naissance",
+        "federation": "Fédération",
+        "fide_id": "Numéro FIDE",
+        "fide_title": "Titre",
+        "rating_standard": "Elo Standard",
+        "rating_blitz": "Elo Blitz",
+        "rating_rapid": "Elo Rapide"
+    }
+    
+    return df.rename(columns=labels_francais)
+
+    # ---------------------------------------------------------------------------
+# 5. Tous les classements Elo
+# ---------------------------------------------------------------------------
+
+def classements_tous_elo(n: int = 10) -> dict:
+    """
+    Renvoie les 3 classements (Standard, Rapide, Blitz) d'un seul coup 
+    sous forme de dictionnaire.
+    """
+    # On utilise la fonction 'classement_elo' qui existe déjà plus haut !
+    classements = {
+        "Top Standard": classement_elo(mode="standard", n=n),
+        "Top Rapide": classement_elo(mode="rapid", n=n),
+        "Top Blitz": classement_elo(mode="blitz", n=n)
+    }
+    
+    return classements
