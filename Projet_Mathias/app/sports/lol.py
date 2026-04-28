@@ -40,14 +40,13 @@ def classement_emea() -> pd.DataFrame:
 
 
 # ---------------------------------------------------------------------------
-# 2. Stats d'une équipe
+# 2. Stats d'une équipe plus duree moyenne 
 # ---------------------------------------------------------------------------
 
 def stats_equipe(team_name: str) -> pd.DataFrame:
-    """Statistiques moyennes par match pour une équipe LoL."""
+    """Statistiques moyennes par match pour une équipe LoL, incluant la durée moyenne."""
     _load()
 
-    # Vérifier que l'équipe existe
     all_teams = pd.concat([_matches["team_blue"], _matches["team_red"]]).unique()
     matches_team = pd.concat([
         _matches[_matches["team_blue"].str.contains(team_name, case=False, na=False)],
@@ -57,9 +56,7 @@ def stats_equipe(team_name: str) -> pd.DataFrame:
     if matches_team.empty:
         raise ValueError(f"Aucune équipe trouvée pour : '{team_name}'")
 
-    team_label = matches_team.iloc[
-        0]["team_blue"] if team_name.lower() in matches_team.iloc[0][
-            "team_blue"].lower() else matches_team.iloc[0]["team_red"]
+    team_label = matches_team.iloc[0]["team_blue"] if team_name.lower() in matches_team.iloc[0]["team_blue"].lower() else matches_team.iloc[0]["team_red"]
 
     blue = matches_team[matches_team["team_blue"] == team_label].rename(
         columns={c: c.replace("_team_blue", "") for c in matches_team.columns}
@@ -73,9 +70,15 @@ def stats_equipe(team_name: str) -> pd.DataFrame:
     existing = [c for c in stat_cols if c in combined.columns]
     moyennes = combined[existing].mean().round(2)
 
+    # Ajouter la durée moyenne ici
+    if "duration_s" in combined.columns:
+        duree_moy = round(combined["duration_s"].mean() / 60, 1)
+        moyennes["duration_s"] = duree_moy
+
     labels = {
         "kills": "Kills", "assists": "Assists", "deaths": "Morts",
-        "gold": "Or total", "turrets": "Tourelles", "dragons": "Dragons", "barons": "Barons",
+        "gold": "Or total", "turrets": "Tourelles", "dragons": "Dragons",
+        "barons": "Barons", "duration_s": "Durée moy. (min)"
     }
     result = moyennes.rename(labels).reset_index()
     result.columns = ["Statistique", f"{team_label} (moy./match)"]
@@ -105,28 +108,36 @@ def champions_picks_bans(n: int = 10) -> pd.DataFrame:
     result.index += 1
     return result[["Champion", "Picks", "Bans"]]
 
-
 # ---------------------------------------------------------------------------
-# 4. Durée moyenne des parties
+# 5. Roster d'une équipe (joueurs + coachs)
 # ---------------------------------------------------------------------------
 
-def duree_moyenne_parties() -> pd.DataFrame:
-    """Durée moyenne des parties par équipe (en minutes)."""
+def roster_equipe(team_name: str) -> pd.DataFrame:
+    """Roster d'une équipe LoL : joueurs et coachs avec nom, pseudo, date de naissance, position."""
     _load()
 
-    rows = []
-    all_teams = pd.concat([_matches["team_blue"], _matches["team_red"]]).unique()
-    for team in sorted(all_teams):
-        mask = (_matches["team_blue"] == team) | (_matches["team_red"] == team)
-        moy_s = _matches.loc[mask, "duration_s"].mean()
-        rows.append({"Équipe": team, "Durée moy. (min)": round(
-            moy_s / 60, 1) if pd.notna(moy_s) else None})
+    # Joueurs
+    mask_players = _players["team"].str.contains(team_name, case=False, na=False)
+    joueurs = _players[mask_players].copy()
+    joueurs["type"] = "Joueur"
 
-    result = pd.DataFrame(rows).sort_values("Durée moy. (min)").reset_index(drop=True)
+    # Coachs
+    mask_coaches = _coaches["team"].str.contains(team_name, case=False, na=False)
+    coachs = _coaches[mask_coaches].copy()
+    coachs["type"] = "Coach"
+
+    if joueurs.empty and coachs.empty:
+        raise ValueError(f"Aucune équipe trouvée pour : '{team_name}'")
+
+    # Fusionner joueurs + coachs
+    combined = pd.concat([joueurs, coachs], ignore_index=True)
+
+    cols = ["type", "name", "pseudo", "birthdate", "role"]
+    labels = {
+        "type": "Type", "name": "Nom", "pseudo": "Pseudo",
+        "birthdate": "Date de naissance", "role": "Position"
+    }
+    existing = [c for c in cols if c in combined.columns]
+    result = combined[existing].rename(columns=labels).reset_index(drop=True)
     result.index += 1
-
-    # Ligne globale
-    global_moy = _matches["duration_s"].mean()
-    global_row = pd.DataFrame([{"Équipe": "TOUTES ÉQUIPES", "Durée moy. (min)": round(
-        global_moy / 60, 1)}])
-    return pd.concat([global_row, result], ignore_index=True)
+    return result
