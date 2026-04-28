@@ -119,26 +119,66 @@ def bilan_equipe(team_code: str, genre: str = "hommes") -> pd.DataFrame:
 
 
 # ---------------------------------------------------------------------------
-# 3. Stats joueurs par pays
+# 3. Roster d'équipe (Joueurs et Coachs)
 # ---------------------------------------------------------------------------
 
-def stats_joueurs_par_pays(country_code: str, genre: str = "hommes") -> pd.DataFrame:
-    """Liste des joueurs d'un pays avec taille et âge."""
+def roster_equipe(team_code: str, genre: str = "hommes") -> pd.DataFrame:
+    """
+    Liste complète des membres d'une équipe (Joueurs + Coachs) 
+    avec : nom, date de naissance, genre, pays, taille, surnom.
+    """
     _load()
-    p = _players(genre)
-    code = country_code.upper()
+    code = team_code.upper()
+    nom_pays = _country_name(code)
+    genre_clean = genre.lower()
 
-    squad = p[p["country_code"] == code].copy()
-    if squad.empty:
-        raise ValueError(f"Aucun joueur trouvé pour le code : '{code}'")
+    # Sélection des bonnes tables selon le genre
+    if genre_clean in ("hommes", "m", "men"):
+        df_players = _players_men.copy()
+        df_coaches = _coaches_men.copy()
+        genre_label = "Homme"
+    else:
+        df_players = _players_women.copy()
+        df_coaches = _coaches_women.copy()
+        genre_label = "Femme"
 
-    squad = squad.sort_values("name").reset_index(drop=True)
-    squad.index += 1
-    cols = ["name", "height", "birth_date", "nickname"]
-    labels = {
-        "name": "Joueur",
+    # Filtrage des joueurs
+    joueurs_equipe = df_players[df_players["country_code"] == code].copy()
+    if joueurs_equipe.empty:
+        raise ValueError(f"Aucun membre trouvé pour le code : '{code}'")
+    
+    joueurs_equipe["Rôle"] = "Joueur"
+
+    # Filtrage des coachs
+    coachs_equipe = df_coaches[df_coaches["country_code"] == code].copy()
+    coachs_equipe["Rôle"] = "Coach"
+
+    # Fusion des joueurs et des coachs
+    roster = pd.concat([joueurs_equipe, coachs_equipe], ignore_index=True)
+
+    # Ajout des informations fixes demandées (Genre et Pays)
+    roster["Genre"] = genre_label
+    roster["Pays"] = nom_pays
+
+    # Sélection et renommage des colonnes selon la consigne
+    colonnes_map = {
+        "name": "Nom",
+        "birth_date": "Date de Naissance",
+        "Genre": "Genre",
+        "Pays": "Pays",
         "height": "Taille (cm)",
-        "birth_date": "Date de naissance",
-        "nickname": "Surnom"}
-    existing = [c for c in cols if c in squad.columns]
-    return squad[existing].rename(columns=labels)
+        "nickname": "Surnom",
+        "Rôle": "Rôle"
+    }
+
+    # On ne garde que les colonnes qui existent pour éviter les erreurs
+    cols_existantes = [col for col in colonnes_map.keys() if col in roster.columns]
+    
+    roster_final = roster[cols_existantes].rename(columns=colonnes_map)
+    
+    # On met les coachs en haut, puis on trie par nom alphabétique
+    roster_final = roster_final.sort_values(by=["Rôle", "Nom"], ascending=[True, True])
+    roster_final.reset_index(drop=True, inplace=True)
+    roster_final.index += 1
+
+    return roster_final
