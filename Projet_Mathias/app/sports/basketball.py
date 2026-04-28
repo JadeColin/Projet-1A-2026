@@ -130,12 +130,65 @@ def stats_equipe(team_name: str) -> pd.DataFrame:
 # ---------------------------------------------------------------------------
 
 def roster_equipe(team_name: str) -> pd.DataFrame:
-    """Liste des joueurs d'une équipe."""
+    """Liste des joueurs d'une équipe avec poste, année de naissance et poids."""
     _load()
     df = _loader.get_team_roster(_players, _teams, team_name)
-    cols = ["full_name", "height_cm", "jersey"]
-    labels = {"full_name": "Joueur", "height_cm": "Taille (cm)", "jersey": "Numéro"}
+    
+    df = df.copy()
+    df["birth_year"] = pd.to_datetime(df["birthdate"], errors="coerce").dt.year
+
+    cols = ["full_name", "position", "birth_year", "weight", "height_cm", "jersey"]
+    labels = {
+        "full_name": "Joueur",
+        "position": "Poste",
+        "birth_year": "Année naissance",
+        "weight": "Poids (lbs)",
+        "height_cm": "Taille (cm)",
+        "jersey": "Numéro",
+    }
     existing = [c for c in cols if c in df.columns]
     result = df[existing].rename(columns=labels).reset_index(drop=True)
     result.index += 1
     return result
+
+# ---------------------------------------------------------------------------
+# 5. Classement défensif
+# ---------------------------------------------------------------------------
+
+def classement_defensif(n: int = 10) -> pd.DataFrame:
+    """Top N équipes les plus défensives (points encaissés, blocks, interceptions)."""
+    _load()
+    m = _matches.copy()
+
+    # Points encaissés par équipe (quand tu joues à domicile, tu encaisses les points de l'adversaire)
+    pts_encaisses_home = m[["team_id_home", "pts_away"]].rename(columns={"team_id_home": "team_id", "pts_away": "pts_encaisses"})
+    pts_encaisses_away = m[["team_id_away", "pts_home"]].rename(columns={"team_id_away": "team_id", "pts_home": "pts_encaisses"})
+    pts_encaisses = pd.concat([pts_encaisses_home, pts_encaisses_away]).groupby("team_id")["pts_encaisses"].mean().round(1)
+
+    # Blocks par équipe
+    blk_home = m[["team_id_home", "blk_home"]].rename(columns={"team_id_home": "team_id", "blk_home": "blk"})
+    blk_away = m[["team_id_away", "blk_away"]].rename(columns={"team_id_away": "team_id", "blk_away": "blk"})
+    blk = pd.concat([blk_home, blk_away]).groupby("team_id")["blk"].mean().round(1)
+
+    # Interceptions par équipe
+    stl_home = m[["team_id_home", "stl_home"]].rename(columns={"team_id_home": "team_id", "stl_home": "stl"})
+    stl_away = m[["team_id_away", "stl_away"]].rename(columns={"team_id_away": "team_id", "stl_away": "stl"})
+    stl = pd.concat([stl_home, stl_away]).groupby("team_id")["stl"].mean().round(1)
+
+    # Assembler tout ensemble
+    result = pd.DataFrame({
+        "Pts encaissés/match": pts_encaisses,
+        "Blocks/match": blk,
+        "Interceptions/match": stl,
+    })
+
+    # Ajouter les noms d'équipes
+    teams_idx = _teams.set_index("id")["full_name"]
+    result["Équipe"] = result.index.map(teams_idx)
+
+    # Trier par points encaissés (moins = meilleure défense)
+    result = result.sort_values("Pts encaissés/match", ascending=True).head(n)
+    result = result.reset_index(drop=True)
+    result.index += 1
+
+    return result[["Équipe", "Pts encaissés/match", "Blocks/match", "Interceptions/match"]]
