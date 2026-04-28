@@ -2,7 +2,8 @@ from Projet_Mathias.joueur import *
 from Projet_Adam.classe_competition import *
 from Projet_Adam.Evenements import *
 
-
+ 
+ 
 
 class SportVisializer() :
 
