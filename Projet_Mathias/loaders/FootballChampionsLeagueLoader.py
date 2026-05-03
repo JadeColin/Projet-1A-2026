@@ -1,9 +1,9 @@
-from pathlib import Path
-
 import pandas as pd
 
+from Projet_Mathias.loaders.BaseLoader import BaseLoader
 
-class FootballChampionsLeagueLoader:
+
+class FootballChampionsLeagueLoader(BaseLoader):
     """
     Charge les données de la base Football Champions League (UEFA).
 
@@ -19,7 +19,7 @@ class FootballChampionsLeagueLoader:
         players, teams, matches = loader.load_all()
     """
 
-    ROOT = Path(__file__).parent.parent.parent / "Base_de_données" / "football_champions_league"
+    SPORT_FOLDER = "football_champions_league"
 
     def load_players(self) -> pd.DataFrame:
         """
@@ -31,13 +31,11 @@ class FootballChampionsLeagueLoader:
         saved, conceded, cleansheets, distance_covered.
 
         Note : le fichier source contient deux colonnes 'match_played' ;
-               la première (par position) est renommée 'match_played_field'
-               (stats de champ), la seconde 'match_played' (total).
+               la première est renommée 'match_played_field', la seconde 'match_played'.
                Typos conservés depuis la source : 'balls_recoverd',
                'cross_complted', 'punches made'.
         """
-        df = pd.read_csv(self.ROOT / "player.csv")
-        # La colonne dupliquée est automatiquement renommée 'match_played.1' par pandas
+        df = self._load_csv("player.csv")
         df = df.rename(columns={"match_played": "match_played_field", "match_played.1": "match_played"})
         return df
 
@@ -47,7 +45,7 @@ class FootballChampionsLeagueLoader:
 
         Colonnes : full_name, short_name, year_founded, country, league, city
         """
-        return pd.read_csv(self.ROOT / "team.csv")
+        return self._load_csv("team.csv")
 
     def load_matches(self) -> pd.DataFrame:
         """
@@ -59,15 +57,8 @@ class FootballChampionsLeagueLoader:
         Colonnes ajoutées :
             - date : converti en datetime
         """
-        df = pd.read_csv(self.ROOT / "match.csv")
-        df["date"] = pd.to_datetime(df["date"], errors="coerce")
-        return df
+        return self._load_csv("match.csv", date_cols=["date"])
 
     def load_all(self) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-        """
-        Charge les trois tables en une seule fois.
-
-        Renvoie :
-            players, teams, matches
-        """
+        """Charge les trois tables en une seule fois. Renvoie : players, teams, matches"""
         return self.load_players(), self.load_teams(), self.load_matches()

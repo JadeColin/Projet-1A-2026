@@ -1,9 +1,9 @@
-from pathlib import Path
-
 import pandas as pd
 
+from Projet_Mathias.loaders.BaseLoader import BaseLoader
 
-class ChessLoader:
+
+class ChessLoader(BaseLoader):
     """
     Charge les données de la base Échecs (FIDE).
 
@@ -18,7 +18,7 @@ class ChessLoader:
         players, matches = loader.load_all()
     """
 
-    ROOT = Path(__file__).parent.parent.parent / "Base_de_données" / "chess"
+    SPORT_FOLDER = "chess"
 
     def load_players(self) -> pd.DataFrame:
         """
@@ -27,8 +27,8 @@ class ChessLoader:
         Colonnes : name, fide_id, birth_year, gender, federation, fide_title,
                    rating_standard, rating_rapid, rating_blitz
         """
-        return pd.read_csv(
-            self.ROOT / "player.csv",
+        return self._load_csv(
+            "player.csv",
             dtype={
                 "fide_id": "Int64",
                 "birth_year": "Int64",
@@ -48,19 +48,11 @@ class ChessLoader:
         Note : score_player_1 peut contenir 'Bye' lorsqu'un joueur est exempt
                de tour. score_player_2 est NaN dans ce cas.
         """
-        return pd.read_csv(
-            self.ROOT / "match.csv",
-            dtype={
-                "section": "Float64",
-                "seed_player_2": "Float64",
-            },
+        return self._load_csv(
+            "match.csv",
+            dtype={"section": "Float64", "seed_player_2": "Float64"},
         )
 
     def load_all(self) -> tuple[pd.DataFrame, pd.DataFrame]:
-        """
-        Charge les deux tables en une seule fois.
-
-        Renvoie :
-            players, matches
-        """
+        """Charge les deux tables en une seule fois. Renvoie : players, matches"""
         return self.load_players(), self.load_matches()

@@ -34,7 +34,7 @@ def classement_victoires(circuit: str = "ATP", n: int = 20) -> pd.DataFrame:
     m = _matches(circuit)
     p = _players(circuit)
 
-    victoires = m["winner_id"].value_counts().rename("Victoires").head(n)
+    victoires = m["winner_id"].value_counts().rename("Victoires")
     defaites = m["loser_id"].value_counts().rename("Défaites")
 
     result = pd.DataFrame({"Victoires": victoires, "Défaites": defaites}).fillna(0).astype(int)
@@ -44,7 +44,7 @@ def classement_victoires(circuit: str = "ATP", n: int = 20) -> pd.DataFrame:
     players_idx = p.set_index("player_id")["full_name"]
     result = result.join(players_idx).reset_index(drop=True)
     result = result.rename(columns={"full_name": "Joueur"})
-    result = result.sort_values("Victoires", ascending=False).reset_index(drop=True)
+    result = result.sort_values("Victoires", ascending=False).head(n).reset_index(drop=True)
     result.index += 1
     return result[["Joueur", "Victoires", "Défaites", "Matchs joués", "% Victoires"]]
 

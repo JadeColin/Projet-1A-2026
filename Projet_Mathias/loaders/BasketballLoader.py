@@ -1,9 +1,9 @@
-from pathlib import Path
-
 import pandas as pd
 
+from Projet_Mathias.loaders.BaseLoader import BaseLoader
 
-class BasketballLoader:
+
+class BasketballLoader(BaseLoader):
     """
     Charge les données de la base Basketball (NBA).
 
@@ -20,7 +20,7 @@ class BasketballLoader:
         players, teams, matches = loader.load_all()
     """
 
-    ROOT = Path(__file__).parent.parent.parent / "Base_de_données" / "Basketball"
+    SPORT_FOLDER = "Basketball"
 
     def load_players(self) -> pd.DataFrame:
         """
@@ -31,12 +31,12 @@ class BasketballLoader:
             - height_cm  : taille convertie depuis le format pieds-pouces '6-8'
             - birthdate  : converti en datetime
         """
-        df = pd.read_csv(
-            self.ROOT / "player.csv",
+        df = self._load_csv(
+            "player.csv",
             dtype={"person_id": int, "jersey": "Int64", "weight": "Int64", "team_id": int},
+            date_cols=["birthdate"],
         )
         df["full_name"] = df["first_name"].str.strip() + " " + df["last_name"].str.strip()
-        df["birthdate"] = pd.to_datetime(df["birthdate"], errors="coerce")
         df["height_cm"] = df["height"].apply(self._height_to_cm)
         return df
 
@@ -46,7 +46,7 @@ class BasketballLoader:
 
         Colonnes : id, full_name, abbreviation, nickname, city, state
         """
-        return pd.read_csv(self.ROOT / "team.csv", dtype={"id": int})
+        return self._load_csv("team.csv", dtype={"id": int})
 
     def load_matches(self) -> pd.DataFrame:
         """
@@ -58,8 +58,8 @@ class BasketballLoader:
         Colonnes ajoutées :
             - game_date : converti en datetime
         """
-        df = pd.read_csv(
-            self.ROOT / "game.csv",
+        return self._load_csv(
+            "game.csv",
             dtype={
                 "game_id": int,
                 "team_id_home": int,
@@ -67,9 +67,8 @@ class BasketballLoader:
                 "pts_home": "Int64",
                 "pts_away": "Int64",
             },
+            date_cols=["game_date"],
         )
-        df["game_date"] = pd.to_datetime(df["game_date"], errors="coerce")
-        return df
 
     def load_all(self) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         """

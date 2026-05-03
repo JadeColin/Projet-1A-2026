@@ -1,9 +1,9 @@
-from pathlib import Path
-
 import pandas as pd
 
+from Projet_Mathias.loaders.BaseLoader import BaseLoader
 
-class VolleyballLoader:
+
+class VolleyballLoader(BaseLoader):
     """
     Charge les données de la base Volleyball (JO Paris 2024).
 
@@ -25,15 +25,11 @@ class VolleyballLoader:
          matches_men, matches_women) = loader.load_all()
     """
 
-    ROOT = Path(__file__).parent.parent.parent / "Base_de_données" / "volleyball"
+    SPORT_FOLDER = "volleyball"
 
     def load_countries(self) -> pd.DataFrame:
-        """
-        Charge la table des pays (codes IOC).
-
-        Colonnes : code, country, country_long
-        """
-        return pd.read_csv(self.ROOT / "country.csv")
+        """Charge la table des pays (codes IOC). Colonnes : code, country, country_long"""
+        return self._load_csv("country.csv")
 
     def load_players_men(self) -> pd.DataFrame:
         """
@@ -45,8 +41,7 @@ class VolleyballLoader:
             - birth_date : converti en datetime
             - gender     : 'M'
         """
-        df = pd.read_csv(self.ROOT / "player_men.csv", dtype={"height": "Int64"})
-        df["birth_date"] = pd.to_datetime(df["birth_date"], errors="coerce")
+        df = self._load_csv("player_men.csv", dtype={"height": "Int64"}, date_cols=["birth_date"])
         df["gender"] = "M"
         return df
 
@@ -60,8 +55,7 @@ class VolleyballLoader:
             - birth_date : converti en datetime
             - gender     : 'F'
         """
-        df = pd.read_csv(self.ROOT / "player_women.csv", dtype={"height": "Int64"})
-        df["birth_date"] = pd.to_datetime(df["birth_date"], errors="coerce")
+        df = self._load_csv("player_women.csv", dtype={"height": "Int64"}, date_cols=["birth_date"])
         df["gender"] = "F"
         return df
 
@@ -74,9 +68,7 @@ class VolleyballLoader:
         Colonnes ajoutées :
             - birth_date : converti en datetime
         """
-        df = pd.read_csv(self.ROOT / "coach_men.csv")
-        df["birth_date"] = pd.to_datetime(df["birth_date"], errors="coerce")
-        return df
+        return self._load_csv("coach_men.csv", date_cols=["birth_date"])
 
     def load_coaches_women(self) -> pd.DataFrame:
         """
@@ -87,9 +79,7 @@ class VolleyballLoader:
         Colonnes ajoutées :
             - birth_date : converti en datetime
         """
-        df = pd.read_csv(self.ROOT / "coach_women.csv")
-        df["birth_date"] = pd.to_datetime(df["birth_date"], errors="coerce")
-        return df
+        return self._load_csv("coach_women.csv", date_cols=["birth_date"])
 
     def load_matches_men(self) -> pd.DataFrame:
         """
@@ -102,11 +92,10 @@ class VolleyballLoader:
             - date   : converti en datetime
             - winner : pays ayant remporté le match
         """
-        df = pd.read_csv(self.ROOT / "match_men.csv")
-        df["date"] = pd.to_datetime(df["date"], errors="coerce")
+        df = self._load_csv("match_men.csv", date_cols=["date"])
         df["winner"] = df.apply(
-            lambda r: r["country_code_1"] if r["set_country_1"] > r[
-                "set_country_2"] else r["country_code_2"],
+            lambda r: r["country_code_1"] if r["set_country_1"] > r["set_country_2"]
+            else r["country_code_2"],
             axis=1,
         )
         return df
@@ -126,12 +115,11 @@ class VolleyballLoader:
             - date   : converti en datetime
             - winner : pays ayant remporté le match
         """
-        df = pd.read_csv(self.ROOT / "match_women.csv")
+        df = self._load_csv("match_women.csv", date_cols=["date"])
         df = df.rename(columns={"country_1": "country_code_1", "country_2": "country_code_2"})
-        df["date"] = pd.to_datetime(df["date"], errors="coerce")
         df["winner"] = df.apply(
-            lambda r: r["country_code_1"] if r["set_country_1"] > r[
-                "set_country_2"] else r["country_code_2"],
+            lambda r: r["country_code_1"] if r["set_country_1"] > r["set_country_2"]
+            else r["country_code_2"],
             axis=1,
         )
         return df

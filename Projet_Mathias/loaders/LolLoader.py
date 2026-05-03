@@ -1,9 +1,9 @@
-from pathlib import Path
-
 import pandas as pd
 
+from Projet_Mathias.loaders.BaseLoader import BaseLoader
 
-class LolLoader:
+
+class LolLoader(BaseLoader):
     """
     Charge les données de la base League of Legends (EMEA 2025).
 
@@ -20,7 +20,7 @@ class LolLoader:
         players, coaches, teams, matches = loader.load_all()
     """
 
-    ROOT = Path(__file__).parent.parent.parent / "Base_de_données" / "Lol"
+    SPORT_FOLDER = "Lol"
 
     def load_players(self) -> pd.DataFrame:
         """
@@ -31,9 +31,7 @@ class LolLoader:
         Colonnes ajoutées :
             - birthdate : converti en datetime
         """
-        df = pd.read_csv(self.ROOT / "player.csv")
-        df["birthdate"] = pd.to_datetime(df["birthdate"], errors="coerce")
-        return df
+        return self._load_csv("player.csv", date_cols=["birthdate"])
 
     def load_coaches(self) -> pd.DataFrame:
         """
@@ -44,9 +42,7 @@ class LolLoader:
         Colonnes ajoutées :
             - birthdate : converti en datetime
         """
-        df = pd.read_csv(self.ROOT / "coach.csv")
-        df["birthdate"] = pd.to_datetime(df["birthdate"], errors="coerce")
-        return df
+        return self._load_csv("coach.csv", date_cols=["birthdate"])
 
     def load_teams(self) -> pd.DataFrame:
         """
@@ -54,7 +50,7 @@ class LolLoader:
 
         Colonnes : team, team_abbreviation, location, region
         """
-        return pd.read_csv(self.ROOT / "team.csv")
+        return self._load_csv("team.csv")
 
     def load_matches(self) -> pd.DataFrame:
         """
@@ -68,18 +64,12 @@ class LolLoader:
             - date       : converti en datetime
             - duration_s : durée en secondes (calculée depuis le format HH:MM:SS)
         """
-        df = pd.read_csv(self.ROOT / "match.csv")
-        df["date"] = pd.to_datetime(df["date"], errors="coerce")
+        df = self._load_csv("match.csv", date_cols=["date"])
         df["duration_s"] = (
             pd.to_timedelta(df["time"], errors="coerce").dt.total_seconds().astype("Int64")
         )
         return df
 
     def load_all(self) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-        """
-        Charge les quatre tables en une seule fois.
-
-        Renvoie :
-            players, coaches, teams, matches
-        """
+        """Charge les quatre tables en une seule fois. Renvoie : players, coaches, teams, matches"""
         return self.load_players(), self.load_coaches(), self.load_teams(), self.load_matches()

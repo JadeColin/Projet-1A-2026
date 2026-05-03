@@ -1,9 +1,9 @@
-from pathlib import Path
-
 import pandas as pd
 
+from Projet_Mathias.loaders.BaseLoader import BaseLoader
 
-class Cs2Loader:
+
+class Cs2Loader(BaseLoader):
     """
     Charge les données de la base Counter-Strike 2 (CS2).
 
@@ -20,7 +20,7 @@ class Cs2Loader:
         players, coaches, teams, matches = loader.load_all()
     """
 
-    ROOT = Path(__file__).parent.parent.parent / "Base_de_données" / "counter_strike_2"
+    SPORT_FOLDER = "counter_strike_2"
 
     def load_players(self) -> pd.DataFrame:
         """
@@ -31,9 +31,7 @@ class Cs2Loader:
         Colonnes ajoutées :
             - birthdate : converti en datetime
         """
-        df = pd.read_csv(self.ROOT / "player.csv")
-        df["birthdate"] = pd.to_datetime(df["birthdate"], errors="coerce")
-        return df
+        return self._load_csv("player.csv", date_cols=["birthdate"])
 
     def load_coaches(self) -> pd.DataFrame:
         """
@@ -44,9 +42,7 @@ class Cs2Loader:
         Colonnes ajoutées :
             - birthdate : converti en datetime
         """
-        df = pd.read_csv(self.ROOT / "coach.csv")
-        df["birthdate"] = pd.to_datetime(df["birthdate"], errors="coerce")
-        return df
+        return self._load_csv("coach.csv", date_cols=["birthdate"])
 
     def load_teams(self) -> pd.DataFrame:
         """
@@ -54,7 +50,7 @@ class Cs2Loader:
 
         Colonnes : team, team_abbreviation, location, region
         """
-        return pd.read_csv(self.ROOT / "team.csv")
+        return self._load_csv("team.csv")
 
     def load_matches(self) -> pd.DataFrame:
         """
@@ -66,20 +62,8 @@ class Cs2Loader:
         Colonnes ajoutées :
             - date : converti en datetime
         """
-        df = pd.read_csv(self.ROOT / "match.csv")
-        df["date"] = pd.to_datetime(df["date"], errors="coerce")
-        return df
+        return self._load_csv("match.csv", date_cols=["date"])
 
     def load_all(self) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-        """
-        Charge les quatre tables en une seule fois.
-
-        Renvoie :
-            players, coaches, teams, matches
-        """
-        return (
-            self.load_players(),
-            self.load_coaches(),
-            self.load_teams(),
-            self.load_matches(),
-        )
+        """Charge les quatre tables en une seule fois. Renvoie : players, coaches, teams, matches"""
+        return self.load_players(), self.load_coaches(), self.load_teams(), self.load_matches()

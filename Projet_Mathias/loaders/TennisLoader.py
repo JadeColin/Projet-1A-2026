@@ -1,9 +1,9 @@
-from pathlib import Path
-
 import pandas as pd
 
+from Projet_Mathias.loaders.BaseLoader import BaseLoader
 
-class TennisLoader:
+
+class TennisLoader(BaseLoader):
     """
     Charge les données de la base Tennis (ATP et WTA 2024).
 
@@ -20,7 +20,7 @@ class TennisLoader:
         atp_players, wta_players, atp_matches, wta_matches = loader.load_all()
     """
 
-    ROOT = Path(__file__).parent.parent.parent / "Base_de_données" / "tennis"
+    SPORT_FOLDER = "tennis"
 
     def load_atp_players(self) -> pd.DataFrame:
         """
@@ -32,7 +32,7 @@ class TennisLoader:
             - full_name : prénom + nom
             - dob       : converti en datetime (depuis le format YYYYMMDD)
         """
-        df = pd.read_csv(self.ROOT / "atp_players_2024.csv", dtype={"player_id": int})
+        df = self._load_csv("atp_players_2024.csv", dtype={"player_id": int})
         df["dob"] = self._parse_dob(df["dob"])
         df["full_name"] = df["name_first"].str.strip() + " " + df["name_last"].str.strip()
         return df
@@ -47,7 +47,7 @@ class TennisLoader:
             - full_name : prénom + nom
             - dob       : converti en datetime (depuis le format YYYYMMDD)
         """
-        df = pd.read_csv(self.ROOT / "wta_players_2024.csv", dtype={"player_id": int})
+        df = self._load_csv("wta_players_2024.csv", dtype={"player_id": int})
         df["dob"] = self._parse_dob(df["dob"])
         df["full_name"] = df["name_first"].str.strip() + " " + df["name_last"].str.strip()
         return df
@@ -57,13 +57,12 @@ class TennisLoader:
         Charge et nettoie les matchs ATP 2024.
 
         Colonnes principales : tourney_id, tourney_name, surface, tourney_date,
-        winner_id, loser_id, score, round, minutes, statistiques de service
-        (aces, doubles fautes, points de service…).
+        winner_id, loser_id, score, round, minutes, statistiques de service.
 
         Colonnes ajoutées :
             - tourney_date : converti en datetime (depuis le format YYYYMMDD)
         """
-        df = pd.read_csv(self.ROOT / "atp_matches_2024.csv")
+        df = self._load_csv("atp_matches_2024.csv")
         df["tourney_date"] = self._parse_tourney_date(df["tourney_date"])
         return df
 
@@ -76,7 +75,7 @@ class TennisLoader:
         Colonnes ajoutées :
             - tourney_date : converti en datetime (depuis le format YYYYMMDD)
         """
-        df = pd.read_csv(self.ROOT / "wta_matches_2024.csv")
+        df = self._load_csv("wta_matches_2024.csv")
         df["tourney_date"] = self._parse_tourney_date(df["tourney_date"])
         return df
 
