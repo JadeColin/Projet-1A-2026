@@ -133,7 +133,7 @@ def roster_equipe(team_name: str) -> pd.DataFrame:
     """Liste des joueurs d'une équipe avec poste, année de naissance et poids."""
     _load()
     df = _loader.get_team_roster(_players, _teams, team_name)
-    
+
     df = df.copy()
     df["birth_year"] = pd.to_datetime(df["birthdate"], errors="coerce").dt.year
 

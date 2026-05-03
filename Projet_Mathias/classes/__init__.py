@@ -5,6 +5,7 @@ Importe directement les classes principales :
 
     from classes import Joueur, Joueurs, Equipe, Equipes, Match, Matchs
     from classes import Sport, TypeSport, SPORTS
+    from classes import StatsSport
 """
 
 from .joueur import Joueur, Joueurs
@@ -15,6 +16,7 @@ from .sport import (
     SPORTS, SPORTS_PAR_NOM,
     get_sport, filtrer_par_type, filtrer_par_categorie,
 )
+from .stats_sport import StatsSport
 
 __all__ = [
     "Joueur", "Joueurs",
@@ -23,4 +25,5 @@ __all__ = [
     "Sport", "TypeSport", "CategorieSport",
     "SPORTS", "SPORTS_PAR_NOM",
     "get_sport", "filtrer_par_type", "filtrer_par_categorie",
+    "StatsSport",
 ]

@@ -113,12 +113,12 @@ class Match:
             if not pd.isna(val):
                 return val
 
-        s1, s2 = self.score1, self.score2
+        s1, s2 = self.score_1, self.score_2
         if s1 is not None and s2 is not None:
             if s1 > s2:
-                return self.equipe1
+                return self.equipe_1
             if s2 > s1:
-                return self.equipe2
+                return self.equipe_2
         return None
 
     @property
@@ -142,9 +142,9 @@ class Match:
         return self._data.to_dict()
 
     def __repr__(self) -> str:
-        e1, e2 = self.equipe1, self.equipe2
+        e1, e2 = self.equipe_1, self.equipe_2
         date = self.date.date() if self.date else "?"
-        s1, s2 = self.score1, self.score2
+        s1, s2 = self.score_1, self.score_2
         score = f" {s1}-{s2}" if s1 is not None else ""
         return f"Match({e1!r} vs {e2!r}{score}, date={date})"
 
