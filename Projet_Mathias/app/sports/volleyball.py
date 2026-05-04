@@ -1,6 +1,7 @@
 import pandas as pd
 
 from Projet_Mathias.loaders.VolleyballLoader import VolleyballLoader
+from Projet_Mathias.app.sports.générique import formater_roster
 
 _loader = None
 _countries: pd.DataFrame = None
@@ -123,62 +124,28 @@ def bilan_equipe(team_code: str, genre: str = "hommes") -> pd.DataFrame:
 # ---------------------------------------------------------------------------
 
 def roster_equipe(team_code: str, genre: str = "hommes") -> pd.DataFrame:
-    """
-    Liste complète des membres d'une équipe (Joueurs + Coachs) 
-    avec : nom, date de naissance, genre, pays, taille, surnom.
-    """
+    """Roster d'une équipe de volleyball : joueurs et coachs avec nom, nationalité, date de naissance."""
     _load()
     code = team_code.upper()
-    nom_pays = _country_name(code)
-    genre_clean = genre.lower()
 
-    # Sélection des bonnes tables selon le genre
-    if genre_clean in ("hommes", "m", "men"):
-        df_players = _players_men.copy()
-        df_coaches = _coaches_men.copy()
-        genre_label = "Homme"
+    if genre.lower() in ("hommes", "m", "men"):
+        df_players = _players_men
+        df_coaches = _coaches_men
     else:
-        df_players = _players_women.copy()
-        df_coaches = _coaches_women.copy()
-        genre_label = "Femme"
+        df_players = _players_women
+        df_coaches = _coaches_women
 
-    # Filtrage des joueurs
-    joueurs_equipe = df_players[df_players["country_code"] == code].copy()
-    if joueurs_equipe.empty:
+    joueurs = df_players[df_players["country_code"] == code]
+    if joueurs.empty:
         raise ValueError(f"Aucun membre trouvé pour le code : '{code}'")
-    
-    joueurs_equipe["Rôle"] = "Joueur"
 
-    # Filtrage des coachs
-    coachs_equipe = df_coaches[df_coaches["country_code"] == code].copy()
-    coachs_equipe["Rôle"] = "Coach"
+    coachs = df_coaches[df_coaches["country_code"] == code]
 
-    # Fusion des joueurs et des coachs
-    roster = pd.concat([joueurs_equipe, coachs_equipe], ignore_index=True)
-
-    # Ajout des informations fixes demandées (Genre et Pays)
-    roster["Genre"] = genre_label
-    roster["Pays"] = nom_pays
-
-    # Sélection et renommage des colonnes selon la consigne
-    colonnes_map = {
-        "name": "Nom",
-        "birth_date": "Date de Naissance",
-        "Genre": "Genre",
-        "Pays": "Pays",
-        "height": "Taille (cm)",
-        "nickname": "Surnom",
-        "Rôle": "Rôle"
-    }
-
-    # On ne garde que les colonnes qui existent pour éviter les erreurs
-    cols_existantes = [col for col in colonnes_map.keys() if col in roster.columns]
-    
-    roster_final = roster[cols_existantes].rename(columns=colonnes_map)
-    
-    # On met les coachs en haut, puis on trie par nom alphabétique
-    roster_final = roster_final.sort_values(by=["Rôle", "Nom"], ascending=[True, True])
-    roster_final.reset_index(drop=True, inplace=True)
-    roster_final.index += 1
-
-    return roster_final
+    return formater_roster(
+        df_joueurs=joueurs,
+        col_nom="name",
+        col_nationalite="country_code",
+        col_naissance="birth_date",
+        df_coachs=coachs,
+        est_esport=False,
+    )

@@ -1,6 +1,7 @@
 import pandas as pd
 
 from Projet_Mathias.loaders.BasketballLoader import BasketballLoader
+from Projet_Mathias.app.sports.générique import formater_roster
 
 _loader = None
 _players: pd.DataFrame = None
@@ -130,26 +131,16 @@ def stats_equipe(team_name: str) -> pd.DataFrame:
 # ---------------------------------------------------------------------------
 
 def roster_equipe(team_name: str) -> pd.DataFrame:
-    """Liste des joueurs d'une équipe avec poste, année de naissance et poids."""
+    """Roster d'une équipe NBA : nom complet, nationalité, date de naissance."""
     _load()
     df = _loader.get_team_roster(_players, _teams, team_name)
-
-    df = df.copy()
-    df["birth_year"] = pd.to_datetime(df["birthdate"], errors="coerce").dt.year
-
-    cols = ["full_name", "position", "birth_year", "weight", "height_cm", "jersey"]
-    labels = {
-        "full_name": "Joueur",
-        "position": "Poste",
-        "birth_year": "Année naissance",
-        "weight": "Poids (lbs)",
-        "height_cm": "Taille (cm)",
-        "jersey": "Numéro",
-    }
-    existing = [c for c in cols if c in df.columns]
-    result = df[existing].rename(columns=labels).reset_index(drop=True)
-    result.index += 1
-    return result
+    return formater_roster(
+        df_joueurs=df,
+        col_nom="full_name",
+        col_nationalite="country",
+        col_naissance="birthdate",
+        est_esport=False,
+    )
 
 # ---------------------------------------------------------------------------
 # 5. Classement défensif

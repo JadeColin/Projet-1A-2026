@@ -1,6 +1,7 @@
 import pandas as pd
 
 from Projet_Mathias.loaders.LolLoader import LolLoader
+from Projet_Mathias.app.sports.générique import formater_roster
 
 _loader = None
 _players: pd.DataFrame = None
@@ -113,31 +114,24 @@ def champions_picks_bans(n: int = 10) -> pd.DataFrame:
 # ---------------------------------------------------------------------------
 
 def roster_equipe(team_name: str) -> pd.DataFrame:
-    """Roster d'une équipe LoL : joueurs et coachs avec nom, pseudo, date de naissance, position."""
+    """Roster d'une équipe LoL : joueurs et coachs avec nom, pseudo, nationalité, date de naissance."""
     _load()
 
-    # Joueurs
     mask_players = _players["team"].str.contains(team_name, case=False, na=False)
-    joueurs = _players[mask_players].copy()
-    joueurs["type"] = "Joueur"
+    joueurs = _players[mask_players]
 
-    # Coachs
     mask_coaches = _coaches["team"].str.contains(team_name, case=False, na=False)
-    coachs = _coaches[mask_coaches].copy()
-    coachs["type"] = "Coach"
+    coachs = _coaches[mask_coaches]
 
     if joueurs.empty and coachs.empty:
         raise ValueError(f"Aucune équipe trouvée pour : '{team_name}'")
 
-    # Fusionner joueurs + coachs
-    combined = pd.concat([joueurs, coachs], ignore_index=True)
-
-    cols = ["type", "name", "pseudo", "birthdate", "role"]
-    labels = {
-        "type": "Type", "name": "Nom", "pseudo": "Pseudo",
-        "birthdate": "Date de naissance", "role": "Position"
-    }
-    existing = [c for c in cols if c in combined.columns]
-    result = combined[existing].rename(columns=labels).reset_index(drop=True)
-    result.index += 1
-    return result
+    return formater_roster(
+        df_joueurs=joueurs,
+        col_nom="name",
+        col_pseudo="pseudo",
+        col_nationalite="country_of_birth",
+        col_naissance="birthdate",
+        df_coachs=coachs,
+        est_esport=True,
+    )
