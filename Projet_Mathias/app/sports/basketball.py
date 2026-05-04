@@ -1,7 +1,9 @@
 import pandas as pd
 
 from Projet_Mathias.loaders.BasketballLoader import BasketballLoader
-from Projet_Mathias.app.sports.générique import formater_roster
+from Projet_Mathias.app.sports.générique import (
+    formater_roster, fiche_joueur, lister_joueurs,
+)
 
 _loader = None
 _players: pd.DataFrame = None
@@ -25,29 +27,28 @@ def classement_equipes() -> pd.DataFrame:
     _load()
     m = _matches.copy()
 
-    # Déterminer le gagnant de chaque match
     m["winner_id"] = m.apply(
         lambda r: r["team_id_home"] if r["pts_home"] > r["pts_away"] else r["team_id_away"],
         axis=1,
     )
 
     victoires = m["winner_id"].value_counts().rename("Victoires")
-    total = len(m)
-
-    # Compter les matchs joués par équipe
     matchs_joues = (
         pd.concat([m["team_id_home"], m["team_id_away"]])
         .value_counts()
         .rename("Matchs joués")
     )
 
-    classement = pd.DataFrame({"Victoires": victoires, "Matchs joués": matchs_joues}).fillna(0)
+    classement = (
+        pd.DataFrame({"Victoires": victoires, "Matchs joués": matchs_joues})
+        .fillna(0)
+    )
     classement["Défaites"] = classement["Matchs joués"] - classement["Victoires"]
     classement = classement.astype(int)
-    classement[
-        "% Victoires"] = (classement["Victoires"] / classement["Matchs joués"] * 100).round(1)
+    classement["% Victoires"] = (
+        classement["Victoires"] / classement["Matchs joués"] * 100
+    ).round(1)
 
-    # Joindre les noms d'équipes
     teams_idx = _teams.set_index("id")[["full_name", "abbreviation"]]
     classement = classement.join(teams_idx).reset_index(drop=True)
     classement = classement.rename(columns={"full_name": "Équipe", "abbreviation": "Abrév."})
@@ -66,13 +67,21 @@ def top_equipes_offensives(n: int = 10) -> pd.DataFrame:
     _load()
     m = _matches.copy()
 
-    home = m[["team_id_home", "pts_home"]].rename(columns={
-        "team_id_home": "team_id", "pts_home": "pts"})
-    away = m[["team_id_away", "pts_away"]].rename(columns={
-        "team_id_away": "team_id", "pts_away": "pts"})
+    home = m[["team_id_home", "pts_home"]].rename(
+        columns={"team_id_home": "team_id", "pts_home": "pts"}
+    )
+    away = m[["team_id_away", "pts_away"]].rename(
+        columns={"team_id_away": "team_id", "pts_away": "pts"}
+    )
     all_pts = pd.concat([home, away])
 
-    moy = all_pts.groupby("team_id")["pts"].mean().round(1).sort_values(ascending=False).head(n)
+    moy = (
+        all_pts.groupby("team_id")["pts"]
+        .mean()
+        .round(1)
+        .sort_values(ascending=False)
+        .head(n)
+    )
     teams_idx = _teams.set_index("id")[["full_name", "abbreviation"]]
     result = moy.to_frame("Moy. pts/match").join(teams_idx)
     result = result.rename(columns={"full_name": "Équipe", "abbreviation": "Abrév."})
@@ -110,7 +119,9 @@ def stats_equipe(team_name: str) -> pd.DataFrame:
     combined = pd.concat([home, away])
 
     stat_cols = [
-        "pts", "fgm", "fga", "fg3m", "fg3a", "ftm", "fta", "reb", "ast", "stl", "blk", "tov"]
+        "pts", "fgm", "fga", "fg3m", "fg3a", "ftm", "fta",
+        "reb", "ast", "stl", "blk", "tov",
+    ]
     existing = [c for c in stat_cols if c in combined.columns]
     moyennes = combined[existing].mean().round(2)
 
@@ -142,6 +153,7 @@ def roster_equipe(team_name: str) -> pd.DataFrame:
         est_esport=False,
     )
 
+
 # ---------------------------------------------------------------------------
 # 5. Classement défensif
 # ---------------------------------------------------------------------------
@@ -151,35 +163,102 @@ def classement_defensif(n: int = 10) -> pd.DataFrame:
     _load()
     m = _matches.copy()
 
-    # Points encaissés par équipe (quand tu joues à domicile, tu encaisses les points de l'adversaire)
-    pts_encaisses_home = m[["team_id_home", "pts_away"]].rename(columns={"team_id_home": "team_id", "pts_away": "pts_encaisses"})
-    pts_encaisses_away = m[["team_id_away", "pts_home"]].rename(columns={"team_id_away": "team_id", "pts_home": "pts_encaisses"})
-    pts_encaisses = pd.concat([pts_encaisses_home, pts_encaisses_away]).groupby("team_id")["pts_encaisses"].mean().round(1)
+    pts_h = m[["team_id_home", "pts_away"]].rename(
+        columns={"team_id_home": "team_id", "pts_away": "pts_encaisses"}
+    )
+    pts_a = m[["team_id_away", "pts_home"]].rename(
+        columns={"team_id_away": "team_id", "pts_home": "pts_encaisses"}
+    )
+    pts_encaisses = (
+        pd.concat([pts_h, pts_a]).groupby("team_id")["pts_encaisses"].mean().round(1)
+    )
 
-    # Blocks par équipe
-    blk_home = m[["team_id_home", "blk_home"]].rename(columns={"team_id_home": "team_id", "blk_home": "blk"})
-    blk_away = m[["team_id_away", "blk_away"]].rename(columns={"team_id_away": "team_id", "blk_away": "blk"})
-    blk = pd.concat([blk_home, blk_away]).groupby("team_id")["blk"].mean().round(1)
+    blk_h = m[["team_id_home", "blk_home"]].rename(
+        columns={"team_id_home": "team_id", "blk_home": "blk"}
+    )
+    blk_a = m[["team_id_away", "blk_away"]].rename(
+        columns={"team_id_away": "team_id", "blk_away": "blk"}
+    )
+    blk = pd.concat([blk_h, blk_a]).groupby("team_id")["blk"].mean().round(1)
 
-    # Interceptions par équipe
-    stl_home = m[["team_id_home", "stl_home"]].rename(columns={"team_id_home": "team_id", "stl_home": "stl"})
-    stl_away = m[["team_id_away", "stl_away"]].rename(columns={"team_id_away": "team_id", "stl_away": "stl"})
-    stl = pd.concat([stl_home, stl_away]).groupby("team_id")["stl"].mean().round(1)
+    stl_h = m[["team_id_home", "stl_home"]].rename(
+        columns={"team_id_home": "team_id", "stl_home": "stl"}
+    )
+    stl_a = m[["team_id_away", "stl_away"]].rename(
+        columns={"team_id_away": "team_id", "stl_away": "stl"}
+    )
+    stl = pd.concat([stl_h, stl_a]).groupby("team_id")["stl"].mean().round(1)
 
-    # Assembler tout ensemble
     result = pd.DataFrame({
         "Pts encaissés/match": pts_encaisses,
         "Blocks/match": blk,
         "Interceptions/match": stl,
     })
 
-    # Ajouter les noms d'équipes
     teams_idx = _teams.set_index("id")["full_name"]
     result["Équipe"] = result.index.map(teams_idx)
-
-    # Trier par points encaissés (moins = meilleure défense)
     result = result.sort_values("Pts encaissés/match", ascending=True).head(n)
     result = result.reset_index(drop=True)
     result.index += 1
 
     return result[["Équipe", "Pts encaissés/match", "Blocks/match", "Interceptions/match"]]
+
+
+# ---------------------------------------------------------------------------
+# 6. Fiche individuelle d'un joueur
+# ---------------------------------------------------------------------------
+
+_LABELS_BASKETBALL = {
+    "full_name": "Nom complet", "first_name": "Prénom", "last_name": "Nom",
+    "birthdate": "Date de naissance", "height": "Taille", "weight": "Poids (lbs)",
+    "jersey": "Numéro", "position": "Poste", "country": "Nationalité",
+}
+
+
+def fiche_joueur_basketball(nom: str) -> pd.DataFrame:
+    """Fiche complète d'un joueur NBA (toutes les données disponibles)."""
+    _load()
+    return fiche_joueur(
+        df_joueurs=_players,
+        col_nom="full_name",
+        nom_joueur=nom,
+        col_labels=_LABELS_BASKETBALL,
+        cols_dates=["birthdate"],
+    )
+
+
+def liste_joueurs(equipe: str | None = None) -> pd.DataFrame:
+    """Liste tous les joueurs NBA, ou ceux d'une équipe si un team_id est précisé."""
+    _load()
+    if equipe is not None:
+        mask = (
+            _teams["full_name"].str.contains(equipe, case=False, na=False)
+            | _teams["abbreviation"].str.contains(equipe, case=False, na=False)
+        )
+        matched = _teams[mask]
+        if matched.empty:
+            raise ValueError(f"Aucune équipe trouvée pour : '{equipe}'")
+        team_id = int(matched.iloc[0]["id"])
+        df = _players[_players["team_id"] == team_id].copy()
+    else:
+        df = _players.copy()
+    return lister_joueurs(df, col_nom="full_name", col_labels=_LABELS_BASKETBALL)
+
+
+# ---------------------------------------------------------------------------
+# 7. Données agenda
+# ---------------------------------------------------------------------------
+
+def get_agenda_data() -> pd.DataFrame:
+    """Retourne les matchs Basketball au format standard pour l'agenda."""
+    _load()
+    m = _matches.copy()
+    teams_idx = _teams.set_index("id")["full_name"]
+    return pd.DataFrame({
+        "Sport": "Basketball",
+        "Date": m["game_date"],
+        "Équipe 1": m["team_id_home"].map(teams_idx).fillna(m["team_id_home"].astype(str)),
+        "Équipe 2": m["team_id_away"].map(teams_idx).fillna(m["team_id_away"].astype(str)),
+        "Score 1": m["pts_home"].astype(int).astype(str),
+        "Score 2": m["pts_away"].astype(int).astype(str),
+    })

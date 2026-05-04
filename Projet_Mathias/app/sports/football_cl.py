@@ -1,7 +1,7 @@
 import pandas as pd
 
 from Projet_Mathias.loaders.FootballChampionsLeagueLoader import FootballChampionsLeagueLoader
-from Projet_Mathias.app.sports.générique import afficher_bracket
+from Projet_Mathias.app.sports.générique import afficher_bracket, fiche_joueur, lister_joueurs
 
 _loader = None
 _players: pd.DataFrame = None
@@ -172,8 +172,46 @@ def stats_gardiens(n: int = 10) -> pd.DataFrame:
     return result
 
 
+_LABELS_FCL = {
+    "player_name": "Joueur", "club": "Club", "position": "Poste",
+    "match_played": "Matchs joués", "goals": "Buts", "assists": "Passes déc.",
+    "dribbles": "Dribbles", "tackles_won": "Tacles réussis",
+    "yellow": "Cartons jaunes", "red": "Cartons rouges",
+    "pass_completed": "Passes réussies", "pass_attempted": "Passes tentées",
+    "minutes_played": "Minutes jouées", "total_attempts": "Tirs tentés",
+    "on_target": "Tirs cadrés", "saved": "Arrêts", "conceded": "Buts encaissés",
+    "cleansheets": "Clean sheets", "saved_penalties": "Pénaltys arrêtés",
+}
+
 # ---------------------------------------------------------------------------
-# 7. Données agenda
+# 7. Fiche individuelle d'un joueur
+# ---------------------------------------------------------------------------
+
+
+def fiche_joueur_fcl(nom: str) -> pd.DataFrame:
+    """Fiche complète d'un joueur de la Champions League (toutes les données disponibles)."""
+    _load()
+    return fiche_joueur(
+        df_joueurs=_players,
+        col_nom="player_name",
+        nom_joueur=nom,
+        col_labels=_LABELS_FCL,
+    )
+
+
+def liste_joueurs(club: str | None = None) -> pd.DataFrame:
+    """Liste tous les joueurs de la CL, ou ceux d'un club si précisé."""
+    _load()
+    df = _players if club is None else _players[
+        _players["club"].str.contains(club, case=False, na=False)
+    ]
+    return lister_joueurs(
+        df, col_nom="player_name", col_equipe="club", col_labels=_LABELS_FCL
+    )
+
+
+# ---------------------------------------------------------------------------
+# 8. Données agenda
 # ---------------------------------------------------------------------------
 
 def get_agenda_data() -> pd.DataFrame:

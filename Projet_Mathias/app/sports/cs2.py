@@ -1,7 +1,7 @@
 import pandas as pd
 
 from Projet_Mathias.loaders.Cs2Loader import Cs2Loader
-from Projet_Mathias.app.sports.générique import afficher_bracket, formater_roster
+from Projet_Mathias.app.sports.générique import afficher_bracket, formater_roster, fiche_joueur, lister_joueurs
 
 _loader = None
 _players: pd.DataFrame = None
@@ -122,8 +122,38 @@ def roster_equipe(team_name: str) -> pd.DataFrame:
     )
 
 
+_LABELS_CS2 = {
+    "pseudo": "Pseudo", "name": "Nom complet", "nationality": "Nationalité",
+    "birthdate": "Date de naissance", "role": "Rôle", "team": "Équipe",
+}
+
 # ---------------------------------------------------------------------------
-# 4. Bracket des PlayOffs
+# 4. Fiche individuelle d'un joueur
+# ---------------------------------------------------------------------------
+
+def fiche_joueur_cs2(nom: str) -> pd.DataFrame:
+    """Fiche complète d'un joueur CS2 (toutes les données disponibles)."""
+    _load()
+    return fiche_joueur(
+        df_joueurs=_players,
+        col_nom="name",
+        nom_joueur=nom,
+        col_labels=_LABELS_CS2,
+        cols_dates=["birthdate"],
+    )
+
+
+def liste_joueurs(equipe: str | None = None) -> pd.DataFrame:
+    """Liste tous les joueurs CS2, ou uniquement ceux d'une équipe si précisée."""
+    _load()
+    df = _players if equipe is None else _players[
+        _players["team"].str.contains(equipe, case=False, na=False)
+    ]
+    return lister_joueurs(df, col_nom="name", col_equipe="team", col_labels=_LABELS_CS2)
+
+
+# ---------------------------------------------------------------------------
+# 5. Bracket des PlayOffs
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
@@ -134,10 +164,6 @@ def get_agenda_data() -> pd.DataFrame:
     """Retourne les matchs CS2 au format standard pour l'agenda."""
     _load()
     m = _matches.copy()
-    winner = m.apply(
-        lambda r: r["team_1"] if r["score_team_1"] > r["score_team_2"] else r["team_2"],
-        axis=1,
-    )
     return pd.DataFrame({
         "Sport": "CS2",
         "Date": m["date"],

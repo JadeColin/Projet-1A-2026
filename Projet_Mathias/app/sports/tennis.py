@@ -1,6 +1,8 @@
+import re
 import pandas as pd
 
 from Projet_Mathias.loaders.TennisLoader import TennisLoader
+from Projet_Mathias.app.sports.générique import fiche_joueur, lister_joueurs
 
 _loader = None
 _atp_players: pd.DataFrame = None
@@ -124,3 +126,98 @@ def stats_par_tournoi(circuit: str = "ATP", n: int = 20) -> pd.DataFrame:
     grouped = grouped.sort_values("Matchs", ascending=False).head(n).reset_index(drop=True)
     grouped.index += 1
     return grouped[["Tournoi", "Surface", "Matchs", "Durée moy. (min)"]]
+
+
+_LABELS_TENNIS = {
+    "full_name": "Nom complet", "name_first": "Prénom", "name_last": "Nom",
+    "hand": "Main dominante", "dob": "Date de naissance",
+    "ioc": "Nationalité (IOC)", "height": "Taille (cm)",
+}
+
+
+# ---------------------------------------------------------------------------
+# 5. Fiche individuelle d'un joueur
+# ---------------------------------------------------------------------------
+
+def fiche_joueur_tennis(nom: str, circuit: str = "ATP") -> pd.DataFrame:
+    """Fiche complète d'un joueur de tennis (toutes les données disponibles)."""
+    _load()
+    p = _atp_players if circuit.upper() == "ATP" else _wta_players
+    return fiche_joueur(
+        df_joueurs=p,
+        col_nom="full_name",
+        nom_joueur=nom,
+        col_labels=_LABELS_TENNIS,
+        cols_dates=["dob"],
+    )
+
+
+def liste_joueurs(circuit: str = "ATP") -> pd.DataFrame:
+    """Liste tous les joueurs du circuit ATP ou WTA."""
+    _load()
+    p = _atp_players if circuit.upper() == "ATP" else _wta_players
+    return lister_joueurs(p, col_nom="full_name", col_labels=_LABELS_TENNIS)
+
+
+# ---------------------------------------------------------------------------
+# 6. Données agenda
+# ---------------------------------------------------------------------------
+
+def _compter_sets(score: str) -> tuple[int, int]:
+    """Retourne (sets_gagnant, sets_perdant) depuis une chaîne de score tennis.
+
+    Exemples : '7-6(5) 6-4'  → (2, 0)
+               '6-4 3-6 7-5' → (2, 1)
+    """
+    if pd.isna(score):
+        return 0, 0
+    sets = re.sub(r'\(\d+\)', '', str(score)).strip().split()
+    gagnant, perdant = 0, 0
+    for s in sets:
+        parts = s.split("-")
+        if len(parts) == 2:
+            try:
+                s1, s2 = int(parts[0]), int(parts[1])
+                if s1 > s2:
+                    gagnant += 1
+                else:
+                    perdant += 1
+            except ValueError:
+                pass
+    return gagnant, perdant
+
+
+def _standardiser_tennis(
+    matches: pd.DataFrame,
+    players: pd.DataFrame,
+    label: str,
+) -> pd.DataFrame:
+    players_idx = players.set_index("player_id")["full_name"]
+    winner_names = matches["winner_id"].map(players_idx).fillna(
+        matches["winner_id"].astype(str)
+    )
+    loser_names = matches["loser_id"].map(players_idx).fillna(
+        matches["loser_id"].astype(str)
+    )
+    sets = matches["score"].apply(_compter_sets)
+    return pd.DataFrame({
+        "Sport": f"Tennis {label}",
+        "Date": matches["tourney_date"],
+        "Équipe 1": winner_names.values,
+        "Équipe 2": loser_names.values,
+        "Score 1": [str(s[0]) for s in sets],
+        "Score 2": [str(s[1]) for s in sets],
+    })
+
+
+def get_agenda_data() -> pd.DataFrame:
+    """Retourne les matchs Tennis ATP et WTA au format standard pour l'agenda.
+
+    Score 1 / Score 2 = sets gagnés par le vainqueur / le perdant.
+    Joueur 1 = gagnant, Joueur 2 = perdant.
+    """
+    _load()
+    return pd.concat([
+        _standardiser_tennis(_atp_matches, _atp_players, "ATP"),
+        _standardiser_tennis(_wta_matches, _wta_players, "WTA"),
+    ], ignore_index=True)

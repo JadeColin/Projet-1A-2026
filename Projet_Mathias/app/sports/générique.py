@@ -460,3 +460,120 @@ def agenda_recents(sources: list[pd.DataFrame], n: int = 10) -> pd.DataFrame:
     combined["Date"] = combined["Date"].dt.strftime("%d/%m/%Y")
     combined.index += 1
     return combined[_COLS_AGENDA]
+
+
+# ---------------------------------------------------------------------------
+# Fiche individuelle d'un joueur
+# ---------------------------------------------------------------------------
+
+def fiche_joueur(
+    df_joueurs: pd.DataFrame,
+    col_nom: str,
+    nom_joueur: str,
+    col_labels: dict[str, str] | None = None,
+    cols_dates: list[str] | None = None,
+) -> pd.DataFrame:
+    """
+    Retourne la fiche complète d'un joueur sous forme de tableau Statistique | Valeur.
+
+    Toutes les colonnes disponibles dans df_joueurs sont affichées.
+    La recherche est insensible à la casse et accepte des noms partiels.
+
+    Paramètres
+    ----------
+    df_joueurs  : DataFrame contenant les joueurs du sport.
+    col_nom     : Colonne utilisée pour la recherche par nom.
+    nom_joueur  : Nom (ou partie du nom) du joueur recherché.
+    col_labels  : Dictionnaire optionnel {nom_colonne: label_affiché} pour
+                  renommer les colonnes en labels lisibles.
+                  Les colonnes absentes du dict conservent leur nom d'origine.
+    cols_dates  : Liste de colonnes à formater en date (dd/mm/yyyy).
+
+    Retourne
+    --------
+    pd.DataFrame à deux colonnes : "Statistique" | nom du joueur
+        Chaque ligne correspond à une information disponible.
+
+    Lève
+    ----
+    ValueError si aucun joueur ne correspond à la recherche.
+    ValueError si plusieurs joueurs correspondent (liste des correspondances incluse).
+    """
+    mask = df_joueurs[col_nom].astype(str).str.contains(
+        nom_joueur, case=False, na=False
+    )
+    correspondances = df_joueurs[mask]
+
+    if correspondances.empty:
+        raise ValueError(f"Aucun joueur trouvé pour : '{nom_joueur}'")
+
+    if len(correspondances) > 1:
+        noms = correspondances[col_nom].tolist()
+        raise ValueError(
+            f"{len(noms)} joueurs correspondent à '{nom_joueur}' : "
+            + ", ".join(str(n) for n in noms)
+            + ". Précisez la recherche."
+        )
+
+    joueur = correspondances.iloc[0]
+    nom_label = str(joueur[col_nom])
+
+    # Formatage des dates
+    if cols_dates:
+        joueur = joueur.copy()
+        for col in cols_dates:
+            if col in joueur.index and pd.notna(joueur[col]):
+                try:
+                    joueur[col] = pd.to_datetime(joueur[col]).strftime("%d/%m/%Y")
+                except Exception:
+                    pass
+
+    # Construction du tableau Statistique | Valeur
+    labels = col_labels or {}
+    rows = []
+    for col in joueur.index:
+        label = labels.get(col, col)
+        valeur = joueur[col]
+        if pd.isna(valeur) if not isinstance(valeur, str) else False:
+            valeur = "N/A"
+        rows.append((label, valeur))
+
+    result = pd.DataFrame(rows, columns=["Statistique", nom_label])
+    result.index += 1
+    return result
+
+
+def lister_joueurs(
+    df_joueurs: pd.DataFrame,
+    col_nom: str,
+    col_equipe: str | None = None,
+    col_labels: dict[str, str] | None = None,
+) -> pd.DataFrame:
+    """
+    Retourne la liste de tous les joueurs disponibles dans un sport.
+
+    Utilisée pour les sports individuels (affiche tous les sportifs)
+    ou pour les sports collectifs quand on souhaite voir tous les joueurs
+    indépendamment de leur équipe.
+
+    Paramètres
+    ----------
+    df_joueurs  : DataFrame contenant les joueurs.
+    col_nom     : Colonne du nom du joueur.
+    col_equipe  : Colonne de l'équipe (optionnel, affichée si fournie).
+    col_labels  : Dictionnaire optionnel {nom_colonne: label_affiché}.
+
+    Retourne
+    --------
+    pd.DataFrame avec au minimum les colonnes Nom (et Équipe si fournie),
+    trié par nom, indexé à partir de 1.
+    """
+    labels = col_labels or {}
+    cols = [col_nom]
+    if col_equipe and col_equipe in df_joueurs.columns:
+        cols.append(col_equipe)
+
+    result = df_joueurs[cols].copy().sort_values(col_nom).reset_index(drop=True)
+    result = result.rename(columns={c: labels.get(c, c) for c in cols})
+    result.index += 1
+    return result

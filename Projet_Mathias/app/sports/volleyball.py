@@ -1,7 +1,7 @@
 import pandas as pd
 
 from Projet_Mathias.loaders.VolleyballLoader import VolleyballLoader
-from Projet_Mathias.app.sports.générique import formater_roster
+from Projet_Mathias.app.sports.générique import formater_roster, fiche_joueur, lister_joueurs
 
 _loader = None
 _countries: pd.DataFrame = None
@@ -124,7 +124,7 @@ def bilan_equipe(team_code: str, genre: str = "hommes") -> pd.DataFrame:
 # ---------------------------------------------------------------------------
 
 def roster_equipe(team_code: str, genre: str = "hommes") -> pd.DataFrame:
-    """Roster d'une équipe de volleyball : joueurs et coachs avec nom, nationalité, date de naissance."""
+    """Roster d'une équipe de volleyball : joueurs et coachs avec nom, nationalité, naissance."""
     _load()
     code = team_code.upper()
 
@@ -149,3 +149,61 @@ def roster_equipe(team_code: str, genre: str = "hommes") -> pd.DataFrame:
         df_coachs=coachs,
         est_esport=False,
     )
+
+
+_LABELS_VB = {
+    "name": "Nom complet", "country_code": "Code pays",
+    "height": "Taille (cm)", "birth_date": "Date de naissance",
+    "birth_place": "Lieu de naissance", "nickname": "Surnom",
+}
+
+
+# ---------------------------------------------------------------------------
+# 4. Fiche individuelle d'un joueur
+# ---------------------------------------------------------------------------
+
+def fiche_joueur_volleyball(nom: str, genre: str = "hommes") -> pd.DataFrame:
+    """Fiche complète d'un joueur de volleyball (toutes les données disponibles)."""
+    _load()
+    df = _players_men if genre.lower() in ("hommes", "m", "men") else _players_women
+    return fiche_joueur(
+        df_joueurs=df,
+        col_nom="name",
+        nom_joueur=nom,
+        col_labels=_LABELS_VB,
+        cols_dates=["birth_date"],
+    )
+
+
+def liste_joueurs(genre: str = "hommes", equipe: str | None = None) -> pd.DataFrame:
+    """Liste tous les joueurs de volleyball d'un genre, filtrables par code pays."""
+    _load()
+    df = _players_men if genre.lower() in ("hommes", "m", "men") else _players_women
+    if equipe is not None:
+        df = df[df["country_code"].str.contains(equipe, case=False, na=False)]
+    return lister_joueurs(df, col_nom="name", col_equipe="country_code", col_labels=_LABELS_VB)
+
+
+# ---------------------------------------------------------------------------
+# 5. Données agenda
+# ---------------------------------------------------------------------------
+
+def get_agenda_data() -> pd.DataFrame:
+    """Retourne les matchs Volleyball (hommes + femmes) au format standard pour l'agenda."""
+    _load()
+    country_map = _countries.set_index("code")["country"]
+
+    def _standardiser(m: pd.DataFrame, label: str) -> pd.DataFrame:
+        return pd.DataFrame({
+            "Sport": f"Volleyball {label}",
+            "Date": m["date"],
+            "Équipe 1": m["country_code_1"].map(country_map).fillna(m["country_code_1"]),
+            "Équipe 2": m["country_code_2"].map(country_map).fillna(m["country_code_2"]),
+            "Score 1": m["set_country_1"].astype(int).astype(str),
+            "Score 2": m["set_country_2"].astype(int).astype(str),
+        })
+
+    return pd.concat([
+        _standardiser(_matches_men, "Hommes"),
+        _standardiser(_matches_women, "Femmes"),
+    ], ignore_index=True)
