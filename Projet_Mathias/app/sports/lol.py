@@ -23,35 +23,7 @@ def _load():
 
 
 # ---------------------------------------------------------------------------
-# 1. Classement EMEA (victoires)
-# ---------------------------------------------------------------------------
-
-def classement_emea() -> pd.DataFrame:
-    """Classement des équipes EMEA 2025 par victoires."""
-    _load()
-    total = (
-        pd.concat([_matches["team_blue"], _matches["team_red"]])
-        .value_counts()
-        .rename("Matchs joués")
-    )
-    victoires = _matches["winner"].value_counts().rename("Victoires")
-    classement = (
-        pd.DataFrame({"Victoires": victoires, "Matchs joués": total})
-        .fillna(0)
-        .astype(int)
-    )
-    classement["Défaites"] = classement["Matchs joués"] - classement["Victoires"]
-    classement["% Victoires"] = (
-        classement["Victoires"] / classement["Matchs joués"] * 100
-    ).round(1)
-    classement = classement.sort_values("Victoires", ascending=False).reset_index()
-    classement = classement.rename(columns={"index": "Équipe"})
-    classement.index += 1
-    return classement[["Équipe", "Victoires", "Défaites", "Matchs joués", "% Victoires"]]
-
-
-# ---------------------------------------------------------------------------
-# 2. Stats d'une équipe
+# 1. Stats d'une équipe
 # ---------------------------------------------------------------------------
 
 def stats_equipe(team_name: str) -> pd.DataFrame:

@@ -51,7 +51,7 @@ def _make_sports_config():
             "stats": [
                 {
                     "label": "Classement équipes",
-                    "fn": bk.classement_equipes,
+                    "fn": bk.classement_points,
                     "inputs": [],
                 },
                 {
@@ -75,7 +75,7 @@ def _make_sports_config():
             "stats": [
                 {
                     "label": "Classement EMEA",
-                    "fn": lol.classement_emea,
+                    "fn": lol.classement_points,
                     "inputs": [],
                 },
                 {

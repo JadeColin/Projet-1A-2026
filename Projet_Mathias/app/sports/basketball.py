@@ -22,47 +22,7 @@ def _load():
 
 
 # ---------------------------------------------------------------------------
-# 1. Classement des équipes (victoires / défaites)
-# ---------------------------------------------------------------------------
-
-def classement_equipes() -> pd.DataFrame:
-    """Classement NBA par victoires sur la saison 2022-2023."""
-    _load()
-    m = _matches.copy()
-
-    m["winner_id"] = m.apply(
-        lambda r: r["team_id_home"] if r["pts_home"] > r["pts_away"] else r["team_id_away"],
-        axis=1,
-    )
-
-    victoires = m["winner_id"].value_counts().rename("Victoires")
-    matchs_joues = (
-        pd.concat([m["team_id_home"], m["team_id_away"]])
-        .value_counts()
-        .rename("Matchs joués")
-    )
-
-    classement = (
-        pd.DataFrame({"Victoires": victoires, "Matchs joués": matchs_joues})
-        .fillna(0)
-    )
-    classement["Défaites"] = classement["Matchs joués"] - classement["Victoires"]
-    classement = classement.astype(int)
-    classement["% Victoires"] = (
-        classement["Victoires"] / classement["Matchs joués"] * 100
-    ).round(1)
-
-    teams_idx = _teams.set_index("id")[["full_name", "abbreviation"]]
-    classement = classement.join(teams_idx).reset_index(drop=True)
-    classement = classement.rename(columns={"full_name": "Équipe", "abbreviation": "Abrév."})
-    classement = classement.sort_values("Victoires", ascending=False).reset_index(drop=True)
-    classement.index += 1
-
-    return classement[["Équipe", "Abrév.", "Victoires", "Défaites", "Matchs joués", "% Victoires"]]
-
-
-# ---------------------------------------------------------------------------
-# 2. Top équipes offensives (points marqués en moyenne)
+# 1. Top équipes offensives (points marqués en moyenne)
 # ---------------------------------------------------------------------------
 
 def top_equipes_offensives(n: int = 10) -> pd.DataFrame:

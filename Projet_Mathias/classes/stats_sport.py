@@ -27,7 +27,7 @@ Exemple d'implémentation — Basketball :
             self._players, self._teams, self._matches = loader.load_all()
 
         def classement(self, n=10):
-            return classement_equipes()   # réutilise la fonction du module
+            return classement_points()
 
         def nb_joueurs(self):
             return len(self._players)
