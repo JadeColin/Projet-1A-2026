@@ -63,7 +63,7 @@ def generer_football() -> None:
     loader = FootballLoader()
     sauvegarder(loader.load_countries(), "football_countries_clean.csv")
     sauvegarder(loader.load_leagues(), "football_leagues_clean.csv")
-    sauvegarder(loader.load_games(), "football_games_clean.csv")
+    sauvegarder(loader.load_matches(), "football_games_clean.csv")
 
 
 def generer_lol() -> None:

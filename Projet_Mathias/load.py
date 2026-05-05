@@ -52,7 +52,7 @@ _REGISTRY: dict[str, dict[str, callable]] = {
     "football": {
         "countries": FootballLoader().load_countries,
         "leagues":   FootballLoader().load_leagues,
-        "games":     FootballLoader().load_games,
+        "games":     FootballLoader().load_matches,
     },
     "football_champions_league": {
         "players": FootballChampionsLeagueLoader().load_players,

@@ -102,20 +102,6 @@ class BasketballLoader(BaseLoader):
         return players[players["team_id"] == team_id].reset_index(drop=True)
 
     @staticmethod
-    def players_with_team(players: pd.DataFrame, teams: pd.DataFrame) -> pd.DataFrame:
-        """
-        Joint les joueurs avec leur équipe.
-
-        Retourne un DataFrame enrichi avec les colonnes de l'équipe
-        (full_name de l'équipe renommée en team_name, abbreviation, city…).
-        """
-        return players.merge(
-            teams.rename(columns={"full_name": "team_name", "id": "team_id"}),
-            on="team_id",
-            how="left",
-        )
-
-    @staticmethod
     def _height_to_cm(height_str: str) -> float | None:
         """Convertit le format pieds-pouces '6-8' en centimètres."""
         if pd.isna(height_str):
