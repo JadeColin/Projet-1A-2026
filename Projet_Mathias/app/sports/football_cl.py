@@ -1,7 +1,12 @@
 import pandas as pd
 
 from Projet_Mathias.loaders.FootballChampionsLeagueLoader import FootballChampionsLeagueLoader
-from Projet_Mathias.app.sports.générique import afficher_bracket, fiche_joueur, lister_joueurs
+from Projet_Mathias.app.sports.générique import (
+    afficher_bracket,
+    afficher_classement,
+    fiche_joueur,
+    lister_joueurs,
+)
 
 _loader = None
 _players: pd.DataFrame = None
@@ -211,7 +216,35 @@ def liste_joueurs(club: str | None = None) -> pd.DataFrame:
 
 
 # ---------------------------------------------------------------------------
-# 8. Données agenda
+# 8. Classement de la phase de groupes
+# ---------------------------------------------------------------------------
+
+def classement_groupes(top_qualifies: int = 2) -> None:
+    """
+    Affiche le classement de chaque groupe de la phase de poules.
+
+    Un tableau par groupe est affiché, trié par points décroissants.
+    Une ligne de séparation marque le seuil de qualification.
+
+    Paramètres
+    ----------
+    top_qualifies : nombre d'équipes qualifiées par groupe (défaut : 2).
+    """
+    _load()
+    df_groupes = _matches[_matches["phase"] == "group"].copy()
+    afficher_classement(
+        df=df_groupes,
+        col_equipe1="team_home",
+        col_equipe2="team_away",
+        col_score1="score_team_home",
+        col_score2="score_team_away",
+        col_groupe="group",
+        top_qualifies=top_qualifies,
+    )
+
+
+# ---------------------------------------------------------------------------
+# 9. Données agenda
 # ---------------------------------------------------------------------------
 
 def get_agenda_data() -> pd.DataFrame:

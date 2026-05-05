@@ -1,7 +1,13 @@
 import pandas as pd
 
 from Projet_Mathias.loaders.Cs2Loader import Cs2Loader
-from Projet_Mathias.app.sports.générique import afficher_bracket, formater_roster, fiche_joueur, lister_joueurs
+from Projet_Mathias.app.sports.générique import (
+    afficher_bracket,
+    afficher_classement,
+    formater_roster,
+    fiche_joueur,
+    lister_joueurs,
+)
 
 _loader = None
 _players: pd.DataFrame = None
@@ -131,6 +137,7 @@ _LABELS_CS2 = {
 # 4. Fiche individuelle d'un joueur
 # ---------------------------------------------------------------------------
 
+
 def fiche_joueur_cs2(nom: str) -> pd.DataFrame:
     """Fiche complète d'un joueur CS2 (toutes les données disponibles)."""
     _load()
@@ -196,4 +203,34 @@ def bracket() -> None:
         col_round="round",
         ordre_rounds=_ORDRE_ROUNDS_PLAYOFFS,
         deux_manches=False,
+    )
+
+
+# ---------------------------------------------------------------------------
+# 7. Classement par points (phases de groupes)
+# ---------------------------------------------------------------------------
+
+
+def classement_stages(top_qualifies: int | None = None) -> None:
+    """
+    Affiche le classement CS2 par phase de groupes (stages 1, 2, 3).
+
+    Chaque stage est affiché comme un groupe distinct.
+    Les PlayOffs sont exclus.
+
+    Paramètres
+    ----------
+    top_qualifies : Nombre d'équipes affichées avant le séparateur (optionnel).
+    """
+    _load()
+    m = _matches[_matches["stage"] != "PlayOffs"].copy()
+    m["stage_label"] = "Phase " + m["stage"].astype(str)
+    afficher_classement(
+        df=m,
+        col_equipe1="team_1",
+        col_equipe2="team_2",
+        col_score1="score_team_1",
+        col_score2="score_team_2",
+        col_groupe="stage_label",
+        top_qualifies=top_qualifies,
     )

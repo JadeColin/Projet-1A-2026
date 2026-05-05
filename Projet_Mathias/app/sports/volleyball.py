@@ -1,7 +1,12 @@
 import pandas as pd
 
 from Projet_Mathias.loaders.VolleyballLoader import VolleyballLoader
-from Projet_Mathias.app.sports.générique import formater_roster, fiche_joueur, lister_joueurs
+from Projet_Mathias.app.sports.générique import (
+    afficher_classement,
+    formater_roster,
+    fiche_joueur,
+    lister_joueurs,
+)
 
 _loader = None
 _countries: pd.DataFrame = None
@@ -207,3 +212,34 @@ def get_agenda_data() -> pd.DataFrame:
         _standardiser(_matches_men, "Hommes"),
         _standardiser(_matches_women, "Femmes"),
     ], ignore_index=True)
+
+
+# ---------------------------------------------------------------------------
+# 6. Classement par points (phase de groupes)
+# ---------------------------------------------------------------------------
+
+def classement_groupes(genre: str = "hommes", top_qualifies: int = 2) -> None:
+    """
+    Affiche le classement de la phase de groupes (poules) par genre.
+
+    Un tableau par poule est affiché, trié par points décroissants.
+
+    Paramètres
+    ----------
+    genre         : 'hommes' ou 'femmes' (défaut : 'hommes').
+    top_qualifies : Nombre d'équipes qualifiées par poule (défaut : 2).
+    """
+    _load()
+    m = _matches(genre).copy()
+    poules = m[m["stage"].str.startswith("Preliminary Round", na=False)].copy()
+    poules["poule"] = poules["stage"].str.extract(r"Pool ([A-Z])")
+
+    afficher_classement(
+        df=poules,
+        col_equipe1="country_code_1",
+        col_equipe2="country_code_2",
+        col_score1="set_country_1",
+        col_score2="set_country_2",
+        col_groupe="poule",
+        top_qualifies=top_qualifies,
+    )

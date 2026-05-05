@@ -2,7 +2,10 @@ import pandas as pd
 
 from Projet_Mathias.loaders.LolLoader import LolLoader
 from Projet_Mathias.app.sports.générique import (
-    formater_roster, fiche_joueur, lister_joueurs,
+    afficher_classement,
+    formater_roster,
+    fiche_joueur,
+    lister_joueurs,
 )
 
 _loader = None
@@ -196,3 +199,34 @@ def get_agenda_data() -> pd.DataFrame:
         "Score 1": score1,
         "Score 2": score2,
     })
+
+
+# ---------------------------------------------------------------------------
+# 7. Classement par points
+# ---------------------------------------------------------------------------
+
+def classement_points(top_qualifies: int | None = None) -> None:
+    """
+    Affiche le classement EMEA LEC par victoires/défaites.
+
+    Les scores sont déduits de la colonne winner (1 pour le gagnant, 0 pour
+    le perdant), puis les points sont calculés selon la règle standard
+    (3 pts victoire, 1 pt nul, 0 pt défaite).
+
+    Paramètres
+    ----------
+    top_qualifies : Nombre d'équipes affichées avant le séparateur (optionnel).
+    """
+    _load()
+    m = _matches.copy()
+    m["score_blue"] = (m["winner"] == m["team_blue"]).astype(int)
+    m["score_red"] = (m["winner"] == m["team_red"]).astype(int)
+    afficher_classement(
+        df=m,
+        col_equipe1="team_blue",
+        col_equipe2="team_red",
+        col_score1="score_blue",
+        col_score2="score_red",
+        col_groupe=None,
+        top_qualifies=top_qualifies,
+    )

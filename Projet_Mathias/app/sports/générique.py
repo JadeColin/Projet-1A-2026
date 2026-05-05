@@ -463,6 +463,159 @@ def agenda_recents(sources: list[pd.DataFrame], n: int = 10) -> pd.DataFrame:
 
 
 # ---------------------------------------------------------------------------
+# Classement par points
+# ---------------------------------------------------------------------------
+
+def _calculer_classement(
+    df: pd.DataFrame,
+    col_equipe1: str,
+    col_equipe2: str,
+    col_score1: str,
+    col_score2: str,
+) -> pd.DataFrame:
+    """
+    Calcule le classement par points à partir d'un DataFrame de matchs.
+
+    Règles : 3 pts victoire, 1 pt nul, 0 pt défaite.
+    Tri : Points décroissants, puis différence décroissante.
+    Rang : classement standard (ex-æquo = même rang, le suivant saute des places).
+
+    Retourne un DataFrame avec les colonnes :
+        Rang | Équipe | MJ | V | N | D | Pts | Diff
+    """
+    teams: dict[str, dict] = {}
+    for eq in pd.concat([df[col_equipe1], df[col_equipe2]]).unique():
+        teams[eq] = {"MJ": 0, "V": 0, "N": 0, "D": 0, "Pts": 0, "Diff": 0}
+
+    for _, row in df.iterrows():
+        m = ResultatMatch(
+            equipe1=str(row[col_equipe1]),
+            equipe2=str(row[col_equipe2]),
+            score1=row[col_score1],
+            score2=row[col_score2],
+        )
+        if not m.joue:
+            continue
+        eq1, eq2 = m.equipe1, m.equipe2
+        teams[eq1]["MJ"] += 1
+        teams[eq2]["MJ"] += 1
+        diff = int(m.score1) - int(m.score2)
+        teams[eq1]["Diff"] += diff
+        teams[eq2]["Diff"] -= diff
+        if m.gagnant == eq1:
+            teams[eq1]["V"] += 1
+            teams[eq1]["Pts"] += 3
+            teams[eq2]["D"] += 1
+        elif m.gagnant == eq2:
+            teams[eq2]["V"] += 1
+            teams[eq2]["Pts"] += 3
+            teams[eq1]["D"] += 1
+        else:
+            teams[eq1]["N"] += 1
+            teams[eq2]["N"] += 1
+            teams[eq1]["Pts"] += 1
+            teams[eq2]["Pts"] += 1
+
+    result = (
+        pd.DataFrame.from_dict(teams, orient="index")
+        .reset_index()
+        .rename(columns={"index": "Équipe"})
+        .sort_values(["Pts", "Diff"], ascending=[False, False])
+        .reset_index(drop=True)
+    )
+    result["Rang"] = result["Pts"].rank(method="min", ascending=False).astype(int)
+    result["Winrate"] = (result["V"] / result["MJ"].replace(0, pd.NA) * 100).round(1)
+    result["Winrate"] = result["Winrate"].apply(
+        lambda x: f"{x:.1f}%" if pd.notna(x) else "N/A"
+    )
+    return result[["Rang", "Équipe", "MJ", "V", "N", "D", "Pts", "Diff", "Winrate"]]
+
+
+def _afficher_table_classement(
+    df: pd.DataFrame,
+    top_qualifies: int | None = None,
+    titre: str | None = None,
+) -> None:
+    """Affiche un tableau de classement avec séparateur optionnel après top_qualifies."""
+    if titre:
+        print(f"\n{'═' * 70}")
+        print(f"  {titre}")
+        print(f"{'═' * 70}")
+
+    lines = df.to_string(index=False).split("\n")
+    header_line = lines[0]
+    data_lines = lines[1:]
+    width = max(len(header_line), 40)
+
+    print(header_line)
+
+    if top_qualifies is None:
+        for line in data_lines:
+            print(line)
+    else:
+        n_top = len(df[df["Rang"] <= top_qualifies])
+        sep_label = f" TOP {top_qualifies} "
+        sep_line = sep_label.center(width, "─")
+        for i, line in enumerate(data_lines):
+            print(line)
+            if i == n_top - 1 and n_top < len(data_lines):
+                print(sep_line)
+
+    print()
+
+
+def afficher_classement(
+    df: pd.DataFrame,
+    col_equipe1: str,
+    col_equipe2: str,
+    col_score1: str,
+    col_score2: str,
+    col_groupe: str | None = None,
+    top_qualifies: int | None = None,
+) -> None:
+    """
+    Affiche le classement d'une compétition par points dans le terminal.
+
+    Si la compétition comporte des groupes (col_groupe renseigné), un tableau
+    de classement est affiché pour chaque groupe.
+    Sinon, un seul tableau global est affiché.
+
+    Le chemin de qualification est matérialisé par une ligne séparatrice
+    après les top_qualifies premières équipes (si renseigné).
+
+    Règles de points : 3 pts victoire, 1 pt nul, 0 pt défaite.
+    Départage : différence de buts/scores.
+    Rang : standard (ex-æquo → même rang, suivant saute des places).
+
+    Paramètres
+    ----------
+    df            : DataFrame des matchs.
+    col_equipe1   : Colonne du nom de l'équipe 1.
+    col_equipe2   : Colonne du nom de l'équipe 2.
+    col_score1    : Colonne du score de l'équipe 1.
+    col_score2    : Colonne du score de l'équipe 2.
+    col_groupe    : Colonne identifiant le groupe (optionnel).
+                    Si fournie, un tableau par groupe est affiché.
+    top_qualifies : Nombre d'équipes qui se qualifient (optionnel).
+                    Une ligne séparatrice est insérée après ce rang.
+    """
+    if col_groupe is not None and col_groupe in df.columns:
+        for groupe in sorted(df[col_groupe].dropna().unique()):
+            df_groupe = df[df[col_groupe] == groupe]
+            classement = _calculer_classement(
+                df_groupe, col_equipe1, col_equipe2, col_score1, col_score2
+            )
+            _afficher_table_classement(
+                classement, top_qualifies, titre=f"Groupe {groupe}"
+            )
+    else:
+        classement = _calculer_classement(
+            df, col_equipe1, col_equipe2, col_score1, col_score2
+        )
+        _afficher_table_classement(classement, top_qualifies)
+
+
+# ---------------------------------------------------------------------------
 # Fiche individuelle d'un joueur
 # ---------------------------------------------------------------------------
 

@@ -2,7 +2,10 @@ import pandas as pd
 
 from Projet_Mathias.loaders.BasketballLoader import BasketballLoader
 from Projet_Mathias.app.sports.générique import (
-    formater_roster, fiche_joueur, lister_joueurs,
+    afficher_classement,
+    formater_roster,
+    fiche_joueur,
+    lister_joueurs,
 )
 
 _loader = None
@@ -262,3 +265,35 @@ def get_agenda_data() -> pd.DataFrame:
         "Score 1": m["pts_home"].astype(int).astype(str),
         "Score 2": m["pts_away"].astype(int).astype(str),
     })
+
+
+# ---------------------------------------------------------------------------
+# 8. Classement par points
+# ---------------------------------------------------------------------------
+
+def classement_points(saison: str | None = None, top_qualifies: int | None = None) -> None:
+    """
+    Affiche le classement NBA par points (victoires/défaites/nuls).
+
+    Paramètres
+    ----------
+    saison        : Saison à afficher (ex: '2022-2023'). Si None, toutes les
+                    saisons Regular Season sont agrégées.
+    top_qualifies : Nombre d'équipes affichées avant le séparateur (optionnel).
+    """
+    _load()
+    teams_idx = _teams.set_index("id")["full_name"]
+    m = _matches[_matches["season_type"] == "Regular Season"].copy()
+    if saison:
+        m = m[m["season"] == saison]
+    m["equipe_home"] = m["team_id_home"].map(teams_idx).fillna(m["team_id_home"].astype(str))
+    m["equipe_away"] = m["team_id_away"].map(teams_idx).fillna(m["team_id_away"].astype(str))
+    afficher_classement(
+        df=m,
+        col_equipe1="equipe_home",
+        col_equipe2="equipe_away",
+        col_score1="pts_home",
+        col_score2="pts_away",
+        col_groupe=None,
+        top_qualifies=top_qualifies,
+    )
