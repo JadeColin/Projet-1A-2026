@@ -1,8 +1,8 @@
 import re
 import pandas as pd
 
-from Projet_Mathias.loaders.TennisLoader import TennisLoader
-from Projet_Mathias.app.sports.générique import fiche_joueur, lister_joueurs
+from src.Parsers.TennisLoader import TennisLoader
+from src.Analysis.générique import fiche_joueur, lister_joueurs
 
 _loader = None
 _atp_players: pd.DataFrame = None

@@ -1,7 +1,7 @@
 import pandas as pd
 
-from Projet_Mathias.loaders.BasketballLoader import BasketballLoader
-from Projet_Mathias.app.sports.générique import (
+from src.Parsers.BasketballLoader import BasketballLoader
+from src.Analysis.générique import (
     afficher_classement,
     formater_roster,
     fiche_joueur,

@@ -1,7 +1,7 @@
 import pandas as pd
 
-from Projet_Mathias.loaders.Starcraft2Loader import Starcraft2Loader
-from Projet_Mathias.app.sports.générique import fiche_joueur, lister_joueurs
+from src.Parsers.Starcraft2Loader import Starcraft2Loader
+from src.Analysis.générique import fiche_joueur, lister_joueurs
 
 _loader = None
 _players: pd.DataFrame = None

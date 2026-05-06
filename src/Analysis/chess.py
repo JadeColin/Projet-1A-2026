@@ -1,6 +1,6 @@
 import pandas as pd
 
-from Projet_Mathias.loaders.ChessLoader import ChessLoader
+from src.Parsers.ChessLoader import ChessLoader
 
 _loader = None
 _players: pd.DataFrame = None

@@ -1,7 +1,7 @@
 import pandas as pd
 
-from Projet_Mathias.loaders.BadmintonLoader import BadmintonLoader
-from Projet_Mathias.app.sports.générique import fiche_joueur, lister_joueurs
+from src.Parsers.BadmintonLoader import BadmintonLoader
+from src.Analysis.générique import fiche_joueur, lister_joueurs
 
 _loader = None
 _players: pd.DataFrame = None

@@ -1,6 +1,6 @@
 import pandas as pd
 
-from Projet_Mathias.loaders.BaseLoader import BaseLoader
+from src.Parsers.BaseLoader import BaseLoader
 
 
 class ChessLoader(BaseLoader):

@@ -1,7 +1,7 @@
 import pandas as pd
 
-from Projet_Mathias.loaders.Cs2Loader import Cs2Loader
-from Projet_Mathias.app.sports.générique import (
+from src.Parsers.Cs2Loader import Cs2Loader
+from src.Analysis.générique import (
     afficher_bracket,
     afficher_classement,
     formater_roster,

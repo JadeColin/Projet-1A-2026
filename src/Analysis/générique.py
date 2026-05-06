@@ -8,7 +8,7 @@ Fonctions disponibles :
 
 Usage depuis un module sport :
 
-    from Projet_Mathias.app.sports.générique import formater_roster
+    from src.Analysis.générique import formater_roster
 
     # Basketball (sport classique, pas de pseudo, pas de nationalité dans les données)
     formater_roster(

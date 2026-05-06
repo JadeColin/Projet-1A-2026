@@ -36,7 +36,7 @@ class BaseLoader(ABC):
             Nom du dossier dans Base_de_données/ (ex: "Basketball", "tennis").
     """
 
-    _DATA_ROOT: Path = Path(__file__).parent.parent.parent / "Base_de_données"
+    _DATA_ROOT: Path = Path(__file__).parent.parent.parent / "data"
     SPORT_FOLDER: str = ""
 
     @property

@@ -1,7 +1,7 @@
 import pandas as pd
 
-from Projet_Mathias.loaders.FootballChampionsLeagueLoader import FootballChampionsLeagueLoader
-from Projet_Mathias.app.sports.générique import (
+from src.Parsers.FootballChampionsLeagueLoader import FootballChampionsLeagueLoader
+from src.Analysis.générique import (
     afficher_bracket,
     afficher_classement,
     fiche_joueur,
