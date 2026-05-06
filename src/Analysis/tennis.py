@@ -2,7 +2,7 @@ import re
 import pandas as pd
 
 from src.Parsers.TennisLoader import TennisLoader
-from src.Analysis.générique import fiche_joueur, lister_joueurs
+from src.Analysis.générique import afficher_bracket, fiche_joueur, lister_joueurs
 
 _loader = None
 _atp_players: pd.DataFrame = None
@@ -87,45 +87,6 @@ def stats_joueur(player_name: str, circuit: str = "ATP") -> pd.DataFrame:
 
     result = pd.DataFrame(rows, columns=["Statistique", name])
     return result
-
-
-# ---------------------------------------------------------------------------
-# 3. Résultats par surface
-# ---------------------------------------------------------------------------
-
-def resultats_par_surface(circuit: str = "ATP") -> pd.DataFrame:
-    """Nombre de matchs et durée moyenne par surface."""
-    _load()
-    m = _matches(circuit)
-
-    grouped = m.groupby("surface").agg(
-        Matchs=("surface", "count"),
-        Durée_moy=("minutes", "mean"),
-    ).round({"Durée_moy": 1}).reset_index()
-    grouped = grouped.rename(columns={"surface": "Surface", "Durée_moy": "Durée moy. (min)"})
-    grouped = grouped.sort_values("Matchs", ascending=False).reset_index(drop=True)
-    grouped.index += 1
-    return grouped
-
-
-# ---------------------------------------------------------------------------
-# 4. Stats par tournoi
-# ---------------------------------------------------------------------------
-
-def stats_par_tournoi(circuit: str = "ATP", n: int = 20) -> pd.DataFrame:
-    """Statistiques par tournoi : matchs joués et durée moyenne."""
-    _load()
-    m = _matches(circuit)
-
-    grouped = m.groupby("tourney_name").agg(
-        Matchs=("tourney_name", "count"),
-        Surface=("surface", "first"),
-        Durée_moy=("minutes", "mean"),
-    ).round({"Durée_moy": 1}).reset_index()
-    grouped = grouped.rename(columns={"tourney_name": "Tournoi", "Durée_moy": "Durée moy. (min)"})
-    grouped = grouped.sort_values("Matchs", ascending=False).head(n).reset_index(drop=True)
-    grouped.index += 1
-    return grouped[["Tournoi", "Surface", "Matchs", "Durée moy. (min)"]]
 
 
 _LABELS_TENNIS = {
@@ -221,3 +182,51 @@ def get_agenda_data() -> pd.DataFrame:
         _standardiser_tennis(_atp_matches, _atp_players, "ATP"),
         _standardiser_tennis(_wta_matches, _wta_players, "WTA"),
     ], ignore_index=True)
+
+
+# ---------------------------------------------------------------------------
+# Bracket
+# ---------------------------------------------------------------------------
+
+_BRACKET_ROUNDS = ["R128", "R64", "R32", "R16", "QF", "SF", "F"]
+
+
+def bracket(tourney_name: str, circuit: str = "ATP") -> None:
+    """Affiche le bracket d'un tournoi de tennis (Grand Chelem ou autre).
+
+    Les matchs sont affichés depuis le premier round disponible jusqu'à la finale.
+    Le vainqueur de chaque match est le gagnant du plus grand nombre de sets.
+    """
+    _load()
+
+    matches = _atp_matches if circuit.upper() == "ATP" else _wta_matches
+    players = _atp_players if circuit.upper() == "ATP" else _wta_players
+
+    m = matches[
+        matches["tourney_name"].str.contains(tourney_name, case=False, na=False)
+    ].copy()
+
+    if m.empty:
+        raise ValueError(f"Tournoi introuvable : '{tourney_name}' ({circuit})")
+
+    names = players.set_index("player_id")["full_name"]
+    m["player_winner"] = m["winner_id"].map(names).fillna(m["winner_id"].astype(str))
+    m["player_loser"] = m["loser_id"].map(names).fillna(m["loser_id"].astype(str))
+
+    sets_parsed = m["score"].apply(
+        lambda s: pd.Series(_compter_sets(s), index=["sets_w", "sets_l"])
+    )
+    m = pd.concat([m, sets_parsed], axis=1)
+
+    m = m[m["round"].isin(_BRACKET_ROUNDS)].sort_values("match_num")
+    ordre_present = [r for r in _BRACKET_ROUNDS if r in m["round"].values]
+
+    afficher_bracket(
+        df=m,
+        col_equipe1="player_winner",
+        col_equipe2="player_loser",
+        col_score1="sets_w",
+        col_score2="sets_l",
+        col_round="round",
+        ordre_rounds=ordre_present,
+    )

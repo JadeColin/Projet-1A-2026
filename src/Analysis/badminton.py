@@ -1,7 +1,7 @@
 import pandas as pd
 
 from src.Parsers.BadmintonLoader import BadmintonLoader
-from src.Analysis.générique import fiche_joueur, lister_joueurs
+from src.Analysis.générique import afficher_bracket, fiche_joueur
 
 _loader = None
 _players: pd.DataFrame = None
@@ -55,15 +55,48 @@ def fiche_joueur_badminton(nom: str) -> pd.DataFrame:
     )
 
 
-def liste_joueurs() -> pd.DataFrame:
-    """Liste tous les joueurs de badminton."""
-    _load()
-    return lister_joueurs(_players, col_nom="name", col_labels=_LABELS_BADMINTON)
-
-
 # ---------------------------------------------------------------------------
 # 2. Données agenda
 # ---------------------------------------------------------------------------
+
+_BRACKET_ROUNDS = ["Round of 32", "Round of 16", "Quarter final", "Semi final", "Final"]
+
+
+def bracket(tournament_name: str) -> None:
+    """Affiche le bracket d'un tournoi de badminton.
+
+    Le score de chaque joueur correspond au nombre de jeux gagnés sur le match.
+    """
+    _load()
+
+    m = _matches[
+        _matches["tournament"].str.contains(tournament_name, case=False, na=False)
+    ].copy()
+
+    if m.empty:
+        raise ValueError(f"Tournoi introuvable : '{tournament_name}'")
+
+    m = m[m["round"].isin(_BRACKET_ROUNDS)].copy()
+
+    if m.empty:
+        raise ValueError(f"Pas de phase bracket pour '{tournament_name}'")
+
+    scores = m.apply(_compter_jeux, axis=1, result_type="expand")
+    m["score_1"] = scores[0]
+    m["score_2"] = scores[1]
+
+    ordre_present = [r for r in _BRACKET_ROUNDS if r in m["round"].values]
+
+    afficher_bracket(
+        df=m,
+        col_equipe1="player_1",
+        col_equipe2="player_2",
+        col_score1="score_1",
+        col_score2="score_2",
+        col_round="round",
+        ordre_rounds=ordre_present,
+    )
+
 
 def get_agenda_data() -> pd.DataFrame:
     """Retourne les matchs Badminton au format standard pour l'agenda.

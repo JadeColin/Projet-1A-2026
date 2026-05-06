@@ -89,27 +89,7 @@ def stats_equipe(team_name: str) -> pd.DataFrame:
 
 
 # ---------------------------------------------------------------------------
-# 4. Résultats par phase
-# ---------------------------------------------------------------------------
-
-def resultats_par_phase() -> pd.DataFrame:
-    """Nombre de matchs et buts marqués par phase de compétition."""
-    _load()
-    m = _matches.copy()
-    m["buts_total"] = m["score_team_home"] + m["score_team_away"]
-    grouped = m.groupby("phase").agg(
-        Matchs=("phase", "count"),
-        Buts_total=("buts_total", "sum"),
-        Moy_buts=("buts_total", "mean"),
-    ).round({"Moy_buts": 2}).reset_index()
-    grouped = grouped.rename(columns={
-        "phase": "Phase", "Buts_total": "Buts totaux", "Moy_buts": "Moy. buts/match",
-    })
-    return grouped
-
-
-# ---------------------------------------------------------------------------
-# 5. Statistiques complètes d'un joueur
+# 4. Statistiques complètes d'un joueur
 # ---------------------------------------------------------------------------
 
 def stats_joueur(player_name: str) -> pd.DataFrame:

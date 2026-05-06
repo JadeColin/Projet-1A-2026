@@ -65,7 +65,7 @@ def classement(genre: str = "hommes") -> pd.DataFrame:
 
     # Enrichir avec le nom complet du pays
     country_map = _countries.set_index("code")["country"]
-    classement_df["Pays"] = classement_df.index.map(country_map).fillna(classement_df.index)
+    classement_df["Pays"] = classement_df.index.map(lambda code: country_map.get(code, code))
 
     sets_gagnes = (
         pd.concat([

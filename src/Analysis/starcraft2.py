@@ -1,7 +1,7 @@
 import pandas as pd
 
 from src.Parsers.Starcraft2Loader import Starcraft2Loader
-from src.Analysis.générique import fiche_joueur, lister_joueurs
+from src.Analysis.générique import fiche_joueur
 
 _loader = None
 _players: pd.DataFrame = None
@@ -34,14 +34,6 @@ def fiche_joueur_sc2(nom: str) -> pd.DataFrame:
         nom_joueur=nom,
         col_labels=_LABELS_SC2,
         cols_dates=["birthdate"],
-    )
-
-
-def liste_joueurs() -> pd.DataFrame:
-    """Liste tous les joueurs StarCraft II."""
-    _load()
-    return lister_joueurs(
-        _players, col_nom="name", col_equipe="team", col_labels=_LABELS_SC2
     )
 
 
