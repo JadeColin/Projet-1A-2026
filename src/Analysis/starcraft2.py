@@ -38,7 +38,44 @@ def fiche_joueur_sc2(nom: str) -> pd.DataFrame:
 
 
 # ---------------------------------------------------------------------------
-# 2. Données agenda
+# 2. Bilan victoires/défaites d'un joueur
+# ---------------------------------------------------------------------------
+
+def bilan_joueur_sc2(nom: str) -> pd.DataFrame:
+    """Bilan victoires/défaites d'un joueur StarCraft II sur la saison."""
+    _load()
+
+    mask = _players["name"].str.contains(nom, case=False, na=False)
+    matched = _players[mask]
+    if matched.empty:
+        raise ValueError(f"Aucun joueur trouvé pour : '{nom}'")
+
+    name = matched.iloc[0]["name"]
+
+    as_p1 = _matches[_matches["player_1"] == name]
+    as_p2 = _matches[_matches["player_2"] == name]
+
+    victoires = int(
+        (as_p1["score_player_1"] > as_p1["score_player_2"]).sum()
+        + (as_p2["score_player_2"] > as_p2["score_player_1"]).sum()
+    )
+    defaites = int(
+        (as_p1["score_player_1"] < as_p1["score_player_2"]).sum()
+        + (as_p2["score_player_2"] < as_p2["score_player_1"]).sum()
+    )
+    joues = victoires + defaites
+
+    rows = [
+        ("Matchs joués", joues),
+        ("Victoires", victoires),
+        ("Défaites", defaites),
+        ("% Victoires", round(victoires / max(joues, 1) * 100, 1)),
+    ]
+    return pd.DataFrame(rows, columns=["Statistique", name])
+
+
+# ---------------------------------------------------------------------------
+# 3. Données agenda
 # ---------------------------------------------------------------------------
 
 def get_agenda_data() -> pd.DataFrame:

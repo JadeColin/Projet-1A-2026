@@ -92,15 +92,15 @@ def stats_equipe(team_name: str) -> pd.DataFrame:
         + matches_team.loc[matches_team["team_2"] == team_label, "score_team_1"].sum()
     )
 
-    rows = [
-        ("Matchs joués", len(matches_team)),
-        ("Victoires", int(victoires)),
-        ("Défaites", len(matches_team) - int(victoires)),
-        ("Maps gagnées", int(maps_gagnes)),
-        ("Maps perdues", int(maps_perdus)),
-        ("% Victoires", round(victoires / len(matches_team) * 100, 1)),
-    ]
-    return pd.DataFrame(rows, columns=["Statistique", team_label])
+    return pd.DataFrame([{
+        "Équipe": team_label,
+        "Matchs joués": len(matches_team),
+        "Victoires": int(victoires),
+        "Défaites": len(matches_team) - int(victoires),
+        "Maps gagnées": int(maps_gagnes),
+        "Maps perdues": int(maps_perdus),
+        "% Victoires": round(victoires / len(matches_team) * 100, 1),
+    }])
 
 
 # ---------------------------------------------------------------------------

@@ -72,21 +72,21 @@ def stats_joueur(player_name: str, circuit: str = "ATP") -> pd.DataFrame:
     wins = m[m["winner_id"] == pid]
     losses = m[m["loser_id"] == pid]
 
-    rows = [
-        ("Victoires", len(wins)),
-        ("Défaites", len(losses)),
-        ("Matchs joués", len(wins) + len(losses)),
-        ("% Victoires", round(len(wins) / max(len(wins) + len(losses), 1) * 100, 1)),
-        ("Tournois joués", m[m["winner_id"] == pid]["tourney_name"].nunique() +
-         m[m["loser_id"] == pid]["tourney_name"].nunique()),
-    ]
+    row = {
+        "Joueur": name,
+        "Victoires": len(wins),
+        "Défaites": len(losses),
+        "Matchs joués": len(wins) + len(losses),
+        "% Victoires": round(len(wins) / max(len(wins) + len(losses), 1) * 100, 1),
+        "Tournois joués": (m[m["winner_id"] == pid]["tourney_name"].nunique()
+                           + m[m["loser_id"] == pid]["tourney_name"].nunique()),
+    }
 
     if "minutes" in m.columns:
         all_m = pd.concat([wins, losses])
-        rows.append(("Durée moy. match (min)", round(all_m["minutes"].mean(), 1)))
+        row["Durée moy. match (min)"] = round(all_m["minutes"].mean(), 1)
 
-    result = pd.DataFrame(rows, columns=["Statistique", name])
-    return result
+    return pd.DataFrame([row])
 
 
 _LABELS_TENNIS = {

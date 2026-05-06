@@ -95,9 +95,9 @@ def stats_equipe(team_name: str) -> pd.DataFrame:
         "reb": "Rebonds", "ast": "Passes", "stl": "Interceptions",
         "blk": "Contres", "tov": "Pertes de balle",
     }
-    result = moyennes.rename(labels).reset_index()
-    result.columns = ["Statistique", f"{team_label} (moy./match)"]
-    return result
+    row = {"Équipe": team_label}
+    row.update({labels.get(k, k): v for k, v in moyennes.items()})
+    return pd.DataFrame([row])
 
 
 # ---------------------------------------------------------------------------

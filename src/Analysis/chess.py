@@ -1,6 +1,7 @@
 import pandas as pd
 
 from src.Parsers.ChessLoader import ChessLoader
+from src.Analysis.générique import fiche_joueur
 
 _loader = None
 _players: pd.DataFrame = None
@@ -29,14 +30,34 @@ def classement_elo(mode: str = "standard", n: int = 20) -> pd.DataFrame:
     df = _players[["name", "federation", "fide_title", col]].copy()
     df = df.dropna(subset=[col]).sort_values(col, ascending=False).head(n).reset_index(drop=True)
     df.index += 1
-    labels = {
-        col: f"Elo {mode.capitalize()}",
-        "name": "Joueur", "federation": "Fédération", "fide_title": "Titre"}
+    labels = {col: f"Elo {mode.capitalize()}", "name": "Joueur",
+              "federation": "Fédération", "fide_title": "Titre"}
     return df.rename(columns=labels)
 
 
+_LABELS_CHESS = {
+    "name": "Nom complet", "federation": "Fédération", "fide_title": "Titre FIDE",
+    "rating_standard": "Elo Standard", "rating_rapid": "Elo Rapid", "rating_blitz": "Elo Blitz",
+}
+
+
 # ---------------------------------------------------------------------------
-# 2. Bilan d'un joueur
+# 2. Fiche individuelle d'un joueur
+# ---------------------------------------------------------------------------
+
+def fiche_joueur_chess(nom: str) -> pd.DataFrame:
+    """Fiche complète d'un joueur d'échecs (toutes les données disponibles)."""
+    _load()
+    return fiche_joueur(
+        df_joueurs=_players,
+        col_nom="name",
+        nom_joueur=nom,
+        col_labels=_LABELS_CHESS,
+    )
+
+
+# ---------------------------------------------------------------------------
+# 3. Bilan d'un joueur
 # ---------------------------------------------------------------------------
 
 def bilan_joueur(player_name: str) -> pd.DataFrame:
@@ -68,18 +89,18 @@ def bilan_joueur(player_name: str) -> pd.DataFrame:
     defaites = l1 + l2
     joues = victoires + nuls + defaites
 
-    rows = [
-        ("Parties jouées", joues),
-        ("Victoires", victoires),
-        ("Nuls", nuls),
-        ("Défaites", defaites),
-        ("Score total", victoires + nuls * 0.5),
-    ]
-    return pd.DataFrame(rows, columns=["Statistique", name])
+    return pd.DataFrame([{
+        "Joueur": name,
+        "Parties jouées": joues,
+        "Victoires": victoires,
+        "Nuls": nuls,
+        "Défaites": defaites,
+        "Score total": victoires + nuls * 0.5,
+    }])
 
 
 # ---------------------------------------------------------------------------
-# 3. Stats par titre FIDE
+# 4. Stats par titre FIDE
 # ---------------------------------------------------------------------------
 
 def stats_par_titre() -> pd.DataFrame:
@@ -100,65 +121,3 @@ def stats_par_titre() -> pd.DataFrame:
     grouped = grouped.sort_values("Elo moy. Standard", ascending=False).reset_index(drop=True)
     grouped.index += 1
     return grouped
-
-# ---------------------------------------------------------------------------
-# 4. Statistiques globales des joueurs
-# ---------------------------------------------------------------------------
-
-def stats_globales_joueurs() -> pd.DataFrame:
-    """Renvoie les informations globales de tous les joueurs."""
-    _load()
-    
-    # On définit les colonnes qu'on veut afficher (selon ta liste de tâches)
-    # Note: On utilise les noms de colonnes anglais que ton équipe semble utiliser
-    colonnes_souhaitees = [
-        "name",             # nom
-        "sex",              # sexe (à vérifier si c'est 'sex' ou 'gender' dans vos données)
-        "birthday",         # date de naissance (à vérifier si c'est 'birthday' ou 'dob')
-        "federation",       # fédération
-        "fide_id",          # numéro fide
-        "fide_title",       # titre
-        "rating_standard",  # elo
-        "rating_blitz",     # elo blitz
-        "rating_rapid"      # elo rapide
-    ]
-    
-    # On filtre pour ne garder que les colonnes qui existent vraiment 
-    # (au cas où le nom des colonnes diffère un peu dans votre CSV)
-    colonnes_existantes = [col for col in colonnes_souhaitees if col in _players.columns]
-    
-    # On crée le tableau final
-    df = _players[colonnes_existantes].copy()
-    
-    # On renomme proprement en français pour l'affichage
-    labels_francais = {
-        "name": "Nom",
-        "sex": "Sexe",
-        "birthday": "Date de Naissance",
-        "federation": "Fédération",
-        "fide_id": "Numéro FIDE",
-        "fide_title": "Titre",
-        "rating_standard": "Elo Standard",
-        "rating_blitz": "Elo Blitz",
-        "rating_rapid": "Elo Rapide"
-    }
-    
-    return df.rename(columns=labels_francais)
-
-    # ---------------------------------------------------------------------------
-# 5. Tous les classements Elo
-# ---------------------------------------------------------------------------
-
-def classements_tous_elo(n: int = 10) -> dict:
-    """
-    Renvoie les 3 classements (Standard, Rapide, Blitz) d'un seul coup 
-    sous forme de dictionnaire.
-    """
-    # On utilise la fonction 'classement_elo' qui existe déjà plus haut !
-    classements = {
-        "Top Standard": classement_elo(mode="standard", n=n),
-        "Top Rapide": classement_elo(mode="rapid", n=n),
-        "Top Blitz": classement_elo(mode="blitz", n=n)
-    }
-    
-    return classements

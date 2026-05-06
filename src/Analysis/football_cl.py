@@ -83,9 +83,9 @@ def stats_equipe(team_name: str) -> pd.DataFrame:
         "minutes_played": "Minutes jouées",
         "yellow": "Cartons jaunes", "red": "Cartons rouges",
     }
-    result = totaux.rename(labels).reset_index()
-    result.columns = ["Statistique", f"{club_label} (total saison)"]
-    return result
+    row = {"Équipe": club_label}
+    row.update({labels.get(k, k): v for k, v in totaux.items()})
+    return pd.DataFrame([row])
 
 
 # ---------------------------------------------------------------------------
@@ -119,9 +119,8 @@ def stats_joueur(player_name: str) -> pd.DataFrame:
     }
 
     existing = [c for c in cols if c in joueur.index]
-    result = joueur[existing].rename(labels).reset_index()
-    result.columns = ["Statistique", joueur["player_name"]]
-    return result
+    row = {labels.get(c, c): joueur[c] for c in existing}
+    return pd.DataFrame([row])
 
 
 # ---------------------------------------------------------------------------

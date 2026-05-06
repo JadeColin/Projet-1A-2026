@@ -14,6 +14,25 @@ from src.Model.sport import (
 
 
 # ── Configuration des stats par sport ────────────────────────────────────────
+#
+# Chaque sport possède :
+#   collectif : bool  — True → propose Équipe / Joueurs
+#   genre     : bool  — True → propose Hommes / Femmes en premier
+#
+# Pour un sport collectif sans genre :
+#   {"collectif": True, "genre": False, "equipe": [...], "joueurs": [...]}
+#
+# Pour un sport collectif avec genre :
+#   {"collectif": True, "genre": True,
+#    "hommes": {"equipe": [...], "joueurs": [...]},
+#    "femmes": {"equipe": [...], "joueurs": [...]}}
+#
+# Pour un sport individuel sans genre :
+#   {"collectif": False, "genre": False, "stats": [...]}
+#
+# Pour un sport individuel avec genre :
+#   {"collectif": False, "genre": True, "hommes": [...], "femmes": [...]}
+#
 
 
 def _make_sports_config() -> dict:
@@ -30,7 +49,9 @@ def _make_sports_config() -> dict:
 
     return {
         "Basketball": {
-            "stats": [
+            "collectif": True,
+            "genre": False,
+            "equipe": [
                 {
                     "label": "Classement équipes",
                     "fn": bk.classement_points,
@@ -51,6 +72,18 @@ def _make_sports_config() -> dict:
                         "options_fn": lambda: (bk._load(), bk._teams.sort_values("full_name")["full_name"].tolist())[1],
                     },
                 },
+            ],
+            "joueurs": [
+                {
+                    "label": "Fiche d'un joueur",
+                    "fn": bk.fiche_joueur_basketball,
+                    "inputs": [],
+                    "selector": {
+                        "key": "nom",
+                        "label": "Sélectionnez un joueur",
+                        "options_fn": lambda: (bk._load(), bk._players["full_name"].dropna().sort_values().tolist())[1],
+                    },
+                },
                 {
                     "label": "Roster d'une équipe",
                     "fn": bk.roster_equipe,
@@ -61,10 +94,12 @@ def _make_sports_config() -> dict:
                         "options_fn": lambda: (bk._load(), bk._teams.sort_values("full_name")["full_name"].tolist())[1],
                     },
                 },
-            ]
+            ],
         },
         "League of Legends": {
-            "stats": [
+            "collectif": True,
+            "genre": False,
+            "equipe": [
                 {
                     "label": "Classement EMEA",
                     "fn": lol.classement_points,
@@ -85,6 +120,18 @@ def _make_sports_config() -> dict:
                     "fn": lol.champions_picks_bans,
                     "inputs": [],
                 },
+            ],
+            "joueurs": [
+                {
+                    "label": "Fiche d'un joueur",
+                    "fn": lol.fiche_joueur_lol,
+                    "inputs": [],
+                    "selector": {
+                        "key": "nom",
+                        "label": "Sélectionnez un joueur",
+                        "options_fn": lambda: (lol._load(), lol._players["name"].dropna().sort_values().tolist())[1],
+                    },
+                },
                 {
                     "label": "Roster d'une équipe",
                     "fn": lol.roster_equipe,
@@ -95,18 +142,15 @@ def _make_sports_config() -> dict:
                         "options_fn": lambda: (lol._load(), lol._players["team"].dropna().sort_values().unique().tolist())[1],
                     },
                 },
-            ]
+            ],
         },
         "Football Champions L.": {
-            "stats": [
+            "collectif": True,
+            "genre": False,
+            "equipe": [
                 {
-                    "label": "Meilleurs buteurs",
-                    "fn": fcl.meilleurs_buteurs,
-                    "inputs": [],
-                },
-                {
-                    "label": "Meilleurs passeurs",
-                    "fn": fcl.meilleurs_passeurs,
+                    "label": "Bracket",
+                    "fn": fcl.bracket,
                     "inputs": [],
                 },
                 {
@@ -119,6 +163,28 @@ def _make_sports_config() -> dict:
                         "options_fn": lambda: (fcl._load(), fcl._players["club"].dropna().sort_values().unique().tolist())[1],
                     },
                 },
+            ],
+            "joueurs": [
+                {
+                    "label": "Fiche d'un joueur",
+                    "fn": fcl.fiche_joueur_fcl,
+                    "inputs": [],
+                    "selector": {
+                        "key": "nom",
+                        "label": "Sélectionnez un joueur",
+                        "options_fn": lambda: (fcl._load(), fcl._players["player_name"].dropna().sort_values().tolist())[1],
+                    },
+                },
+                {
+                    "label": "Meilleurs buteurs",
+                    "fn": fcl.meilleurs_buteurs,
+                    "inputs": [],
+                },
+                {
+                    "label": "Meilleurs passeurs",
+                    "fn": fcl.meilleurs_passeurs,
+                    "inputs": [],
+                },
                 {
                     "label": "Roster d'un club",
                     "fn": lambda club: fcl.liste_joueurs(club=club),
@@ -129,27 +195,29 @@ def _make_sports_config() -> dict:
                         "options_fn": lambda: (fcl._load(), fcl._players["club"].dropna().sort_values().unique().tolist())[1],
                     },
                 },
-                {
-                    "label": "Bracket",
-                    "fn": fcl.bracket,
-                    "inputs": [],
-                },
-            ]
+            ],
         },
         "Tennis": {
-            "stats": [
+            "collectif": False,
+            "genre": True,
+            "hommes": [
                 {
                     "label": "Classement ATP (victoires)",
                     "fn": lambda: tn.classement_victoires("ATP"),
                     "inputs": [],
                 },
                 {
-                    "label": "Classement WTA (victoires)",
-                    "fn": lambda: tn.classement_victoires("WTA"),
+                    "label": "Fiche d'un joueur",
+                    "fn": lambda nom: tn.fiche_joueur_tennis(nom, "ATP"),
                     "inputs": [],
+                    "selector": {
+                        "key": "nom",
+                        "label": "Sélectionnez un joueur",
+                        "options_fn": lambda: (tn._load(), tn._atp_players["full_name"].dropna().sort_values().tolist())[1],
+                    },
                 },
                 {
-                    "label": "Stats d'un joueur ATP",
+                    "label": "Stats d'un joueur",
                     "fn": lambda player_name: tn.stats_joueur(player_name, "ATP"),
                     "inputs": [],
                     "selector": {
@@ -159,7 +227,34 @@ def _make_sports_config() -> dict:
                     },
                 },
                 {
-                    "label": "Stats d'une joueuse WTA",
+                    "label": "Bracket (Grand Chelem)",
+                    "fn": lambda tourney_name: tn.bracket(tourney_name, "ATP"),
+                    "inputs": [],
+                    "selector": {
+                        "key": "tourney_name",
+                        "label": "Sélectionnez un tournoi",
+                        "options_fn": lambda: (tn._load(), sorted(tn._atp_matches[tn._atp_matches["tourney_level"] == "G"]["tourney_name"].unique().tolist()))[1],
+                    },
+                },
+            ],
+            "femmes": [
+                {
+                    "label": "Classement WTA (victoires)",
+                    "fn": lambda: tn.classement_victoires("WTA"),
+                    "inputs": [],
+                },
+                {
+                    "label": "Fiche d'une joueuse",
+                    "fn": lambda nom: tn.fiche_joueur_tennis(nom, "WTA"),
+                    "inputs": [],
+                    "selector": {
+                        "key": "nom",
+                        "label": "Sélectionnez une joueuse",
+                        "options_fn": lambda: (tn._load(), tn._wta_players["full_name"].dropna().sort_values().tolist())[1],
+                    },
+                },
+                {
+                    "label": "Stats d'une joueuse",
                     "fn": lambda player_name: tn.stats_joueur(player_name, "WTA"),
                     "inputs": [],
                     "selector": {
@@ -169,17 +264,7 @@ def _make_sports_config() -> dict:
                     },
                 },
                 {
-                    "label": "Bracket ATP (Grand Chelem)",
-                    "fn": lambda tourney_name: tn.bracket(tourney_name, "ATP"),
-                    "inputs": [],
-                    "selector": {
-                        "key": "tourney_name",
-                        "label": "Sélectionnez un tournoi",
-                        "options_fn": lambda: (tn._load(), sorted(tn._atp_matches[tn._atp_matches["tourney_level"] == "G"]["tourney_name"].unique().tolist()))[1],
-                    },
-                },
-                {
-                    "label": "Bracket WTA (Grand Chelem)",
+                    "label": "Bracket (Grand Chelem)",
                     "fn": lambda tourney_name: tn.bracket(tourney_name, "WTA"),
                     "inputs": [],
                     "selector": {
@@ -188,9 +273,11 @@ def _make_sports_config() -> dict:
                         "options_fn": lambda: (tn._load(), sorted(tn._wta_matches[tn._wta_matches["tourney_level"] == "G"]["tourney_name"].unique().tolist()))[1],
                     },
                 },
-            ]
+            ],
         },
         "Échecs": {
+            "collectif": False,
+            "genre": False,
             "stats": [
                 {
                     "label": "Classement Elo Standard",
@@ -208,6 +295,16 @@ def _make_sports_config() -> dict:
                     "inputs": [],
                 },
                 {
+                    "label": "Fiche d'un joueur",
+                    "fn": ch.fiche_joueur_chess,
+                    "inputs": [],
+                    "selector": {
+                        "key": "nom",
+                        "label": "Sélectionnez un joueur",
+                        "options_fn": lambda: (ch._load(), ch._players["name"].dropna().sort_values().tolist())[1],
+                    },
+                },
+                {
                     "label": "Bilan d'un joueur",
                     "fn": ch.bilan_joueur,
                     "inputs": [],
@@ -222,64 +319,98 @@ def _make_sports_config() -> dict:
                     "fn": ch.stats_par_titre,
                     "inputs": [],
                 },
-            ]
+            ],
         },
         "Volleyball": {
-            "stats": [
-                {
-                    "label": "Classement Hommes",
-                    "fn": lambda: vb.classement("hommes"),
-                    "inputs": [],
-                },
-                {
-                    "label": "Classement Femmes",
-                    "fn": lambda: vb.classement("femmes"),
-                    "inputs": [],
-                },
-                {
-                    "label": "Bilan équipe Hommes",
-                    "fn": lambda team_code: vb.bilan_equipe(team_code, "hommes"),
-                    "inputs": [],
-                    "selector": {
-                        "key": "team_code",
-                        "label": "Sélectionnez un pays",
-                        "options_fn": lambda: (vb._load(), sorted(set(vb._matches_men["country_code_1"].dropna().tolist() + vb._matches_men["country_code_2"].dropna().tolist())))[1],
+            "collectif": True,
+            "genre": True,
+            "hommes": {
+                "equipe": [
+                    {
+                        "label": "Classement",
+                        "fn": lambda: vb.classement("hommes"),
+                        "inputs": [],
                     },
-                },
-                {
-                    "label": "Bilan équipe Femmes",
-                    "fn": lambda team_code: vb.bilan_equipe(team_code, "femmes"),
-                    "inputs": [],
-                    "selector": {
-                        "key": "team_code",
-                        "label": "Sélectionnez un pays",
-                        "options_fn": lambda: (vb._load(), sorted(set(vb._matches_women["country_code_1"].dropna().tolist() + vb._matches_women["country_code_2"].dropna().tolist())))[1],
+                    {
+                        "label": "Bilan d'une équipe",
+                        "fn": lambda team_code: vb.bilan_equipe(team_code, "hommes"),
+                        "inputs": [],
+                        "selector": {
+                            "key": "team_code",
+                            "label": "Sélectionnez un pays",
+                            "options_fn": lambda: (vb._load(), sorted(set(vb._matches_men["country_code_1"].dropna().tolist() + vb._matches_men["country_code_2"].dropna().tolist())))[1],
+                        },
                     },
-                },
-                {
-                    "label": "Joueurs d'un pays (H)",
-                    "fn": lambda country_code: vb.liste_joueurs(genre="hommes", equipe=country_code),
-                    "inputs": [],
-                    "selector": {
-                        "key": "country_code",
-                        "label": "Sélectionnez un pays",
-                        "options_fn": lambda: (vb._load(), vb._players_men["country_code"].dropna().sort_values().unique().tolist())[1],
+                ],
+                "joueurs": [
+                    {
+                        "label": "Fiche d'un joueur",
+                        "fn": lambda nom: vb.fiche_joueur_volleyball(nom, "hommes"),
+                        "inputs": [],
+                        "selector": {
+                            "key": "nom",
+                            "label": "Sélectionnez un joueur",
+                            "options_fn": lambda: (vb._load(), vb._players_men["name"].dropna().sort_values().tolist())[1],
+                        },
                     },
-                },
-                {
-                    "label": "Joueuses d'un pays (F)",
-                    "fn": lambda country_code: vb.liste_joueurs(genre="femmes", equipe=country_code),
-                    "inputs": [],
-                    "selector": {
-                        "key": "country_code",
-                        "label": "Sélectionnez un pays",
-                        "options_fn": lambda: (vb._load(), vb._players_women["country_code"].dropna().sort_values().unique().tolist())[1],
+                    {
+                        "label": "Joueurs d'un pays",
+                        "fn": lambda country_code: vb.liste_joueurs(genre="hommes", equipe=country_code),
+                        "inputs": [],
+                        "selector": {
+                            "key": "country_code",
+                            "label": "Sélectionnez un pays",
+                            "options_fn": lambda: (vb._load(), vb._players_men["country_code"].dropna().sort_values().unique().tolist())[1],
+                        },
                     },
-                },
-            ]
+                ],
+            },
+            "femmes": {
+                "equipe": [
+                    {
+                        "label": "Classement",
+                        "fn": lambda: vb.classement("femmes"),
+                        "inputs": [],
+                    },
+                    {
+                        "label": "Bilan d'une équipe",
+                        "fn": lambda team_code: vb.bilan_equipe(team_code, "femmes"),
+                        "inputs": [],
+                        "selector": {
+                            "key": "team_code",
+                            "label": "Sélectionnez un pays",
+                            "options_fn": lambda: (vb._load(), sorted(set(vb._matches_women["country_code_1"].dropna().tolist() + vb._matches_women["country_code_2"].dropna().tolist())))[1],
+                        },
+                    },
+                ],
+                "joueurs": [
+                    {
+                        "label": "Fiche d'une joueuse",
+                        "fn": lambda nom: vb.fiche_joueur_volleyball(nom, "femmes"),
+                        "inputs": [],
+                        "selector": {
+                            "key": "nom",
+                            "label": "Sélectionnez une joueuse",
+                            "options_fn": lambda: (vb._load(), vb._players_women["name"].dropna().sort_values().tolist())[1],
+                        },
+                    },
+                    {
+                        "label": "Joueuses d'un pays",
+                        "fn": lambda country_code: vb.liste_joueurs(genre="femmes", equipe=country_code),
+                        "inputs": [],
+                        "selector": {
+                            "key": "country_code",
+                            "label": "Sélectionnez un pays",
+                            "options_fn": lambda: (vb._load(), vb._players_women["country_code"].dropna().sort_values().unique().tolist())[1],
+                        },
+                    },
+                ],
+            },
         },
         "CS2": {
-            "stats": [
+            "collectif": True,
+            "genre": False,
+            "equipe": [
                 {
                     "label": "Classement stages",
                     "fn": cs2.classement_stages,
@@ -300,6 +431,18 @@ def _make_sports_config() -> dict:
                         "options_fn": lambda: (cs2._load(), cs2._players["team"].dropna().sort_values().unique().tolist())[1],
                     },
                 },
+            ],
+            "joueurs": [
+                {
+                    "label": "Fiche d'un joueur",
+                    "fn": cs2.fiche_joueur_cs2,
+                    "inputs": [],
+                    "selector": {
+                        "key": "nom",
+                        "label": "Sélectionnez un joueur",
+                        "options_fn": lambda: (cs2._load(), cs2._players["name"].dropna().sort_values().tolist())[1],
+                    },
+                },
                 {
                     "label": "Roster d'une équipe",
                     "fn": cs2.roster_equipe,
@@ -310,13 +453,15 @@ def _make_sports_config() -> dict:
                         "options_fn": lambda: (cs2._load(), cs2._players["team"].dropna().sort_values().unique().tolist())[1],
                     },
                 },
-            ]
+            ],
         },
         "StarCraft II": {
+            "collectif": False,
+            "genre": False,
             "stats": [
                 {
                     "label": "Fiche d'un joueur",
-                    "fn": lambda nom: sc2.fiche_joueur_sc2(nom),
+                    "fn": sc2.fiche_joueur_sc2,
                     "inputs": [],
                     "selector": {
                         "key": "nom",
@@ -324,13 +469,35 @@ def _make_sports_config() -> dict:
                         "options_fn": lambda: (sc2._load(), sc2._players["name"].dropna().sort_values().tolist())[1],
                     },
                 },
-            ]
+                {
+                    "label": "Bilan d'un joueur",
+                    "fn": sc2.bilan_joueur_sc2,
+                    "inputs": [],
+                    "selector": {
+                        "key": "nom",
+                        "label": "Sélectionnez un joueur",
+                        "options_fn": lambda: (sc2._load(), sc2._players["name"].dropna().sort_values().tolist())[1],
+                    },
+                },
+            ],
         },
         "Badminton": {
+            "collectif": False,
+            "genre": False,
             "stats": [
                 {
                     "label": "Fiche d'un joueur",
-                    "fn": lambda nom: bad.fiche_joueur_badminton(nom),
+                    "fn": bad.fiche_joueur_badminton,
+                    "inputs": [],
+                    "selector": {
+                        "key": "nom",
+                        "label": "Sélectionnez un joueur",
+                        "options_fn": lambda: (bad._load(), bad._players["name"].dropna().sort_values().tolist())[1],
+                    },
+                },
+                {
+                    "label": "Bilan d'un joueur",
+                    "fn": bad.bilan_joueur_badminton,
                     "inputs": [],
                     "selector": {
                         "key": "nom",
@@ -348,7 +515,7 @@ def _make_sports_config() -> dict:
                         "options_fn": lambda: (bad._load(), sorted(bad._matches[bad._matches["round"] == "Final"]["tournament"].dropna().unique().tolist()))[1],
                     },
                 },
-            ]
+            ],
         },
     }
 
@@ -538,25 +705,98 @@ class CLI:
         if choix in _MAP:
             cle, val = _MAP[choix]
             self._filters[cle] = val
-            # Rester sur la page pour permettre de combiner plusieurs filtres
         else:
             print("  Commande non reconnue.")
         return None
 
-    # ── Page : sport ──────────────────────────────────────────────────────────
+    # ── Page : sport (routeur) ────────────────────────────────────────────────
 
     def _make_page_sport(self, sport):
         config = self._config[sport.nom]
+        collectif = config.get("collectif", False)
+        genre = config.get("genre", False)
+
+        if genre:
+            return self._make_page_genre(sport.nom, config)
+        elif collectif:
+            return self._make_page_cat(sport.nom, config["equipe"], config["joueurs"])
+        else:
+            return self._make_page_stats(sport.nom, config["stats"])
+
+    # ── Page : sélection du genre ─────────────────────────────────────────────
+
+    def _make_page_genre(self, titre, config):
+        collectif = config.get("collectif", False)
 
         def page():
-            _titre(sport.nom)
-            stats = config["stats"]
+            _titre(titre)
+            _option(1, "Hommes")
+            _option(2, "Femmes")
+            _nav(peut_avancer=bool(self._fwd))
+
+            choix = _lire()
+            if choix == "q":
+                return "quit"
+            if choix == "-":
+                return "back"
+            if choix == "+":
+                return "forward"
+            if choix == "1":
+                genre_data = config["hommes"]
+                label_genre = "Hommes"
+            elif choix == "2":
+                genre_data = config["femmes"]
+                label_genre = "Femmes"
+            else:
+                print("  Commande non reconnue.")
+                return None
+
+            if collectif:
+                return self._make_page_cat(
+                    f"{titre} — {label_genre}",
+                    genre_data["equipe"],
+                    genre_data["joueurs"],
+                )
+            else:
+                return self._make_page_stats(f"{titre} — {label_genre}", genre_data)
+
+        return page
+
+    # ── Page : sélection Équipe / Joueurs ─────────────────────────────────────
+
+    def _make_page_cat(self, titre, stats_equipe, stats_joueurs):
+        def page():
+            _titre(titre)
+            _option(1, "Équipe")
+            _option(2, "Joueurs")
+            _nav(peut_avancer=bool(self._fwd))
+
+            choix = _lire()
+            if choix == "q":
+                return "quit"
+            if choix == "-":
+                return "back"
+            if choix == "+":
+                return "forward"
+            if choix == "1":
+                return self._make_page_stats(f"{titre} — Équipe", stats_equipe)
+            if choix == "2":
+                return self._make_page_stats(f"{titre} — Joueurs", stats_joueurs)
+            print("  Commande non reconnue.")
+            return None
+
+        return page
+
+    # ── Page : liste des fonctionnalités ──────────────────────────────────────
+
+    def _make_page_stats(self, titre, stats):
+        def page():
+            _titre(titre)
             for i, stat in enumerate(stats, 1):
                 _option(i, stat["label"])
             _nav(peut_avancer=bool(self._fwd))
 
             choix = _lire()
-
             if choix == "q":
                 return "quit"
             if choix == "-":
@@ -574,7 +814,7 @@ class CLI:
 
         return page
 
-    # ── Page : stat ───────────────────────────────────────────────────────────
+    # ── Page : exécution d'une stat ───────────────────────────────────────────
 
     def _make_page_stat(self, stat):
         def page():

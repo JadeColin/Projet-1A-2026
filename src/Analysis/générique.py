@@ -681,18 +681,19 @@ def fiche_joueur(
                 except Exception:
                     pass
 
-    # Construction du tableau Statistique | Valeur
+    # Construction du tableau large : 1 ligne = 1 joueur, 1 colonne = 1 variable
     labels = col_labels or {}
-    rows = []
+    data = {}
     for col in joueur.index:
         label = labels.get(col, col)
         valeur = joueur[col]
         if pd.isna(valeur) if not isinstance(valeur, str) else False:
             valeur = "N/A"
-        rows.append((label, valeur))
+        data[label] = valeur
 
-    result = pd.DataFrame(rows, columns=["Statistique", nom_label])
-    result.index += 1
+    result = pd.DataFrame([data])
+    result.index = pd.Index([nom_label])
+    result.index.name = None
     return result
 
 

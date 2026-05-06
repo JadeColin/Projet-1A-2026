@@ -114,14 +114,14 @@ def bilan_equipe(team_code: str, genre: str = "hommes") -> pd.DataFrame:
         + team_matches.loc[team_matches["country_code_2"] == code, "set_country_1"].sum()
     )
 
-    rows = [
-        ("Matchs joués", len(team_matches)),
-        ("Victoires", victoires),
-        ("Défaites", defaites),
-        ("Sets gagnés", int(sets_gagnes)),
-        ("Sets perdus", int(sets_perdus)),
-    ]
-    return pd.DataFrame(rows, columns=["Statistique", team_name])
+    return pd.DataFrame([{
+        "Équipe": team_name,
+        "Matchs joués": len(team_matches),
+        "Victoires": victoires,
+        "Défaites": defaites,
+        "Sets gagnés": int(sets_gagnes),
+        "Sets perdus": int(sets_perdus),
+    }])
 
 
 # ---------------------------------------------------------------------------

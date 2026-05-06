@@ -56,7 +56,46 @@ def fiche_joueur_badminton(nom: str) -> pd.DataFrame:
 
 
 # ---------------------------------------------------------------------------
-# 2. Données agenda
+# 2. Bilan victoires/défaites d'un joueur
+# ---------------------------------------------------------------------------
+
+def bilan_joueur_badminton(nom: str) -> pd.DataFrame:
+    """Bilan victoires/défaites d'un joueur de badminton sur la saison."""
+    _load()
+
+    mask = _players["name"].str.contains(nom, case=False, na=False)
+    matched = _players[mask]
+    if matched.empty:
+        raise ValueError(f"Aucun joueur trouvé pour : '{nom}'")
+
+    name = matched.iloc[0]["name"]
+
+    as_p1 = _matches[_matches["player_1"] == name]
+    as_p2 = _matches[_matches["player_2"] == name]
+
+    scores_p1 = as_p1.apply(_compter_jeux, axis=1)
+    wins_as_p1 = sum(1 for s in scores_p1 if s[0] > s[1])
+    losses_as_p1 = sum(1 for s in scores_p1 if s[0] < s[1])
+
+    scores_p2 = as_p2.apply(_compter_jeux, axis=1)
+    wins_as_p2 = sum(1 for s in scores_p2 if s[1] > s[0])
+    losses_as_p2 = sum(1 for s in scores_p2 if s[1] < s[0])
+
+    victoires = wins_as_p1 + wins_as_p2
+    defaites = losses_as_p1 + losses_as_p2
+    joues = victoires + defaites
+
+    rows = [
+        ("Matchs joués", joues),
+        ("Victoires", victoires),
+        ("Défaites", defaites),
+        ("% Victoires", round(victoires / max(joues, 1) * 100, 1)),
+    ]
+    return pd.DataFrame(rows, columns=["Statistique", name])
+
+
+# ---------------------------------------------------------------------------
+# 3. Données agenda
 # ---------------------------------------------------------------------------
 
 _BRACKET_ROUNDS = ["Round of 32", "Round of 16", "Quarter final", "Semi final", "Final"]
