@@ -1,43 +1,22 @@
 """
-Application de statistiques sportives — interface Tkinter.
+Application de statistiques sportives — interface en ligne de commande.
 
 Lancement :
     python -m Projet_Mathias.app.main
-    # ou depuis le dossier Projet-1A-2026 :
-    python -m Projet_Mathias.app.main
 """
 
-import tkinter as tk
-from tkinter import ttk, messagebox
-import threading
-
-from Projet_Mathias.classes.sport import SPORTS, TypeSport, CategorieSport
-
-# ── Palette de couleurs ──────────────────────────────────────────────────────
-BG_DARK = "#1e1e2e"
-BG_PANEL = "#2a2a3e"
-BG_CARD = "#313145"
-FG_TEXT = "#cdd6f4"
-FG_MUTED = "#6c7086"
-ACCENT = "#89b4fa"
-ACCENT2 = "#cba6f7"
-SUCCESS = "#a6e3a1"
-WARNING = "#f9e2af"
-DANGER = "#f38ba8"
-
-SPORT_COLORS = {s.nom: s.couleur for s in SPORTS}
-
-FONT_TITLE = ("Segoe UI", 16, "bold")
-FONT_SPORT = ("Segoe UI", 11, "bold")
-FONT_BTN = ("Segoe UI", 10)
-FONT_BODY = ("Segoe UI", 10)
-FONT_SMALL = ("Segoe UI", 9)
+from Projet_Mathias.classes.sport import (
+    TypeSport,
+    CategorieSport,
+    TypeCompetition,
+    filtrer,
+)
 
 
-# ── Configuration des sports ─────────────────────────────────────────────────
+# ── Configuration des stats par sport ────────────────────────────────────────
 
 
-def _make_sports_config():
+def _make_sports_config() -> dict:
     """Retourne la configuration complète de chaque sport."""
     import Projet_Mathias.app.sports.basketball as bk
     import Projet_Mathias.app.sports.lol as lol
@@ -133,12 +112,12 @@ def _make_sports_config():
                 },
                 {
                     "label": "Stats d'un joueur ATP",
-                    "fn": lambda name: tn.stats_joueur(name, "ATP"),
+                    "fn": lambda player_name: tn.stats_joueur(player_name, "ATP"),
                     "inputs": [{"key": "player_name", "label": "Nom joueur"}],
                 },
                 {
                     "label": "Stats d'une joueuse WTA",
-                    "fn": lambda name: tn.stats_joueur(name, "WTA"),
+                    "fn": lambda player_name: tn.stats_joueur(player_name, "WTA"),
                     "inputs": [{"key": "player_name", "label": "Nom joueuse"}],
                 },
                 {
@@ -206,501 +185,294 @@ def _make_sports_config():
                 },
                 {
                     "label": "Bilan équipe Hommes",
-                    "fn": lambda code: vb.bilan_equipe(code, "hommes"),
+                    "fn": lambda team_code: vb.bilan_equipe(team_code, "hommes"),
                     "inputs": [{"key": "team_code", "label": "Code pays (ex : FRA)"}],
                 },
                 {
                     "label": "Bilan équipe Femmes",
-                    "fn": lambda code: vb.bilan_equipe(code, "femmes"),
+                    "fn": lambda team_code: vb.bilan_equipe(team_code, "femmes"),
                     "inputs": [{"key": "team_code", "label": "Code pays (ex : FRA)"}],
                 },
                 {
                     "label": "Joueurs d'un pays (H)",
-                    "fn": lambda code: vb.stats_joueurs_par_pays(code, "hommes"),
-                    "inputs": [
-                        {"key": "country_code", "label": "Code pays (ex : FRA)"}
-                    ],
+                    "fn": lambda country_code: vb.stats_joueurs_par_pays(country_code, "hommes"),
+                    "inputs": [{"key": "country_code", "label": "Code pays (ex : FRA)"}],
                 },
                 {
                     "label": "Joueuses d'un pays (F)",
-                    "fn": lambda code: vb.stats_joueurs_par_pays(code, "femmes"),
-                    "inputs": [
-                        {"key": "country_code", "label": "Code pays (ex : FRA)"}
-                    ],
+                    "fn": lambda country_code: vb.stats_joueurs_par_pays(country_code, "femmes"),
+                    "inputs": [{"key": "country_code", "label": "Code pays (ex : FRA)"}],
                 },
             ]
         },
     }
 
 
-# ── Widgets utilitaires ───────────────────────────────────────────────────────
+# ── Affichage ─────────────────────────────────────────────────────────────────
+
+_SEP = "─" * 54
 
 
-class ScrollableTreeview(tk.Frame):
-    """Treeview avec scrollbars horizontal et vertical."""
-
-    def __init__(self, parent, **kwargs):
-        super().__init__(parent, bg=BG_DARK)
-        self.tree = ttk.Treeview(self, **kwargs)
-        vsb = ttk.Scrollbar(self, orient="vertical", command=self.tree.yview)
-        hsb = ttk.Scrollbar(self, orient="horizontal", command=self.tree.xview)
-        self.tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
-
-        self.tree.grid(row=0, column=0, sticky="nsew")
-        vsb.grid(row=0, column=1, sticky="ns")
-        hsb.grid(row=1, column=0, sticky="ew")
-        self.rowconfigure(0, weight=1)
-        self.columnconfigure(0, weight=1)
-
-    def load_dataframe(self, df):
-        """Charge un DataFrame pandas dans le Treeview."""
-        # Vider
-        self.tree.delete(*self.tree.get_children())
-        self.tree["columns"] = list(df.columns)
-        self.tree["show"] = "headings"
-
-        for col in df.columns:
-            self.tree.heading(col, text=str(col))
-            width = max(len(str(col)) * 9, 80)
-            self.tree.column(col, width=width, anchor="center")
-
-        for _, row in df.iterrows():
-            values = [str(v) if str(v) != "nan" else "" for v in row]
-            self.tree.insert("", "end", values=values)
+def _titre(texte: str) -> None:
+    print(f"\n{_SEP}")
+    print(f"  {texte}")
+    print(_SEP)
 
 
-# ── Application principale ───────────────────────────────────────────────────
+def _option(num, texte: str) -> None:
+    print(f"  [{num}]  {texte}")
 
 
-class App(tk.Tk):
+def _nav(peut_reculer: bool = True, peut_avancer: bool = False) -> None:
+    parts = []
+    if peut_reculer:
+        parts.append("[-] Retour")
+    if peut_avancer:
+        parts.append("[+] Suivant")
+    parts.append("[q] Quitter")
+    print(f"\n  {' | '.join(parts)}")
+
+
+def _lire(prompt: str = "Votre choix : ") -> str:
+    return input(f"\n  {prompt}").strip()
+
+
+def _afficher_resultat(result) -> None:
+    """Affiche un résultat : DataFrame retourné ou impression directe déjà faite."""
+    import pandas as pd
+    if isinstance(result, pd.DataFrame):
+        if result.empty:
+            print("  (aucun résultat)")
+        else:
+            print(result.to_string(index=False))
+
+
+# ── Moteur de navigation ──────────────────────────────────────────────────────
+#
+# Chaque "page" est un callable() → str | callable | None
+#   callable  → naviguer vers cette nouvelle page
+#   'back'    → reculer dans l'historique
+#   'forward' → avancer dans l'historique
+#   'quit'    → quitter l'application
+#   None      → rester sur la page (réafficher)
+#
+
+
+class CLI:
     def __init__(self):
-        super().__init__()
-        self.title("Stats Sports")
-        self.geometry("1200x750")
-        self.minsize(900, 600)
-        self.configure(bg=BG_DARK)
+        self._back: list = []
+        self._fwd: list = []
+        self._filters: dict = {
+            "type_sport": None,        # TypeSport | None
+            "categorie": None,         # CategorieSport | None
+            "type_competition": None,  # TypeCompetition | None
+        }
+        self._config: dict | None = None
 
-        self._sports_config = None
-        self._current_sport = None
-        self._current_stat = None
+    # ── Boucle principale ─────────────────────────────────────────────────────
 
-        self._apply_styles()
-        self._build_ui()
-
-    # ── Styles ttk ────────────────────────────────────────────────────────────
-
-    def _apply_styles(self):
-        style = ttk.Style(self)
-        style.theme_use("clam")
-
-        style.configure(
-            "Treeview",
-            background=BG_CARD,
-            foreground=FG_TEXT,
-            fieldbackground=BG_CARD,
-            rowheight=24,
-            font=FONT_SMALL,
-        )
-        style.configure(
-            "Treeview.Heading",
-            background=BG_PANEL,
-            foreground=ACCENT,
-            font=("Segoe UI", 9, "bold"),
-        )
-        style.map("Treeview", background=[("selected", ACCENT)])
-        style.configure("Vertical.TScrollbar", background=BG_PANEL, troughcolor=BG_DARK)
-        style.configure(
-            "Horizontal.TScrollbar", background=BG_PANEL, troughcolor=BG_DARK
-        )
-
-    # ── Construction de l'interface ───────────────────────────────────────────
-
-    def _build_ui(self):
-        # Barre de titre
-        header = tk.Frame(self, bg=BG_PANEL, height=50)
-        header.pack(fill="x", side="top")
-        tk.Label(
-            header,
-            text="  Stats Sports",
-            bg=BG_PANEL,
-            fg=ACCENT,
-            font=FONT_TITLE,
-        ).pack(side="left", padx=16, pady=10)
-
-        # Corps principal : sidebar + contenu
-        body = tk.Frame(self, bg=BG_DARK)
-        body.pack(fill="both", expand=True)
-
-        # Sidebar sports
-        self._sidebar = tk.Frame(body, bg=BG_PANEL, width=200)
-        self._sidebar.pack(fill="y", side="left")
-        self._sidebar.pack_propagate(False)
-
-        # ── Filtre individuel / collectif ─────────────────────────────────────
-        tk.Label(
-            self._sidebar,
-            text="Format",
-            bg=BG_PANEL,
-            fg=FG_MUTED,
-            font=("Segoe UI", 9, "bold"),
-        ).pack(pady=(16, 4), padx=12, anchor="w")
-
-        self._filtre_type = None       # None = tous
-        self._filtre_categorie = None  # None = tous
-
-        filtre_type_frame = tk.Frame(self._sidebar, bg=BG_PANEL)
-        filtre_type_frame.pack(fill="x", padx=8, pady=(0, 6))
-
-        self._filtre_type_buttons = {}
-        for label, valeur in [
-            ("Tous",        None),
-            ("Collectif",   TypeSport.COLLECTIF),
-            ("Individuel",  TypeSport.INDIVIDUEL),
-        ]:
-            btn = tk.Button(
-                filtre_type_frame,
-                text=label,
-                bg=ACCENT if valeur is None else BG_CARD,
-                fg=BG_DARK if valeur is None else FG_MUTED,
-                font=("Segoe UI", 8, "bold"),
-                relief="flat",
-                padx=6,
-                pady=3,
-                cursor="hand2",
-                command=lambda v=valeur: self._appliquer_filtre_type(v),
-            )
-            btn.pack(side="left", padx=2)
-            self._filtre_type_buttons[label] = btn
-
-        # ── Filtre sport / e-sport ────────────────────────────────────────────
-        tk.Label(
-            self._sidebar,
-            text="Discipline",
-            bg=BG_PANEL,
-            fg=FG_MUTED,
-            font=("Segoe UI", 9, "bold"),
-        ).pack(pady=(4, 4), padx=12, anchor="w")
-
-        filtre_cat_frame = tk.Frame(self._sidebar, bg=BG_PANEL)
-        filtre_cat_frame.pack(fill="x", padx=8, pady=(0, 8))
-
-        self._filtre_cat_buttons = {}
-        for label, valeur in [
-            ("Tous",    None),
-            ("Sport",   CategorieSport.SPORT),
-            ("E-sport", CategorieSport.ESPORT),
-        ]:
-            btn = tk.Button(
-                filtre_cat_frame,
-                text=label,
-                bg=ACCENT if valeur is None else BG_CARD,
-                fg=BG_DARK if valeur is None else FG_MUTED,
-                font=("Segoe UI", 8, "bold"),
-                relief="flat",
-                padx=6,
-                pady=3,
-                cursor="hand2",
-                command=lambda v=valeur: self._appliquer_filtre_categorie(v),
-            )
-            btn.pack(side="left", padx=2)
-            self._filtre_cat_buttons[label] = btn
-
-        # ── Liste des sports ──────────────────────────────────────────────────
-        tk.Label(
-            self._sidebar,
-            text="Sports",
-            bg=BG_PANEL,
-            fg=FG_MUTED,
-            font=("Segoe UI", 9, "bold"),
-        ).pack(pady=(4, 4), padx=12, anchor="w")
-
-        self._sport_buttons = {}
-        for sport in SPORTS:
-            btn = tk.Button(
-                self._sidebar,
-                text=sport.nom,
-                bg=BG_PANEL,
-                fg=FG_TEXT,
-                font=FONT_SPORT,
-                relief="flat",
-                anchor="w",
-                padx=14,
-                activebackground=BG_CARD,
-                activeforeground=ACCENT,
-                cursor="hand2",
-                command=lambda s=sport.nom: self._select_sport(s),
-            )
-            btn.pack(fill="x", pady=1)
-            self._sport_buttons[sport.nom] = btn
-
-        # Zone de contenu
-        self._content = tk.Frame(body, bg=BG_DARK)
-        self._content.pack(fill="both", expand=True, padx=0)
-
-        self._show_welcome()
-
-    # ── Écran d'accueil ───────────────────────────────────────────────────────
-
-    def _show_welcome(self):
-        self._clear_content()
-        frame = tk.Frame(self._content, bg=BG_DARK)
-        frame.place(relx=0.5, rely=0.5, anchor="center")
-        tk.Label(
-            frame,
-            text="Bienvenue",
-            bg=BG_DARK,
-            fg=ACCENT,
-            font=("Segoe UI", 28, "bold"),
-        ).pack()
-        tk.Label(
-            frame,
-            text="Sélectionnez un sport dans la barre latérale\npour accéder aux statistiques.",
-            bg=BG_DARK,
-            fg=FG_MUTED,
-            font=("Segoe UI", 13),
-            justify="center",
-        ).pack(pady=12)
-
-    # ── Filtres ───────────────────────────────────────────────────────────────
-
-    def _appliquer_filtre_type(self, type_sport):
-        """Filtre par format : individuel / collectif / tous."""
-        self._filtre_type = type_sport
-        labels = {None: "Tous", TypeSport.COLLECTIF: "Collectif", TypeSport.INDIVIDUEL: "Individuel"}
-        for label, btn in self._filtre_type_buttons.items():
-            actif = (label == labels[type_sport])
-            btn.configure(bg=ACCENT if actif else BG_CARD, fg=BG_DARK if actif else FG_MUTED)
-        self._update_sport_visibility()
-
-    def _appliquer_filtre_categorie(self, categorie):
-        """Filtre par discipline : sport / e-sport / tous."""
-        self._filtre_categorie = categorie
-        labels = {None: "Tous", CategorieSport.SPORT: "Sport", CategorieSport.ESPORT: "E-sport"}
-        for label, btn in self._filtre_cat_buttons.items():
-            actif = (label == labels[categorie])
-            btn.configure(bg=ACCENT if actif else BG_CARD, fg=BG_DARK if actif else FG_MUTED)
-        self._update_sport_visibility()
-
-    def _update_sport_visibility(self):
-        """Affiche ou masque les boutons de sport selon les deux filtres actifs."""
-        from Projet_Mathias.classes.sport import get_sport
-        for sport in SPORTS:
-            btn = self._sport_buttons[sport.nom]
-            type_ok = (self._filtre_type is None) or (sport.type_sport == self._filtre_type)
-            cat_ok = (self._filtre_categorie is None) or (sport.categorie == self._filtre_categorie)
-            if type_ok and cat_ok:
-                btn.pack(fill="x", pady=1)
-            else:
-                btn.pack_forget()
-
-        # Si le sport sélectionné est maintenant masqué, revenir à l'accueil
-        if self._current_sport is not None:
-            sport_obj = get_sport(self._current_sport)
-            if sport_obj:
-                type_ok = (self._filtre_type is None) or (sport_obj.type_sport == self._filtre_type)
-                cat_ok = (
-                    self._filtre_categorie is None
-                    or sport_obj.categorie == self._filtre_categorie
-                )
-                if not (type_ok and cat_ok):
-                    self._current_sport = None
-                    self._current_stat = None
-                    for btn in self._sport_buttons.values():
-                        btn.configure(bg=BG_PANEL, fg=FG_TEXT)
-                    self._show_welcome()
-
-    # ── Sélection d'un sport ──────────────────────────────────────────────────
-
-    def _select_sport(self, sport: str):
-        # Mettre à jour l'apparence des boutons
-        for s, btn in self._sport_buttons.items():
-            color = SPORT_COLORS.get(s, ACCENT)
-            if s == sport:
-                btn.configure(bg=BG_CARD, fg=color)
-            else:
-                btn.configure(bg=BG_PANEL, fg=FG_TEXT)
-
-        self._current_sport = sport
-        self._current_stat = None
-
-        # Charger la config au premier accès
-        if self._sports_config is None:
-            self._sports_config = _make_sports_config()
-
-        self._build_sport_view(sport)
-
-    # ── Vue d'un sport ────────────────────────────────────────────────────────
-
-    def _build_sport_view(self, sport: str):
-        self._clear_content()
-        config = self._sports_config[sport]
-        color = SPORT_COLORS.get(sport, ACCENT)
-
-        # En-tête du sport
-        header = tk.Frame(self._content, bg=BG_PANEL)
-        header.pack(fill="x")
-        tk.Label(
-            header,
-            text=f"  {sport}",
-            bg=BG_PANEL,
-            fg=color,
-            font=FONT_TITLE,
-        ).pack(side="left", padx=16, pady=10)
-
-        # Barre de stats (boutons horizontaux)
-        stat_bar = tk.Frame(self._content, bg=BG_CARD)
-        stat_bar.pack(fill="x", pady=1)
-
-        self._stat_buttons = {}
-        for stat in config["stats"]:
-            btn = tk.Button(
-                stat_bar,
-                text=stat["label"],
-                bg=BG_CARD,
-                fg=FG_TEXT,
-                font=FONT_BTN,
-                relief="flat",
-                padx=10,
-                pady=8,
-                activebackground=BG_PANEL,
-                activeforeground=color,
-                cursor="hand2",
-                command=lambda s=stat: self._select_stat(s, color),
-            )
-            btn.pack(side="left", padx=2, pady=4)
-            self._stat_buttons[stat["label"]] = btn
-
-        # Zone de saisie (masquée par défaut)
-        self._input_frame = tk.Frame(self._content, bg=BG_DARK)
-        self._input_frame.pack(fill="x", padx=16, pady=6)
-
-        # Zone de résultats
-        result_frame = tk.Frame(self._content, bg=BG_DARK)
-        result_frame.pack(fill="both", expand=True, padx=8, pady=(0, 8))
-
-        self._table = ScrollableTreeview(result_frame)
-        self._table.pack(fill="both", expand=True)
-
-        # Label de statut
-        self._status_var = tk.StringVar(value="← Choisissez une statistique")
-        self._status_lbl = tk.Label(
-            self._content,
-            textvariable=self._status_var,
-            bg=BG_DARK,
-            fg=FG_MUTED,
-            font=FONT_SMALL,
-        )
-        self._status_lbl.pack(pady=4)
-
-    # ── Sélection d'une stat ──────────────────────────────────────────────────
-
-    def _select_stat(self, stat: dict, color: str):
-        # Mettre en valeur le bouton actif
-        for lbl, btn in self._stat_buttons.items():
-            if lbl == stat["label"]:
-                btn.configure(bg=BG_PANEL, fg=color)
-            else:
-                btn.configure(bg=BG_CARD, fg=FG_TEXT)
-
-        self._current_stat = stat
-        self._build_input_area(stat, color)
-
-        # Si aucune saisie requise, lancer directement
-        if not stat["inputs"]:
-            self._run_stat(stat, {})
-
-    # ── Zone de saisie dynamique ──────────────────────────────────────────────
-
-    def _build_input_area(self, stat: dict, color: str):
-        for w in self._input_frame.winfo_children():
-            w.destroy()
-
-        if not stat["inputs"]:
-            return
-
-        self._entries = {}
-        for inp in stat["inputs"]:
-            tk.Label(
-                self._input_frame,
-                text=inp["label"] + " :",
-                bg=BG_DARK,
-                fg=FG_TEXT,
-                font=FONT_BODY,
-            ).pack(side="left", padx=(0, 6))
-
-            entry = tk.Entry(
-                self._input_frame,
-                bg=BG_CARD,
-                fg=FG_TEXT,
-                font=FONT_BODY,
-                insertbackground=FG_TEXT,
-                relief="flat",
-                width=24,
-            )
-            entry.pack(side="left", padx=(0, 10))
-            entry.bind("<Return>", lambda e, s=stat: self._run_stat_from_ui(s))
-            self._entries[inp["key"]] = entry
-
-        tk.Button(
-            self._input_frame,
-            text="Rechercher",
-            bg=color,
-            fg=BG_DARK,
-            font=("Segoe UI", 10, "bold"),
-            relief="flat",
-            padx=12,
-            pady=4,
-            cursor="hand2",
-            command=lambda s=stat: self._run_stat_from_ui(s),
-        ).pack(side="left")
-
-    # ── Exécution d'une stat ──────────────────────────────────────────────────
-
-    def _run_stat_from_ui(self, stat: dict):
-        kwargs = {key: entry.get().strip() for key, entry in self._entries.items()}
-        if any(not v for v in kwargs.values()):
-            messagebox.showwarning(
-                "Saisie manquante", "Veuillez remplir tous les champs."
-            )
-            return
-        self._run_stat(stat, kwargs)
-
-    def _run_stat(self, stat: dict, kwargs: dict):
-        self._status_var.set("Chargement…")
-        self._table.load_dataframe(__import__("pandas").DataFrame())
-
-        def worker():
-            try:
-                df = stat["fn"](**kwargs)
-                self.after(0, lambda: self._display_result(df, stat["label"]))
-            except ValueError as err:
-                self.after(0, lambda msg=str(err): self._show_error(msg))
-            except Exception as err:
-                self.after(0, lambda msg=str(err): self._show_error(f"Erreur : {msg}"))
-
-        threading.Thread(target=worker, daemon=True).start()
-
-    def _display_result(self, df, label: str):
-        self._table.load_dataframe(df)
-        self._status_var.set(f"{label}  —  {len(df)} ligne(s)")
-
-    def _show_error(self, msg: str):
-        self._status_var.set("Erreur")
-        messagebox.showerror("Erreur", msg)
+    def run(self) -> None:
+        self._config = _make_sports_config()
+        current = self._page_accueil
+        while current is not None:
+            result = current()
+            if result == "quit":
+                print("\n  Au revoir !\n")
+                break
+            elif result == "back":
+                if self._back:
+                    self._fwd.append(current)
+                    current = self._back.pop()
+                else:
+                    print("  (déjà au début de la navigation)")
+            elif result == "forward":
+                if self._fwd:
+                    self._back.append(current)
+                    current = self._fwd.pop()
+                else:
+                    print("  (déjà à la fin de la navigation)")
+            elif callable(result):
+                self._back.append(current)
+                self._fwd.clear()
+                current = result
+            # None → rester sur la page courante (réafficher)
 
     # ── Utilitaires ───────────────────────────────────────────────────────────
 
-    def _clear_content(self):
-        for widget in self._content.winfo_children():
-            widget.destroy()
+    def _sports_visibles(self) -> list:
+        """Retourne les sports filtrés ET disponibles dans la config."""
+        sports = filtrer(
+            type_sport=self._filters["type_sport"],
+            categorie=self._filters["categorie"],
+            type_competition=self._filters["type_competition"],
+        )
+        return [s for s in sports if s.nom in self._config]
+
+    def _filtres_str(self) -> str:
+        vals = [str(v) for v in self._filters.values() if v is not None]
+        return ", ".join(vals) if vals else "Aucun"
+
+    # ── Page : accueil ────────────────────────────────────────────────────────
+
+    def _page_accueil(self):
+        sports = self._sports_visibles()
+        _titre("Stats Sports — Menu principal")
+        print(f"  Filtres actifs : {self._filtres_str()}")
+        print()
+        _option(0, "Filtres")
+        for i, sport in enumerate(sports, 1):
+            _option(i, sport.nom)
+        _nav(peut_reculer=False, peut_avancer=bool(self._fwd))
+
+        choix = _lire()
+
+        if choix == "q":
+            return "quit"
+        if choix == "+":
+            return "forward"
+        if choix == "0":
+            return self._page_filtres
+        if choix.isdigit():
+            idx = int(choix) - 1
+            if 0 <= idx < len(sports):
+                return self._make_page_sport(sports[idx])
+            print("  Numéro invalide.")
+        else:
+            print("  Commande non reconnue.")
+        return None
+
+    # ── Page : filtres ────────────────────────────────────────────────────────
+
+    def _page_filtres(self):
+        f = self._filters
+
+        def coche(condition: bool) -> str:
+            return " [✓]" if condition else ""
+
+        _titre("Filtres — logique ET (combinez librement)")
+
+        print("  Format :")
+        _option(1, f"Collectif{coche(f['type_sport'] == TypeSport.COLLECTIF)}")
+        _option(2, f"Individuel{coche(f['type_sport'] == TypeSport.INDIVIDUEL)}")
+        _option(3, "Réinitialiser format")
+
+        print("\n  Discipline :")
+        _option(4, f"Sport{coche(f['categorie'] == CategorieSport.SPORT)}")
+        _option(5, f"E-sport{coche(f['categorie'] == CategorieSport.ESPORT)}")
+        _option(6, "Réinitialiser discipline")
+
+        print("\n  Compétition :")
+        _option(7, f"Par points{coche(f['type_competition'] == TypeCompetition.POINTS)}")
+        _option(8, f"Éliminatoire{coche(f['type_competition'] == TypeCompetition.ELIMINATOIRE)}")
+        _option(9, f"Mixte{coche(f['type_competition'] == TypeCompetition.MIXTE)}")
+        _option(10, "Réinitialiser compétition")
+
+        _nav(peut_avancer=bool(self._fwd))
+
+        choix = _lire()
+
+        _MAP = {
+            "1":  ("type_sport",       TypeSport.COLLECTIF),
+            "2":  ("type_sport",       TypeSport.INDIVIDUEL),
+            "3":  ("type_sport",       None),
+            "4":  ("categorie",        CategorieSport.SPORT),
+            "5":  ("categorie",        CategorieSport.ESPORT),
+            "6":  ("categorie",        None),
+            "7":  ("type_competition", TypeCompetition.POINTS),
+            "8":  ("type_competition", TypeCompetition.ELIMINATOIRE),
+            "9":  ("type_competition", TypeCompetition.MIXTE),
+            "10": ("type_competition", None),
+        }
+
+        if choix == "q":
+            return "quit"
+        if choix == "-":
+            return "back"
+        if choix == "+":
+            return "forward"
+        if choix in _MAP:
+            cle, val = _MAP[choix]
+            self._filters[cle] = val
+            # Rester sur la page pour permettre de combiner plusieurs filtres
+        else:
+            print("  Commande non reconnue.")
+        return None
+
+    # ── Page : sport ──────────────────────────────────────────────────────────
+
+    def _make_page_sport(self, sport):
+        config = self._config[sport.nom]
+
+        def page():
+            _titre(sport.nom)
+            stats = config["stats"]
+            for i, stat in enumerate(stats, 1):
+                _option(i, stat["label"])
+            _nav(peut_avancer=bool(self._fwd))
+
+            choix = _lire()
+
+            if choix == "q":
+                return "quit"
+            if choix == "-":
+                return "back"
+            if choix == "+":
+                return "forward"
+            if choix.isdigit():
+                idx = int(choix) - 1
+                if 0 <= idx < len(stats):
+                    return self._make_page_stat(stats[idx])
+                print("  Numéro invalide.")
+            else:
+                print("  Commande non reconnue.")
+            return None
+
+        return page
+
+    # ── Page : stat ───────────────────────────────────────────────────────────
+
+    def _make_page_stat(self, stat):
+        def page():
+            _titre(stat["label"])
+
+            kwargs = {}
+            for inp in stat["inputs"]:
+                val = input(f"  {inp['label']} : ").strip()
+                if not val:
+                    print("  Saisie annulée.")
+                    return "back"
+                kwargs[inp["key"]] = val
+
+            print()
+            try:
+                result = stat["fn"](**kwargs)
+                _afficher_resultat(result)
+            except ValueError as e:
+                print(f"  Erreur : {e}")
+            except Exception as e:
+                print(f"  Erreur inattendue : {e}")
+
+            print(f"\n{_SEP}")
+            _nav(peut_avancer=bool(self._fwd))
+
+            choix = _lire()
+            if choix == "q":
+                return "quit"
+            if choix == "-":
+                return "back"
+            if choix == "+":
+                return "forward"
+            return None
+
+        return page
 
 
-# ── Point d'entrée ───────────────────────────────────────────────────────────
+# ── Point d'entrée ────────────────────────────────────────────────────────────
 
 
-def main():
-    app = App()
-    app.mainloop()
+def main() -> None:
+    cli = CLI()
+    cli.run()
 
 
 if __name__ == "__main__":
