@@ -80,8 +80,21 @@ def _make_sports_config() -> dict:
                     "inputs": [],
                     "selector": {
                         "key": "nom",
-                        "label": "Sélectionnez un joueur",
-                        "options_fn": lambda: (bk._load(), bk._players["full_name"].dropna().sort_values().tolist())[1],
+                        "label": "Sélectionnez un joueur (Basketball)",
+                        "options_df_fn": lambda: (
+                            bk._load(),
+                            bk._players[["full_name", "team_id", "birthdate"]].merge(
+                                bk._teams[["id", "full_name"]].rename(
+                                    columns={"id": "team_id", "full_name": "Équipe"}
+                                ),
+                                on="team_id", how="left",
+                            )[["full_name", "Équipe", "birthdate"]]
+                        )[1],
+                        "col_display": "full_name",
+                        "filters": [
+                            {"label": "Équipe",    "col": "Équipe",    "type": "category"},
+                            {"label": "Naissance", "col": "birthdate", "type": "year"},
+                        ],
                     },
                 },
                 {
@@ -128,8 +141,17 @@ def _make_sports_config() -> dict:
                     "inputs": [],
                     "selector": {
                         "key": "nom",
-                        "label": "Sélectionnez un joueur",
-                        "options_fn": lambda: (lol._load(), lol._players["name"].dropna().sort_values().tolist())[1],
+                        "label": "Sélectionnez un joueur (LoL)",
+                        "options_df_fn": lambda: (
+                            lol._load(),
+                            lol._players[["name", "team", "country_of_birth", "birthdate"]]
+                        )[1],
+                        "col_display": "name",
+                        "filters": [
+                            {"label": "Équipe",    "col": "team",             "type": "category"},
+                            {"label": "Pays",      "col": "country_of_birth", "type": "category"},
+                            {"label": "Naissance", "col": "birthdate",        "type": "year"},
+                        ],
                     },
                 },
                 {
@@ -171,8 +193,15 @@ def _make_sports_config() -> dict:
                     "inputs": [],
                     "selector": {
                         "key": "nom",
-                        "label": "Sélectionnez un joueur",
-                        "options_fn": lambda: (fcl._load(), fcl._players["player_name"].dropna().sort_values().tolist())[1],
+                        "label": "Sélectionnez un joueur (Football CL)",
+                        "options_df_fn": lambda: (
+                            fcl._load(),
+                            fcl._players[["player_name", "club"]]
+                        )[1],
+                        "col_display": "player_name",
+                        "filters": [
+                            {"label": "Club", "col": "club", "type": "category"},
+                        ],
                     },
                 },
                 {
@@ -212,8 +241,16 @@ def _make_sports_config() -> dict:
                     "inputs": [],
                     "selector": {
                         "key": "nom",
-                        "label": "Sélectionnez un joueur",
-                        "options_fn": lambda: (tn._load(), tn._atp_players["full_name"].dropna().sort_values().tolist())[1],
+                        "label": "Sélectionnez un joueur (Tennis ATP)",
+                        "options_df_fn": lambda: (
+                            tn._load(),
+                            tn._atp_players[["full_name", "ioc", "dob"]]
+                        )[1],
+                        "col_display": "full_name",
+                        "filters": [
+                            {"label": "Pays (IOC)", "col": "ioc", "type": "category"},
+                            {"label": "Naissance",  "col": "dob", "type": "year"},
+                        ],
                     },
                 },
                 {
@@ -222,8 +259,16 @@ def _make_sports_config() -> dict:
                     "inputs": [],
                     "selector": {
                         "key": "player_name",
-                        "label": "Sélectionnez un joueur",
-                        "options_fn": lambda: (tn._load(), tn._atp_players["full_name"].dropna().sort_values().tolist())[1],
+                        "label": "Sélectionnez un joueur (Tennis ATP)",
+                        "options_df_fn": lambda: (
+                            tn._load(),
+                            tn._atp_players[["full_name", "ioc", "dob"]]
+                        )[1],
+                        "col_display": "full_name",
+                        "filters": [
+                            {"label": "Pays (IOC)", "col": "ioc", "type": "category"},
+                            {"label": "Naissance",  "col": "dob", "type": "year"},
+                        ],
                     },
                 },
                 {
@@ -249,8 +294,16 @@ def _make_sports_config() -> dict:
                     "inputs": [],
                     "selector": {
                         "key": "nom",
-                        "label": "Sélectionnez une joueuse",
-                        "options_fn": lambda: (tn._load(), tn._wta_players["full_name"].dropna().sort_values().tolist())[1],
+                        "label": "Sélectionnez une joueuse (Tennis WTA)",
+                        "options_df_fn": lambda: (
+                            tn._load(),
+                            tn._wta_players[["full_name", "ioc", "dob"]]
+                        )[1],
+                        "col_display": "full_name",
+                        "filters": [
+                            {"label": "Pays (IOC)", "col": "ioc", "type": "category"},
+                            {"label": "Naissance",  "col": "dob", "type": "year"},
+                        ],
                     },
                 },
                 {
@@ -259,8 +312,16 @@ def _make_sports_config() -> dict:
                     "inputs": [],
                     "selector": {
                         "key": "player_name",
-                        "label": "Sélectionnez une joueuse",
-                        "options_fn": lambda: (tn._load(), tn._wta_players["full_name"].dropna().sort_values().tolist())[1],
+                        "label": "Sélectionnez une joueuse (Tennis WTA)",
+                        "options_df_fn": lambda: (
+                            tn._load(),
+                            tn._wta_players[["full_name", "ioc", "dob"]]
+                        )[1],
+                        "col_display": "full_name",
+                        "filters": [
+                            {"label": "Pays (IOC)", "col": "ioc", "type": "category"},
+                            {"label": "Naissance",  "col": "dob", "type": "year"},
+                        ],
                     },
                 },
                 {
@@ -300,8 +361,16 @@ def _make_sports_config() -> dict:
                     "inputs": [],
                     "selector": {
                         "key": "nom",
-                        "label": "Sélectionnez un joueur",
-                        "options_fn": lambda: (ch._load(), ch._players["name"].dropna().sort_values().tolist())[1],
+                        "label": "Sélectionnez un joueur (Échecs)",
+                        "options_df_fn": lambda: (
+                            ch._load(),
+                            ch._players[["name", "federation", "birth_year"]]
+                        )[1],
+                        "col_display": "name",
+                        "filters": [
+                            {"label": "Fédération", "col": "federation",  "type": "category"},
+                            {"label": "Naissance",  "col": "birth_year",  "type": "year"},
+                        ],
                     },
                 },
                 {
@@ -310,8 +379,16 @@ def _make_sports_config() -> dict:
                     "inputs": [],
                     "selector": {
                         "key": "player_name",
-                        "label": "Sélectionnez un joueur",
-                        "options_fn": lambda: (ch._load(), ch._players["name"].dropna().sort_values().tolist())[1],
+                        "label": "Sélectionnez un joueur (Échecs)",
+                        "options_df_fn": lambda: (
+                            ch._load(),
+                            ch._players[["name", "federation", "birth_year"]]
+                        )[1],
+                        "col_display": "name",
+                        "filters": [
+                            {"label": "Fédération", "col": "federation",  "type": "category"},
+                            {"label": "Naissance",  "col": "birth_year",  "type": "year"},
+                        ],
                     },
                 },
                 {
@@ -349,8 +426,16 @@ def _make_sports_config() -> dict:
                         "inputs": [],
                         "selector": {
                             "key": "nom",
-                            "label": "Sélectionnez un joueur",
-                            "options_fn": lambda: (vb._load(), vb._players_men["name"].dropna().sort_values().tolist())[1],
+                            "label": "Sélectionnez un joueur (Volleyball Hommes)",
+                            "options_df_fn": lambda: (
+                                vb._load(),
+                                vb._players_men[["name", "country_code", "birth_date"]]
+                            )[1],
+                            "col_display": "name",
+                            "filters": [
+                                {"label": "Pays",      "col": "country_code", "type": "category"},
+                                {"label": "Naissance", "col": "birth_date",   "type": "year"},
+                            ],
                         },
                     },
                     {
@@ -390,8 +475,16 @@ def _make_sports_config() -> dict:
                         "inputs": [],
                         "selector": {
                             "key": "nom",
-                            "label": "Sélectionnez une joueuse",
-                            "options_fn": lambda: (vb._load(), vb._players_women["name"].dropna().sort_values().tolist())[1],
+                            "label": "Sélectionnez une joueuse (Volleyball Femmes)",
+                            "options_df_fn": lambda: (
+                                vb._load(),
+                                vb._players_women[["name", "country_code", "birth_date"]]
+                            )[1],
+                            "col_display": "name",
+                            "filters": [
+                                {"label": "Pays",      "col": "country_code", "type": "category"},
+                                {"label": "Naissance", "col": "birth_date",   "type": "year"},
+                            ],
                         },
                     },
                     {
@@ -439,8 +532,17 @@ def _make_sports_config() -> dict:
                     "inputs": [],
                     "selector": {
                         "key": "nom",
-                        "label": "Sélectionnez un joueur",
-                        "options_fn": lambda: (cs2._load(), cs2._players["name"].dropna().sort_values().tolist())[1],
+                        "label": "Sélectionnez un joueur (CS2)",
+                        "options_df_fn": lambda: (
+                            cs2._load(),
+                            cs2._players[["name", "team", "nationality", "birthdate"]]
+                        )[1],
+                        "col_display": "name",
+                        "filters": [
+                            {"label": "Équipe",      "col": "team",        "type": "category"},
+                            {"label": "Nationalité", "col": "nationality", "type": "category"},
+                            {"label": "Naissance",   "col": "birthdate",   "type": "year"},
+                        ],
                     },
                 },
                 {
@@ -465,8 +567,17 @@ def _make_sports_config() -> dict:
                     "inputs": [],
                     "selector": {
                         "key": "nom",
-                        "label": "Sélectionnez un joueur",
-                        "options_fn": lambda: (sc2._load(), sc2._players["name"].dropna().sort_values().tolist())[1],
+                        "label": "Sélectionnez un joueur (StarCraft II)",
+                        "options_df_fn": lambda: (
+                            sc2._load(),
+                            sc2._players[["name", "team", "nationality", "birthdate"]]
+                        )[1],
+                        "col_display": "name",
+                        "filters": [
+                            {"label": "Équipe",      "col": "team",        "type": "category"},
+                            {"label": "Nationalité", "col": "nationality", "type": "category"},
+                            {"label": "Naissance",   "col": "birthdate",   "type": "year"},
+                        ],
                     },
                 },
                 {
@@ -475,8 +586,17 @@ def _make_sports_config() -> dict:
                     "inputs": [],
                     "selector": {
                         "key": "nom",
-                        "label": "Sélectionnez un joueur",
-                        "options_fn": lambda: (sc2._load(), sc2._players["name"].dropna().sort_values().tolist())[1],
+                        "label": "Sélectionnez un joueur (StarCraft II)",
+                        "options_df_fn": lambda: (
+                            sc2._load(),
+                            sc2._players[["name", "team", "nationality", "birthdate"]]
+                        )[1],
+                        "col_display": "name",
+                        "filters": [
+                            {"label": "Équipe",      "col": "team",        "type": "category"},
+                            {"label": "Nationalité", "col": "nationality", "type": "category"},
+                            {"label": "Naissance",   "col": "birthdate",   "type": "year"},
+                        ],
                     },
                 },
             ],
@@ -491,8 +611,15 @@ def _make_sports_config() -> dict:
                     "inputs": [],
                     "selector": {
                         "key": "nom",
-                        "label": "Sélectionnez un joueur",
-                        "options_fn": lambda: (bad._load(), bad._players["name"].dropna().sort_values().tolist())[1],
+                        "label": "Sélectionnez un joueur (Badminton)",
+                        "options_df_fn": lambda: (
+                            bad._load(),
+                            bad._players[["name", "country"]]
+                        )[1],
+                        "col_display": "name",
+                        "filters": [
+                            {"label": "Pays", "col": "country", "type": "category"},
+                        ],
                     },
                 },
                 {
@@ -501,8 +628,15 @@ def _make_sports_config() -> dict:
                     "inputs": [],
                     "selector": {
                         "key": "nom",
-                        "label": "Sélectionnez un joueur",
-                        "options_fn": lambda: (bad._load(), bad._players["name"].dropna().sort_values().tolist())[1],
+                        "label": "Sélectionnez un joueur (Badminton)",
+                        "options_df_fn": lambda: (
+                            bad._load(),
+                            bad._players[["name", "country"]]
+                        )[1],
+                        "col_display": "name",
+                        "filters": [
+                            {"label": "Pays", "col": "country", "type": "category"},
+                        ],
                     },
                 },
                 {
@@ -557,6 +691,32 @@ def _afficher_resultat(result) -> None:
             print("  (aucun résultat)")
         else:
             print(result.to_string(index=False))
+
+
+def _extract_year(val) -> int | None:
+    """Extrait l'année depuis différents formats : datetime, int YYYYMMDD, int année, str."""
+    import pandas as pd
+    if val is None:
+        return None
+    try:
+        if pd.isna(val):
+            return None
+    except (TypeError, ValueError):
+        pass
+    if hasattr(val, "year"):          # datetime / Timestamp
+        return val.year
+    if isinstance(val, (int, float)):
+        v = int(val)
+        if v > 19_000_000:            # format YYYYMMDD
+            return v // 10_000
+        return v                      # déjà une année
+    s = str(val).strip()
+    if len(s) >= 4:
+        try:
+            return int(s[:4])
+        except ValueError:
+            pass
+    return None
 
 
 # ── Moteur de navigation ──────────────────────────────────────────────────────
@@ -817,6 +977,11 @@ class CLI:
     # ── Page : exécution d'une stat ───────────────────────────────────────────
 
     def _make_page_stat(self, stat):
+        # Si le sélecteur utilise un DataFrame (pagination + filtres), déléguer
+        sel = stat.get("selector")
+        if sel and "options_df_fn" in sel:
+            return self._make_page_selector_paged(sel, stat)
+
         def page():
             _titre(stat["label"])
 
@@ -875,6 +1040,279 @@ class CLI:
                 return "back"
             if choix == "+":
                 return "forward"
+            return None
+
+        return page
+
+
+    # ── Page : sélecteur paginé avec filtres ──────────────────────────────────
+
+    def _make_page_selector_paged(self, sel, stat):
+        """
+        Remplace _make_page_stat pour les sélecteurs avec options_df_fn.
+
+        Affiche une liste paginée (20 items/page) avec filtres optionnels.
+        Quand l'utilisateur choisit un item, exécute la stat et affiche le résultat.
+        """
+        PAGE_SIZE = 20
+        state: dict = {"page": 0, "filters": {}, "df": None, "_filter_applied": False}
+        filters_cfg = sel.get("filters", [])
+        col = sel["col_display"]
+
+        def _apply_filters(df):
+            filtered = df.copy()
+            for fkey, fval in state["filters"].items():
+                if fkey.startswith("__year__"):
+                    src_col = fkey[len("__year__"):]
+                    years = filtered[src_col].apply(_extract_year)
+                    if isinstance(fval, tuple):
+                        mask = years.apply(
+                            lambda y: y is not None and fval[0] <= y <= fval[1]
+                        )
+                    else:
+                        mask = years.apply(lambda y: y == fval)
+                    filtered = filtered[mask]
+                else:
+                    filtered = filtered[
+                        filtered[fkey].astype(str) == str(fval)
+                    ]
+            return filtered
+
+        def _filtres_str():
+            parts = []
+            for fkey, fval in state["filters"].items():
+                label = next(
+                    (f["label"] for f in filters_cfg
+                     if f["col"] == fkey or f"__year__{f['col']}" == fkey),
+                    fkey,
+                )
+                if isinstance(fval, tuple):
+                    parts.append(f"{label}: {fval[0]}-{fval[1]}")
+                else:
+                    parts.append(f"{label}: {fval}")
+            return " | ".join(parts)
+
+        def page():
+            # Chargement unique du DataFrame
+            if state["df"] is None:
+                try:
+                    state["df"] = sel["options_df_fn"]()
+                except Exception as e:
+                    print(f"  Erreur lors du chargement : {e}")
+                    return "back"
+
+            df = state["df"]
+            filtered = _apply_filters(df)
+            items = filtered[col].dropna().sort_values().tolist()
+            total = len(items)
+            n_pages = max(1, (total + PAGE_SIZE - 1) // PAGE_SIZE)
+            state["page"] = max(0, min(state["page"], n_pages - 1))
+            start = state["page"] * PAGE_SIZE
+            page_items = items[start:start + PAGE_SIZE]
+
+            _titre(sel["label"])
+
+            if state["filters"]:
+                print(f"  Filtres actifs : {_filtres_str()}")
+            print(f"  {total} résultat{'s' if total != 1 else ''}"
+                  f" — Page {state['page'] + 1}/{n_pages}\n")
+
+            for i, item in enumerate(page_items, 1):
+                _option(i, item)
+
+            nav_parts = []
+            if state["page"] > 0:
+                nav_parts.append("[<] Préc.")
+            if state["page"] < n_pages - 1:
+                nav_parts.append("[>] Suiv.")
+            if filters_cfg:
+                nav_parts.append("[f] Filtrer")
+            if state["filters"]:
+                nav_parts.append("[r] Reset")
+            nav_parts += ["[-] Retour", "[q] Quitter"]
+            print(f"\n  {' | '.join(nav_parts)}")
+
+            choix = _lire()
+
+            if choix == "q":
+                return "quit"
+            if choix == "-":
+                return "back"
+            if choix == "<" and state["page"] > 0:
+                state["page"] -= 1
+                return None
+            if choix == ">" and state["page"] < n_pages - 1:
+                state["page"] += 1
+                return None
+            if choix == "r":
+                state["filters"].clear()
+                state["page"] = 0
+                return None
+            if choix == "f" and filters_cfg:
+                return self._make_page_filter(state, filters_cfg, df)
+            if choix.isdigit():
+                idx = int(choix) - 1
+                if 0 <= idx < len(page_items):
+                    value = page_items[idx]
+                    kwargs = {sel["key"]: value}
+                    for inp in stat.get("inputs", []):
+                        v = input(f"  {inp['label']} : ").strip()
+                        if not v:
+                            print("  Saisie annulée.")
+                            return None
+                        kwargs[inp["key"]] = v
+                    print()
+                    try:
+                        result = stat["fn"](**kwargs)
+                        _afficher_resultat(result)
+                    except ValueError as e:
+                        print(f"  Erreur : {e}")
+                    except Exception as e:
+                        print(f"  Erreur inattendue : {e}")
+                    print(f"\n{_SEP}")
+                    _nav(peut_avancer=bool(self._fwd))
+                    c2 = _lire()
+                    if c2 == "q":
+                        return "quit"
+                    if c2 == "-":
+                        return "back"
+                    if c2 == "+":
+                        return "forward"
+                    return None
+                print("  Numéro invalide.")
+            else:
+                print("  Commande non reconnue.")
+            return None
+
+        return page
+
+    # ── Page : choix du filtre ─────────────────────────────────────────────────
+
+    def _make_page_filter(self, state, filters_cfg, df):
+        """Page listant les filtres disponibles. Retourne automatiquement après application."""
+
+        def page():
+            # Retour automatique après application d'un filtre (catégorie ou année)
+            if state.get("_filter_applied"):
+                state["_filter_applied"] = False
+                return "back"
+
+            _titre("Filtrer")
+
+            if state["filters"]:
+                print("  Filtres actifs :")
+                for fkey, fval in state["filters"].items():
+                    label = next(
+                        (f["label"] for f in filters_cfg
+                         if f["col"] == fkey or f"__year__{f['col']}" == fkey),
+                        fkey,
+                    )
+                    val_str = (f"{fval[0]}-{fval[1]}"
+                               if isinstance(fval, tuple) else str(fval))
+                    print(f"    {label} : {val_str}")
+                print()
+
+            print("  Choisir un filtre :")
+            for i, f in enumerate(filters_cfg, 1):
+                _option(i, f["label"])
+            _nav(peut_avancer=bool(self._fwd))
+
+            choix = _lire()
+            if choix == "q":
+                return "quit"
+            if choix == "-":
+                return "back"
+            if choix.isdigit():
+                fi = int(choix) - 1
+                if 0 <= fi < len(filters_cfg):
+                    fconf = filters_cfg[fi]
+                    if fconf["type"] == "category":
+                        return self._make_page_filter_category(state, fconf, df)
+                    elif fconf["type"] == "year":
+                        yinput = _lire(
+                            f"{fconf['label']} (ex: 1990 ou 1990-2000) : "
+                        ).strip()
+                        if not yinput:
+                            return None
+                        fkey = f"__year__{fconf['col']}"
+                        if "-" in yinput:
+                            parts = yinput.split("-", 1)
+                            try:
+                                state["filters"][fkey] = (
+                                    int(parts[0]), int(parts[1])
+                                )
+                                state["page"] = 0
+                                state["_filter_applied"] = True
+                            except ValueError:
+                                print("  Format invalide (ex: 1990-2000).")
+                        else:
+                            try:
+                                state["filters"][fkey] = int(yinput)
+                                state["page"] = 0
+                                state["_filter_applied"] = True
+                            except ValueError:
+                                print("  Format invalide (ex: 1990).")
+                        return None  # prochain appel détecte _filter_applied
+                print("  Numéro invalide.")
+            else:
+                print("  Commande non reconnue.")
+            return None
+
+        return page
+
+    # ── Page : sélection d'une valeur catégorielle ────────────────────────────
+
+    def _make_page_filter_category(self, state, fconf, df):
+        """Page paginée pour sélectionner une valeur de filtre catégoriel."""
+        PAGE_SIZE = 20
+        cat_state: dict = {"page": 0}
+
+        def page():
+            unique_vals = sorted(
+                df[fconf["col"]].dropna().astype(str).unique().tolist()
+            )
+            total = len(unique_vals)
+            n_pages = max(1, (total + PAGE_SIZE - 1) // PAGE_SIZE)
+            cat_state["page"] = max(0, min(cat_state["page"], n_pages - 1))
+            start = cat_state["page"] * PAGE_SIZE
+            page_vals = unique_vals[start:start + PAGE_SIZE]
+
+            _titre(f"Filtrer par {fconf['label']}")
+            print(f"  {total} valeur{'s' if total != 1 else ''}"
+                  f" — Page {cat_state['page'] + 1}/{n_pages}\n")
+
+            for i, v in enumerate(page_vals, 1):
+                _option(i, v)
+
+            nav_parts = []
+            if cat_state["page"] > 0:
+                nav_parts.append("[<] Préc.")
+            if cat_state["page"] < n_pages - 1:
+                nav_parts.append("[>] Suiv.")
+            nav_parts += ["[-] Retour", "[q] Quitter"]
+            print(f"\n  {' | '.join(nav_parts)}")
+
+            choix = _lire()
+            if choix == "q":
+                return "quit"
+            if choix == "-":
+                return "back"
+            if choix == "<" and cat_state["page"] > 0:
+                cat_state["page"] -= 1
+                return None
+            if choix == ">" and cat_state["page"] < n_pages - 1:
+                cat_state["page"] += 1
+                return None
+            if choix.isdigit():
+                vi = int(choix) - 1
+                if 0 <= vi < len(page_vals):
+                    state["filters"][fconf["col"]] = page_vals[vi]
+                    state["page"] = 0
+                    state["_filter_applied"] = True
+                    return "back"  # revient sur filter_choice → auto-back → selector
+                print("  Numéro invalide.")
+            else:
+                print("  Commande non reconnue.")
             return None
 
         return page
