@@ -24,6 +24,9 @@ def _make_sports_config() -> dict:
     import src.Analysis.tennis as tn
     import src.Analysis.chess as ch
     import src.Analysis.volleyball as vb
+    import src.Analysis.cs2 as cs2
+    import src.Analysis.starcraft2 as sc2
+    import src.Analysis.badminton as bad
 
     return {
         "Basketball": {
@@ -46,7 +49,12 @@ def _make_sports_config() -> dict:
                 {
                     "label": "Roster d'une équipe",
                     "fn": bk.roster_equipe,
-                    "inputs": [{"key": "team_name", "label": "Nom / abrév. équipe"}],
+                    "inputs": [],
+                    "selector": {
+                        "key": "team_name",
+                        "label": "Sélectionnez une équipe",
+                        "options_fn": lambda: (bk._load(), bk._teams.sort_values("full_name")["full_name"].tolist())[1],
+                    },
                 },
             ]
         },
@@ -68,9 +76,14 @@ def _make_sports_config() -> dict:
                     "inputs": [],
                 },
                 {
-                    "label": "Durée moyenne des parties",
-                    "fn": lol.duree_moyenne_parties,
+                    "label": "Roster d'une équipe",
+                    "fn": lol.roster_equipe,
                     "inputs": [],
+                    "selector": {
+                        "key": "team_name",
+                        "label": "Sélectionnez une équipe",
+                        "options_fn": lambda: (lol._load(), lol._players["team"].dropna().sort_values().unique().tolist())[1],
+                    },
                 },
             ]
         },
@@ -95,6 +108,16 @@ def _make_sports_config() -> dict:
                     "label": "Résultats par phase",
                     "fn": fcl.resultats_par_phase,
                     "inputs": [],
+                },
+                {
+                    "label": "Roster d'un club",
+                    "fn": lambda club: fcl.liste_joueurs(club=club),
+                    "inputs": [],
+                    "selector": {
+                        "key": "club",
+                        "label": "Sélectionnez un club",
+                        "options_fn": lambda: (fcl._load(), fcl._players["club"].dropna().sort_values().unique().tolist())[1],
+                    },
                 },
             ]
         },
@@ -202,6 +225,63 @@ def _make_sports_config() -> dict:
                     "label": "Joueuses d'un pays (F)",
                     "fn": lambda country_code: vb.stats_joueurs_par_pays(country_code, "femmes"),
                     "inputs": [{"key": "country_code", "label": "Code pays (ex : FRA)"}],
+                },
+            ]
+        },
+        "CS2": {
+            "stats": [
+                {
+                    "label": "Classement stages",
+                    "fn": cs2.classement_stages,
+                    "inputs": [],
+                },
+                {
+                    "label": "Bracket",
+                    "fn": cs2.bracket,
+                    "inputs": [],
+                },
+                {
+                    "label": "Stats d'une équipe",
+                    "fn": cs2.stats_equipe,
+                    "inputs": [{"key": "team_name", "label": "Nom équipe"}],
+                },
+                {
+                    "label": "Roster d'une équipe",
+                    "fn": cs2.roster_equipe,
+                    "inputs": [],
+                    "selector": {
+                        "key": "team_name",
+                        "label": "Sélectionnez une équipe",
+                        "options_fn": lambda: (cs2._load(), cs2._players["team"].dropna().sort_values().unique().tolist())[1],
+                    },
+                },
+            ]
+        },
+        "StarCraft II": {
+            "stats": [
+                {
+                    "label": "Liste des joueurs",
+                    "fn": sc2.liste_joueurs,
+                    "inputs": [],
+                },
+                {
+                    "label": "Fiche d'un joueur",
+                    "fn": lambda nom: sc2.fiche_joueur_sc2(nom),
+                    "inputs": [{"key": "nom", "label": "Nom du joueur"}],
+                },
+            ]
+        },
+        "Badminton": {
+            "stats": [
+                {
+                    "label": "Liste des joueurs",
+                    "fn": bad.liste_joueurs,
+                    "inputs": [],
+                },
+                {
+                    "label": "Fiche d'un joueur",
+                    "fn": lambda nom: bad.fiche_joueur_badminton(nom),
+                    "inputs": [{"key": "nom", "label": "Nom du joueur"}],
                 },
             ]
         },
@@ -436,6 +516,34 @@ class CLI:
             _titre(stat["label"])
 
             kwargs = {}
+
+            # Sélecteur numéroté (liste d'options prédéfinies)
+            sel = stat.get("selector")
+            if sel:
+                try:
+                    options = sel["options_fn"]()
+                except Exception as e:
+                    print(f"  Erreur lors du chargement des options : {e}")
+                    return "back"
+
+                print(f"  {sel['label']} :\n")
+                for i, opt in enumerate(options, 1):
+                    _option(i, opt)
+                _nav(peut_avancer=bool(self._fwd))
+
+                choix = _lire()
+                if choix == "q":
+                    return "quit"
+                if choix == "-":
+                    return "back"
+                if choix == "+":
+                    return "forward"
+                if not choix.isdigit() or not (1 <= int(choix) <= len(options)):
+                    print("  Numéro invalide.")
+                    return None
+                kwargs[sel["key"]] = options[int(choix) - 1]
+
+            # Champs libres
             for inp in stat["inputs"]:
                 val = input(f"  {inp['label']} : ").strip()
                 if not val:
