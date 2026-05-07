@@ -1056,12 +1056,28 @@ class CLI:
         """
         PAGE_SIZE = 20
         state: dict = {"page": 0, "filters": {}, "df": None, "_filter_applied": False}
-        filters_cfg = sel.get("filters", [])
         col = sel["col_display"]
+        # Filtre recherche par nom toujours disponible en tête de liste
+        filters_cfg = [
+            {"label": "Recherche par nom", "col": "__search__", "type": "search"},
+        ] + sel.get("filters", [])
 
         def _apply_filters(df):
             filtered = df.copy()
+            # Recherche textuelle : préfixe sur chaque mot du nom affiché
+            if "__search__" in state["filters"]:
+                term = state["filters"]["__search__"].lower()
+                import pandas as pd
+                mask = filtered[col].apply(
+                    lambda name: pd.notna(name) and any(
+                        word.lower().startswith(term)
+                        for word in str(name).split()
+                    )
+                )
+                filtered = filtered[mask]
             for fkey, fval in state["filters"].items():
+                if fkey == "__search__":
+                    continue
                 if fkey.startswith("__year__"):
                     src_col = fkey[len("__year__"):]
                     years = filtered[src_col].apply(_extract_year)
@@ -1226,7 +1242,18 @@ class CLI:
                 fi = int(choix) - 1
                 if 0 <= fi < len(filters_cfg):
                     fconf = filters_cfg[fi]
-                    if fconf["type"] == "category":
+                    if fconf["type"] == "search":
+                        sinput = _lire(
+                            "Premières lettres d'un prénom ou nom : "
+                        ).strip()
+                        if sinput:
+                            state["filters"]["__search__"] = sinput.lower()
+                        else:
+                            state["filters"].pop("__search__", None)
+                        state["page"] = 0
+                        state["_filter_applied"] = True
+                        return None  # prochain appel détecte _filter_applied
+                    elif fconf["type"] == "category":
                         return self._make_page_filter_category(state, fconf, df)
                     elif fconf["type"] == "year":
                         yinput = _lire(
