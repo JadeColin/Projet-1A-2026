@@ -11,9 +11,14 @@ import pandas as pd
 import pytest
 
 from src.Parsers.BasketballLoader import BasketballLoader
+from src.Parsers.BadmintonLoader import BadmintonLoader
 from src.Parsers.ChessLoader import ChessLoader
-from src.Parsers.TennisLoader import TennisLoader
+from src.Parsers.Cs2Loader import Cs2Loader
+from src.Parsers.FootballChampionsLeagueLoader import FootballChampionsLeagueLoader
+from src.Parsers.FootballLoader import FootballLoader
 from src.Parsers.LolLoader import LolLoader
+from src.Parsers.Starcraft2Loader import Starcraft2Loader
+from src.Parsers.TennisLoader import TennisLoader
 from src.Parsers.VolleyballLoader import VolleyballLoader
 
 
@@ -274,5 +279,253 @@ class TestVolleyballLoaderIntegration:
     def test_load_all_returns_seven_dataframes(self, loader):
         result = loader.load_all()
         assert len(result) == 7
+        for df in result:
+            assert isinstance(df, pd.DataFrame)
+
+
+# ── BadmintonLoader ───────────────────────────────────────────────────────────
+
+
+class TestBadmintonLoaderIntegration:
+
+    @pytest.fixture(scope="class")
+    def loader(self):
+        return BadmintonLoader()
+
+    @pytest.fixture(scope="class")
+    def players(self, loader):
+        return loader.load_players()
+
+    @pytest.fixture(scope="class")
+    def matches(self, loader):
+        return loader.load_matches()
+
+    def test_load_players_is_not_empty(self, players):
+        assert len(players) > 0
+
+    def test_load_players_has_expected_columns(self, players):
+        for col in ("name", "country", "continent"):
+            assert col in players.columns
+
+    def test_load_matches_is_not_empty(self, matches):
+        assert len(matches) > 0
+
+    def test_load_matches_has_expected_columns(self, matches):
+        for col in ("tournament", "round", "player_1", "player_2"):
+            assert col in matches.columns
+
+    def test_load_matches_date_is_datetime(self, matches):
+        assert pd.api.types.is_datetime64_any_dtype(matches["date"])
+
+    def test_load_matches_has_game_score_columns(self, matches):
+        assert "game_1_score" in matches.columns
+        assert "game_2_score" in matches.columns
+
+    def test_load_all_returns_two_dataframes(self, loader):
+        result = loader.load_all()
+        assert len(result) == 2
+        for df in result:
+            assert isinstance(df, pd.DataFrame)
+
+
+# ── Cs2Loader ─────────────────────────────────────────────────────────────────
+
+
+class TestCs2LoaderIntegration:
+
+    @pytest.fixture(scope="class")
+    def loader(self):
+        return Cs2Loader()
+
+    @pytest.fixture(scope="class")
+    def players(self, loader):
+        return loader.load_players()
+
+    @pytest.fixture(scope="class")
+    def matches(self, loader):
+        return loader.load_matches()
+
+    def test_load_players_is_not_empty(self, players):
+        assert len(players) > 0
+
+    def test_load_players_has_expected_columns(self, players):
+        for col in ("pseudo", "name", "nationality", "team"):
+            assert col in players.columns
+
+    def test_load_players_birthdate_is_datetime(self, players):
+        assert pd.api.types.is_datetime64_any_dtype(players["birthdate"])
+
+    def test_load_coaches_is_not_empty(self, loader):
+        coaches = loader.load_coaches()
+        assert len(coaches) > 0
+
+    def test_load_coaches_birthdate_is_datetime(self, loader):
+        coaches = loader.load_coaches()
+        assert pd.api.types.is_datetime64_any_dtype(coaches["birthdate"])
+
+    def test_load_teams_is_not_empty(self, loader):
+        teams = loader.load_teams()
+        assert len(teams) > 0
+
+    def test_load_matches_is_not_empty(self, matches):
+        assert len(matches) > 0
+
+    def test_load_matches_has_expected_columns(self, matches):
+        for col in ("team_1", "team_2", "score_team_1", "score_team_2"):
+            assert col in matches.columns
+
+    def test_load_matches_date_is_datetime(self, matches):
+        assert pd.api.types.is_datetime64_any_dtype(matches["date"])
+
+    def test_load_all_returns_four_dataframes(self, loader):
+        result = loader.load_all()
+        assert len(result) == 4
+        for df in result:
+            assert isinstance(df, pd.DataFrame)
+
+
+# ── FootballChampionsLeagueLoader ─────────────────────────────────────────────
+
+
+class TestFootballChampionsLeagueLoaderIntegration:
+
+    @pytest.fixture(scope="class")
+    def loader(self):
+        return FootballChampionsLeagueLoader()
+
+    @pytest.fixture(scope="class")
+    def players(self, loader):
+        return loader.load_players()
+
+    @pytest.fixture(scope="class")
+    def matches(self, loader):
+        return loader.load_matches()
+
+    def test_load_players_is_not_empty(self, players):
+        assert len(players) > 0
+
+    def test_load_players_has_expected_columns(self, players):
+        for col in ("player_name", "club", "position", "goals", "assists"):
+            assert col in players.columns
+
+    def test_load_players_duplicate_match_played_renamed(self, players):
+        # FootballChampionsLeagueLoader renames 'match_played' → 'match_played_field'
+        # and 'match_played.1' → 'match_played'
+        assert "match_played_field" in players.columns
+        assert "match_played" in players.columns
+
+    def test_load_teams_is_not_empty(self, loader):
+        teams = loader.load_teams()
+        assert len(teams) > 0
+
+    def test_load_teams_has_expected_columns(self, loader):
+        teams = loader.load_teams()
+        for col in ("full_name", "country"):
+            assert col in teams.columns
+
+    def test_load_matches_is_not_empty(self, matches):
+        assert len(matches) > 0
+
+    def test_load_matches_has_expected_columns(self, matches):
+        for col in ("team_home", "team_away", "score_team_home", "score_team_away", "phase"):
+            assert col in matches.columns
+
+    def test_load_matches_date_is_datetime(self, matches):
+        assert pd.api.types.is_datetime64_any_dtype(matches["date"])
+
+    def test_load_all_returns_three_dataframes(self, loader):
+        result = loader.load_all()
+        assert len(result) == 3
+        for df in result:
+            assert isinstance(df, pd.DataFrame)
+
+
+# ── FootballLoader ────────────────────────────────────────────────────────────
+
+
+class TestFootballLoaderIntegration:
+
+    @pytest.fixture(scope="class")
+    def loader(self):
+        return FootballLoader()
+
+    def test_load_countries_is_not_empty(self, loader):
+        countries = loader.load_countries()
+        assert len(countries) > 0
+
+    def test_load_countries_has_expected_columns(self, loader):
+        countries = loader.load_countries()
+        for col in ("id", "name"):
+            assert col in countries.columns
+
+    def test_load_leagues_is_not_empty(self, loader):
+        leagues = loader.load_leagues()
+        assert len(leagues) > 0
+
+    def test_load_leagues_has_expected_columns(self, loader):
+        leagues = loader.load_leagues()
+        for col in ("id", "country_id", "name"):
+            assert col in leagues.columns
+
+    def test_load_matches_is_not_empty(self, loader):
+        matches = loader.load_matches()
+        assert len(matches) > 0
+
+    def test_load_matches_date_is_datetime(self, loader):
+        matches = loader.load_matches()
+        assert pd.api.types.is_datetime64_any_dtype(matches["date"])
+
+    def test_load_matches_has_goal_columns(self, loader):
+        matches = loader.load_matches()
+        for col in ("home_team_goal", "away_team_goal"):
+            assert col in matches.columns
+
+    def test_load_all_returns_three_dataframes(self, loader):
+        result = loader.load_all()
+        assert len(result) == 3
+        for df in result:
+            assert isinstance(df, pd.DataFrame)
+
+
+# ── Starcraft2Loader ──────────────────────────────────────────────────────────
+
+
+class TestStarcraft2LoaderIntegration:
+
+    @pytest.fixture(scope="class")
+    def loader(self):
+        return Starcraft2Loader()
+
+    @pytest.fixture(scope="class")
+    def players(self, loader):
+        return loader.load_players()
+
+    @pytest.fixture(scope="class")
+    def matches(self, loader):
+        return loader.load_matches()
+
+    def test_load_players_is_not_empty(self, players):
+        assert len(players) > 0
+
+    def test_load_players_has_expected_columns(self, players):
+        for col in ("name", "nationality", "race", "team"):
+            assert col in players.columns
+
+    def test_load_players_birthdate_is_datetime(self, players):
+        assert pd.api.types.is_datetime64_any_dtype(players["birthdate"])
+
+    def test_load_matches_is_not_empty(self, matches):
+        assert len(matches) > 0
+
+    def test_load_matches_has_expected_columns(self, matches):
+        for col in ("player_1", "player_2", "score_player_1", "score_player_2"):
+            assert col in matches.columns
+
+    def test_load_matches_date_is_datetime(self, matches):
+        assert pd.api.types.is_datetime64_any_dtype(matches["date"])
+
+    def test_load_all_returns_two_dataframes(self, loader):
+        result = loader.load_all()
+        assert len(result) == 2
         for df in result:
             assert isinstance(df, pd.DataFrame)

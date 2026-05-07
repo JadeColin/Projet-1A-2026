@@ -1021,6 +1021,7 @@ class CLI:
                     return "back"
                 kwargs[inp["key"]] = val
 
+            result = None
             print()
             try:
                 result = stat["fn"](**kwargs)
@@ -1030,17 +1031,7 @@ class CLI:
             except Exception as e:
                 print(f"  Erreur inattendue : {e}")
 
-            print(f"\n{_SEP}")
-            _nav(peut_avancer=bool(self._fwd))
-
-            choix = _lire()
-            if choix == "q":
-                return "quit"
-            if choix == "-":
-                return "back"
-            if choix == "+":
-                return "forward"
-            return None
+            return self._attendre_apres_resultat(result, stat["label"])
 
         return page
 
@@ -1177,6 +1168,7 @@ class CLI:
                             print("  Saisie annulée.")
                             return None
                         kwargs[inp["key"]] = v
+                    result = None
                     print()
                     try:
                         result = stat["fn"](**kwargs)
@@ -1185,16 +1177,7 @@ class CLI:
                         print(f"  Erreur : {e}")
                     except Exception as e:
                         print(f"  Erreur inattendue : {e}")
-                    print(f"\n{_SEP}")
-                    _nav(peut_avancer=bool(self._fwd))
-                    c2 = _lire()
-                    if c2 == "q":
-                        return "quit"
-                    if c2 == "-":
-                        return "back"
-                    if c2 == "+":
-                        return "forward"
-                    return None
+                    return self._attendre_apres_resultat(result, stat["label"])
                 print("  Numéro invalide.")
             else:
                 print("  Commande non reconnue.")
@@ -1343,6 +1326,62 @@ class CLI:
             return None
 
         return page
+
+    # ── Export CSV ────────────────────────────────────────────────────────────
+
+    def _attendre_apres_resultat(self, result, stat_label: str):
+        """
+        Affiche la barre de navigation après un résultat.
+
+        Propose [e] Exporter CSV si le résultat est un DataFrame non vide.
+        Boucle jusqu'à ce que l'utilisateur choisisse de naviguer (back/forward/quit).
+        """
+        import pandas as pd
+
+        peut_exporter = isinstance(result, pd.DataFrame) and not result.empty
+        print(f"\n{_SEP}")
+
+        while True:
+            nav_parts = []
+            if peut_exporter:
+                nav_parts.append("[e] Exporter CSV")
+            if self._fwd:
+                nav_parts.append("[+] Suivant")
+            nav_parts += ["[-] Retour", "[q] Quitter"]
+            print(f"\n  {' | '.join(nav_parts)}")
+
+            choix = _lire()
+            if choix == "q":
+                return "quit"
+            if choix == "-":
+                return "back"
+            if choix == "+":
+                return "forward"
+            if choix == "e" and peut_exporter:
+                self._exporter_csv(result, stat_label)
+            else:
+                print("  Commande non reconnue.")
+
+    def _exporter_csv(self, df, stat_label: str) -> None:
+        """Sauvegarde un DataFrame dans un fichier CSV choisi par l'utilisateur."""
+        import re
+        from datetime import datetime
+
+        clean = re.sub(r"[^a-z0-9]+", "_", stat_label.lower()).strip("_")
+        horodatage = datetime.now().strftime("%Y%m%d_%H%M%S")
+        default = f"{clean}_{horodatage}.csv"
+
+        nom = _lire(f"Nom du fichier [{default}] : ").strip()
+        if not nom:
+            nom = default
+        if not nom.endswith(".csv"):
+            nom += ".csv"
+
+        try:
+            df.to_csv(nom, index=True, encoding="utf-8-sig")
+            print(f"  Exporté : {nom}")
+        except Exception as e:
+            print(f"  Erreur lors de l'export : {e}")
 
 
 # ── Point d'entrée ────────────────────────────────────────────────────────────
