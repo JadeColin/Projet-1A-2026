@@ -1,0 +1,1272 @@
+\documentclass[12pt,a4paper]{article}
+
+% --- Encodage & langue ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+
+% --- Mise en page ---
+\usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{parskip}
+\setlength{\parindent}{0pt}
+
+% --- Typographie ---
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% --- Couleurs & graphiques ---
+\usepackage[dvipsnames]{xcolor}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, fit, backgrounds, calc}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins, breakable}
+
+% --- Tableaux ---
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{longtable}
+
+% --- Code ---
+\usepackage{listings}
+\usepackage{fancyvrb}
+
+\definecolor{codebg}{RGB}{248,248,248}
+\definecolor{codeframe}{RGB}{200,200,200}
+\definecolor{keywordcolor}{RGB}{0,0,180}
+\definecolor{commentcolor}{RGB}{100,150,100}
+\definecolor{stringcolor}{RGB}{180,0,0}
+
+\lstset{
+  language=Python,
+  backgroundcolor=\color{codebg},
+  frame=single,
+  rulecolor=\color{codeframe},
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{keywordcolor}\bfseries,
+  commentstyle=\color{commentcolor}\itshape,
+  stringstyle=\color{stringcolor},
+  showstringspaces=false,
+  breaklines=true,
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  numbersep=5pt,
+  tabsize=4,
+  captionpos=b,
+}
+
+% --- Liens & PDF ---
+\usepackage[hidelinks]{hyperref}
+\usepackage{nameref}
+
+% --- En-têtes & pieds de page ---
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[L]{\small Projet de 1\iere{} année --- Groupe 53}
+\fancyhead[R]{\small ENSAI 2025--2026}
+\fancyfoot[C]{\thepage}
+
+% --- Titres de sections ---
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries}{}{0em}{\thesection\quad}
+\titleformat{\subsection}{\normalsize\bfseries}{}{0em}{\thesubsection\quad}
+\titleformat{\subsubsection}{\normalsize\itshape\bfseries}{}{0em}{\thesubsubsection\quad}
+
+% --- Macros utilitaires ---
+\newcommand{\sport}[1]{\textbf{#1}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\fichier}[1]{\texttt{#1}}
+\newcommand{\classe}[1]{\texttt{\textbf{#1}}}
+
+% Boîte de capture d'écran fictive
+\newcommand{\screenshot}[2]{%
+  \begin{center}
+    \fbox{%
+      \begin{minipage}{0.88\textwidth}
+        \centering\vspace{0.4cm}
+        \textit{[Capture d'écran : #1]}\\[0.3cm]
+        \textcolor{gray}{\small #2}
+        \vspace{0.4cm}
+      \end{minipage}%
+    }
+  \end{center}
+}
+
+% Boîte d'encadré coloré
+\newtcolorbox{infobox}[1][]{
+  colback=blue!5!white,
+  colframe=blue!40!white,
+  fonttitle=\bfseries,
+  title={#1},
+  breakable
+}
+
+\begin{document}
+
+% ============================================================
+% PAGE DE GARDE
+% ============================================================
+\begin{titlepage}
+  \centering
+  \vspace*{1.5cm}
+
+  {\LARGE\bfseries École Nationale de la Statistique\\
+  et de l'Analyse de l'Information}\\[0.3cm]
+  {\large ENSAI --- Bruz}\\[1.5cm]
+
+  \rule{\linewidth}{1.5pt}\\[0.4cm]
+  {\Huge\bfseries Rapport de Projet}\\[0.3cm]
+  {\LARGE Traitement de données sportives}\\[0.2cm]
+  \rule{\linewidth}{1.5pt}\\[1.2cm]
+
+  {\large\itshape Gestion multi-sports des résultats de compétitions\\
+  Application en ligne de commande --- Python}\\[2cm]
+
+  \begin{tabular}{ll}
+    \textbf{Groupe :} & 53 \\[0.3cm]
+    \textbf{Étudiants :} & Jade \textsc{Colin} \\
+                         & Mathias \textsc{Douillard} \\
+                         & Adam \textsc{[Nom]} \\
+                         & Mohamed Fouad \textsc{Chaabane} \\[0.3cm]
+    \textbf{Encadrant :} & Clément \textsc{Valot} \\[0.3cm]
+    \textbf{Année académique :} & 2025--2026 \\
+  \end{tabular}
+
+  \vfill
+
+  {\small Projet de traitement de données --- 1\iere{} année\\
+  Mai 2026}
+\end{titlepage}
+
+% ============================================================
+% RÉSUMÉ
+% ============================================================
+\thispagestyle{empty}
+\section*{Résumé}
+
+Dans le contexte des Jeux Olympiques de Paris 2024 et de la dynamique sportive
+nationale qui en résulte, le Ministère des Sports (client fictif) a exprimé le
+besoin d'une application unifiée pour gérer et analyser les résultats de
+compétitions sportives. Ce projet de première année à l'ENSAI répond à cette
+demande en développant une application en ligne de commande entièrement écrite
+en Python.
+
+L'application couvre \textbf{neuf disciplines sportives} : basketball (NBA),
+football (Ligue des Champions UEFA et ligues européennes), tennis (circuits ATP
+et WTA), League of Legends (EMEA LEC), Counter-Strike~2 (CS2), volleyball
+(hommes et femmes), StarCraft~II, badminton et échecs. Pour chaque sport, elle
+propose un ensemble de fonctionnalités statistiques — classements, fiches
+joueurs, rosters, agendas — accessibles via une interface interactive
+paginée.
+
+Du point de vue technique, le projet est structuré en quatre couches
+logicielles indépendantes : les classes métier (\code{Model}), les chargeurs
+de données (\code{Parsers}), les modules d'analyse (\code{Analysis}) et les
+utilitaires communs (\code{Common}). Une couverture de tests unitaires assure
+la fiabilité des composants clés. L'ensemble du code respecte les conventions
+PEP~8 (formatage \code{black}, linter \code{Flake8}) et est documenté avec des
+\textit{docstrings} au format NumPy.
+
+\bigskip
+\textbf{Mots-clés :} Python, pandas, traitement de données, sports, CLI, programmation
+orientée objet, tests unitaires.
+
+\newpage
+
+% ============================================================
+% TABLE DES MATIÈRES
+% ============================================================
+\thispagestyle{empty}
+\tableofcontents
+\newpage
+
+% ============================================================
+% CORPS DU RAPPORT
+% ============================================================
+\setcounter{page}{1}
+
+% ------------------------------------------------------------
+\section{Introduction}
+% ------------------------------------------------------------
+
+\subsection{Contexte général}
+
+Les Jeux Olympiques de Paris 2024 ont renforcé l'intérêt de la sphère publique
+française pour la gestion et l'analyse de données sportives. Dans ce contexte,
+le \textbf{Ministère des Sports} (client fictif de ce projet pédagogique) a
+manifesté le souhait de disposer d'un outil informatique permettant de
+centraliser les résultats de compétitions issues de sources hétérogènes, d'en
+extraire des statistiques pertinentes et de les restituer de manière claire.
+
+Ce projet de première année à l'ENSAI s'inscrit dans ce cadre en proposant une
+application de traitement de données sportives développée intégralement en
+Python. Le groupe 53 --- composé de quatre étudiants encadrés par
+Clément~\textsc{Valot} --- a mené ce projet sur l'année académique 2025--2026.
+
+\subsection{Objectifs du projet}
+
+L'application doit permettre :
+\begin{itemize}
+  \item d'ingérer et de nettoyer des jeux de données hétérogènes au format CSV
+        couvrant plusieurs sports ;
+  \item de proposer des analyses statistiques adaptées à chaque discipline ;
+  \item d'offrir une interface utilisateur interactive en ligne de commande ;
+  \item de respecter les bonnes pratiques du génie logiciel (tests, documentation,
+        versionnage, style de code).
+\end{itemize}
+
+\subsection{Structure du rapport}
+
+Le présent rapport décrit d'abord le cahier des charges et la répartition du
+travail au sein du groupe (sections~\ref{sec:cdc} et~\ref{sec:roles}), puis
+présente les données utilisées (section~\ref{sec:donnees}), l'architecture
+logicielle (sections~\ref{sec:archi} et~\ref{sec:model}), les fonctionnalités
+implémentées (section~\ref{sec:fonct}), la démarche de tests
+(section~\ref{sec:tests}), et enfin quelques résultats illustrés par des
+captures d'écran (section~\ref{sec:resultats}).
+
+% ------------------------------------------------------------
+\section{Cahier des charges}
+\label{sec:cdc}
+% ------------------------------------------------------------
+
+\subsection{Exigences fonctionnelles}
+
+Le cahier des charges impose de couvrir \textbf{au minimum cinq sports
+différents} avec, pour chacun, au moins trois fonctionnalités distinctes
+(classements, fiches joueurs, statistiques d'équipes, etc.). L'application
+doit également intégrer un \textbf{agenda commun} listant les derniers matchs
+toutes disciplines confondues.
+
+Les fonctionnalités retenues pour l'ensemble de l'application sont les
+suivantes :
+
+\begin{center}
+\begin{tabularx}{\textwidth}{lX}
+  \toprule
+  \textbf{Catégorie} & \textbf{Fonctionnalité} \\
+  \midrule
+  Général & Agenda des derniers matchs (toutes disciplines) \\
+  Général & Export CSV des résultats affichés \\
+  Équipe  & Statistiques moyennes par match \\
+  Équipe  & Roster (liste des joueurs et coachs) \\
+  Équipe  & Classement par points \\
+  Joueurs & Fiche individuelle complète \\
+  Joueurs & Liste paginée avec filtres \\
+  Compétition & Bracket de tournoi \\
+  Sport spécifique & Cf.\ tableau section~\ref{sec:fonct} \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Exigences techniques}
+
+Le projet est soumis aux contraintes techniques suivantes, imposées par les
+enseignants :
+
+\begin{itemize}
+  \item \textbf{Langage} : Python uniquement (aucune interface graphique).
+  \item \textbf{Bibliothèques autorisées} : pandas (manipulation de données),
+        pytest et pytest-cov (tests), black (formatage), Flake8 (linter).
+  \item \textbf{Versionnage} : dépôt GitHub privé, avec l'encadrant ajouté
+        comme collaborateur.
+  \item \textbf{Documentation} : \textit{docstrings} au format NumPy ou Google
+        pour toutes les fonctions et classes publiques.
+  \item \textbf{Tests} : couverture par tests unitaires avec pytest ; rapport
+        de couverture via pytest-cov.
+  \item \textbf{Structure} : fichier \fichier{README.md}, fichier
+        \fichier{requirements.txt} et point d'entrée \fichier{\_\_main\_\_.py}.
+\end{itemize}
+
+\subsection{Diagramme des cas d'utilisation}
+
+La figure~\ref{fig:usecase} présente les principaux cas d'utilisation de
+l'application tels qu'ils ont été identifiés lors de la phase de conception.
+
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}[
+  actor/.style={draw, circle, minimum size=1cm, font=\small},
+  usecase/.style={draw, ellipse, minimum width=3.5cm, minimum height=0.8cm,
+                  font=\small, align=center},
+  sys/.style={draw, rectangle, dashed, minimum width=9cm, minimum height=10cm,
+              font=\bfseries\small},
+  >=Stealth
+]
+  % Acteur
+  \node[actor] (user) at (-5.5, 0) {};
+  \node[below=0.1cm of user, font=\small] {Utilisateur};
+  \draw (-5.5, 0.5) -- (-5.5, 1) -- (-5.2, 0.6);
+  \draw (-5.5, 1) -- (-5.8, 0.6);
+  \draw (-5.5, 0) -- (-5.5, -0.7);
+  \draw (-5.5, -0.7) -- (-5.2, -1.2);
+  \draw (-5.5, -0.7) -- (-5.8, -1.2);
+
+  % Système
+  \node[sys, anchor=center] (sys) at (1.5, 0) {};
+  \node[above=4.7cm of sys, xshift=0cm, font=\bfseries\small] {Application sportive};
+
+  % Cas d'utilisation
+  \node[usecase] (agenda)  at (1.5,  3.5) {Consulter l'agenda\\des matchs};
+  \node[usecase] (stats)   at (1.5,  2.0) {Voir les stats\\d'une équipe};
+  \node[usecase] (roster)  at (1.5,  0.7) {Consulter un roster};
+  \node[usecase] (joueur)  at (1.5, -0.7) {Fiche d'un joueur};
+  \node[usecase] (classmt) at (1.5, -2.0) {Afficher un classement};
+  \node[usecase] (bracket) at (1.5, -3.3) {Voir un bracket};
+  \node[usecase] (export)  at (1.5, -4.6) {Exporter en CSV};
+
+  % Flèches
+  \foreach \uc in {agenda, stats, roster, joueur, classmt, bracket, export}
+    \draw[->, thick] (user) -- (\uc);
+\end{tikzpicture}
+\caption{Diagramme des cas d'utilisation de l'application.}
+\label{fig:usecase}
+\end{figure}
+
+% ------------------------------------------------------------
+\section{Répartition des rôles}
+\label{sec:roles}
+% ------------------------------------------------------------
+
+Le groupe a organisé son travail en s'appuyant sur les compétences et les
+centres d'intérêt de chacun. Le tableau ci-dessous synthétise la répartition
+retenue.
+
+\begin{center}
+\begin{tabularx}{\textwidth}{lX}
+  \toprule
+  \textbf{Membre} & \textbf{Contributions principales} \\
+  \midrule
+  Jade \textsc{Colin}
+    & Conception et implémentation des classes du modèle objet
+      (\classe{Joueur}, \classe{Joueurs}, \classe{Equipe}, \classe{Equipes}) ;
+      modules d'analyse Chess et Volleyball ; rédaction de tests unitaires
+      pour les classes du modèle. \\[0.3cm]
+  Adam \textsc{[Nom]}
+    & Classe \classe{Match}/\classe{Matchs} et modélisation des compétitions ;
+      modules d'analyse Basketball et Football (Ligue des Champions) ;
+      contribution aux tests d'intégration. \\[0.3cm]
+  Mohamed Fouad \textsc{Chaabane}
+    & Interface utilisateur CLI (\fichier{\_\_main\_\_.py}) ;
+      modules d'analyse Football (ligues européennes), Tennis ATP/WTA ;
+      conception de la navigation paginée et du filtre de recherche. \\[0.3cm]
+  Mathias \textsc{Douillard}
+    & Architecture générale ; classe \classe{BaseLoader} et tous les loaders
+      (\fichier{src/Parsers/}) ; modules d'analyse LoL, CS2, StarCraft~II,
+      Badminton ; module \fichier{générique.py} (fonctions partagées) ;
+      intégration finale et documentation. \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+La gestion du projet a été assurée conjointement via un dépôt GitHub privé,
+avec des \textit{pull requests} pour les contributions majeures et des réunions
+hebdomadaires de suivi avec l'encadrant Clément~\textsc{Valot}.
+
+% ------------------------------------------------------------
+\section{Données et jeux de données}
+\label{sec:donnees}
+% ------------------------------------------------------------
+
+\subsection{Sources et volumétrie}
+
+L'ensemble des données est stocké dans le répertoire \fichier{data/} et fourni
+au format CSV. Chaque sport possède son propre sous-dossier. Le
+tableau~\ref{tab:datasets} présente les jeux de données intégrés.
+
+\begin{center}
+\begin{longtable}{llll}
+  \caption{Jeux de données utilisés dans l'application.}
+  \label{tab:datasets}\\
+  \toprule
+  \textbf{Sport} & \textbf{Fichiers principaux} & \textbf{Saison / Source} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Sport} & \textbf{Fichiers principaux} & \textbf{Saison / Source} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+  Basketball (NBA) & \code{game.csv}, \code{player.csv}, \code{team.csv}
+    & Saison 2022--2023 \\
+  Football UCL & \code{match.csv}, \code{player.csv}, \code{team.csv}
+    & Ligue des Champions UEFA \\
+  Football ligues & \code{match.csv}, \code{league.csv}, \code{team.csv}
+    & Ligues européennes \\
+  League of Legends & \code{match.csv}, \code{player.csv}, \code{coach.csv}, \code{team.csv}
+    & EMEA LEC \\
+  CS2 & \code{match.csv}, \code{player.csv}, \code{coach.csv}, \code{team.csv}
+    & Compétitions professionnelles \\
+  Tennis & \code{atp\_matches\_2024.csv}, \code{wta\_matches\_2024.csv}
+    & Saison 2024 ATP/WTA \\
+  Volleyball & \code{match\_men.csv}, \code{match\_women.csv}, \code{player\_men.csv}
+    & Compétitions internationales \\
+  StarCraft~II & \code{match.csv}, \code{player.csv}
+    & Compétitions professionnelles \\
+  Badminton & \code{match.csv}, \code{player.csv}
+    & Compétitions internationales \\
+  Échecs & \code{match.csv}, \code{player.csv}
+    & Tournois classiques \\
+\end{longtable}
+\end{center}
+
+\subsection{Nettoyage et transformation des données}
+
+Les données brutes nécessitent plusieurs transformations avant d'être
+exploitables. Ces opérations sont centralisées dans les loaders
+(\fichier{src/Parsers/}).
+
+\subsubsection{Taille des joueurs NBA}
+
+Les tailles dans le jeu de données Basketball sont au format américain
+\textit{pieds-pouces} (par exemple \code{"6-8"}). Elles sont converties en
+centimètres selon la formule :
+
+\begin{lstlisting}[caption={Conversion taille NBA (BasketballLoader.py)}]
+def _height_to_cm(h: str) -> float | None:
+    """Convertit '6-8' (pieds-pouces) en centimetres."""
+    try:
+        feet, inches = map(int, h.split("-"))
+        return round((feet * 12 + inches) * 2.54, 1)
+    except (ValueError, AttributeError):
+        return None
+\end{lstlisting}
+
+\subsubsection{Parsing des dates}
+
+Toutes les dates sont standardisées en \code{pd.Timestamp} via la méthode
+\code{\_load\_csv()} de \classe{BaseLoader}, qui accepte un paramètre optionnel
+\code{date\_cols} :
+
+\begin{lstlisting}[caption={Parsing des dates dans BaseLoader.py}]
+for col in (date_cols or []):
+    if col in df.columns:
+        df[col] = pd.to_datetime(df[col], errors="coerce")
+\end{lstlisting}
+
+\subsubsection{Gestion des valeurs manquantes}
+
+Pour les colonnes numériques des statistiques (kills, gold, assists, etc.),
+les valeurs manquantes sont implicitement gérées par les méthodes \code{.mean()}
+et \code{.fillna(0)} de pandas, selon le contexte. Pour les données textuelles
+(noms de joueurs, équipes), la valeur \code{NaN} est préservée et filtrée lors
+de l'affichage.
+
+\subsection{Construction du nom complet (Basketball)}
+
+Le jeu de données NBA contient séparément le prénom (\code{first\_name}) et le
+nom (\code{last\_name}). Un champ synthétique \code{full\_name} est créé lors du
+chargement :
+
+\begin{lstlisting}[caption={Création du full\_name (BasketballLoader.py)}]
+players["full_name"] = (
+    players["first_name"].str.strip()
+    + " "
+    + players["last_name"].str.strip()
+)
+\end{lstlisting}
+
+% ------------------------------------------------------------
+\section{Architecture du code}
+\label{sec:archi}
+% ------------------------------------------------------------
+
+\subsection{Vue d'ensemble}
+
+L'application est structurée selon une architecture en \textbf{quatre couches}
+indépendantes, auxquelles s'ajoute le point d'entrée \fichier{\_\_main\_\_.py}.
+Cette séparation des responsabilités facilite la maintenance et l'extension
+à de nouveaux sports.
+
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}[
+  layer/.style={draw, fill=#1, rounded corners=4pt,
+                minimum width=10cm, minimum height=1.1cm,
+                font=\bfseries\small, align=center},
+  arr/.style={->, thick, >=Stealth},
+  note/.style={font=\footnotesize\itshape, text width=4cm, align=left}
+]
+  \node[layer=orange!20] (main)    at (0,  5.5) {\_\_main\_\_.py \quad (Interface CLI)};
+  \node[layer=blue!15]   (analysis)at (0,  3.8) {src/Analysis/ \quad (Fonctions d'analyse)};
+  \node[layer=green!15]  (parsers) at (0,  2.1) {src/Parsers/ \quad (Chargeurs CSV)};
+  \node[layer=red!15]    (model)   at (0,  0.4) {src/Model/ \quad (Classes métier)};
+  \node[layer=gray!15]   (common)  at (0, -1.2) {src/Common/ \quad (Utilitaires partagés)};
+
+  \draw[arr] (main)     -- (analysis);
+  \draw[arr] (analysis) -- (parsers);
+  \draw[arr] (parsers)  -- (model);
+  \draw[arr] (analysis.west) to[out=180, in=180] (common.west);
+  \draw[arr] (parsers.east)  to[out=0,   in=0]   (model.east);
+
+  % Étiquettes
+  \node[note] at (7, 4.65)  {stats, classements, rosters, brackets};
+  \node[note] at (7, 2.95)  {lecture CSV, nettoyage, jointures};
+  \node[note] at (7, 1.25)  {Joueur, Match, Equipe, Sport};
+  \node[note] at (7, -0.35) {décorateurs, helpers};
+\end{tikzpicture}
+\caption{Architecture en couches de l'application.}
+\label{fig:archi}
+\end{figure}
+
+\subsection{Description des couches}
+
+\subsubsection{src/Model/ --- Classes métier}
+
+Cette couche définit les abstractions orientées objet génériques, indépendantes
+de tout sport particulier :
+
+\begin{itemize}
+  \item \classe{Joueur} / \classe{Joueurs} : représentation d'un joueur
+        individuel et d'une collection de joueurs.
+  \item \classe{Match} / \classe{Matchs} : représentation d'un match et
+        d'une collection de matchs avec calcul automatique du gagnant.
+  \item \classe{Equipe} / \classe{Equipes} : représentation d'une équipe
+        et d'une collection d'équipes.
+  \item \classe{Sport}, \classe{StatsSport} : méta-informations sur un sport.
+\end{itemize}
+
+Les classes sont \textbf{configurables par injection de noms de colonnes} à
+l'initialisation, ce qui les rend réutilisables pour tous les sports sans
+modification.
+
+\subsubsection{src/Parsers/ --- Chargeurs de données}
+
+Cette couche est basée sur une classe abstraite \classe{BaseLoader} qui
+centralise la logique de lecture CSV. Chaque sport possède un loader dédié
+héritant de \classe{BaseLoader} et déclarant uniquement son
+\code{SPORT\_FOLDER} :
+
+\begin{lstlisting}[caption={Structure minimale d'un loader (exemple Badminton)}]
+class BadmintonLoader(BaseLoader):
+    SPORT_FOLDER = "badminton"
+
+    def load_all(self):
+        players = self._load_csv("player.csv")
+        matches = self._load_csv("match.csv", date_cols=["date"])
+        return players, matches
+\end{lstlisting}
+
+Les loaders disponibles sont : \code{BasketballLoader}, \code{FootballLoader},
+\code{FootballChampionsLeagueLoader}, \code{LolLoader}, \code{Cs2Loader},
+\code{TennisLoader}, \code{VolleyballLoader}, \code{Starcraft2Loader},
+\code{BadmintonLoader}, \code{ChessLoader}.
+
+\subsubsection{src/Analysis/ --- Modules d'analyse}
+
+Chaque sport dispose d'un module Python dédié (par exemple \fichier{basketball.py},
+\fichier{tennis.py}) qui expose des fonctions métier de haut niveau. Ces
+modules utilisent un \textbf{pattern singleton de chargement paresseux}
+(\textit{lazy loading}) : les données ne sont chargées qu'au premier appel et
+mises en cache pour les appels suivants :
+
+\begin{lstlisting}[caption={Pattern de chargement paresseux (extrait de basketball.py)}]
+_loader = None
+_players: pd.DataFrame = None
+_teams: pd.DataFrame = None
+_matches: pd.DataFrame = None
+
+def _load():
+    global _loader, _players, _teams, _matches
+    if _loader is None:
+        _loader = BasketballLoader()
+        _players, _teams, _matches = _loader.load_all()
+\end{lstlisting}
+
+Le module \fichier{générique.py} regroupe les fonctions partagées par tous les
+sports : \code{formater\_roster}, \code{afficher\_classement},
+\code{afficher\_bracket}, \code{fiche\_joueur}, \code{lister\_joueurs},
+\code{agenda\_recents}.
+
+\subsubsection{src/Common/ --- Utilitaires}
+
+Ce module regroupe des outils transverses :
+\begin{itemize}
+  \item \code{print\_timings} : décorateur mesurant le temps d'exécution
+        CPU d'une fonction.
+  \item \code{parse\_boolean} : conversion robuste d'une chaîne en booléen
+        (accepte \code{"true"}, \code{"vrai"}, \code{True}, etc.).
+\end{itemize}
+
+\subsubsection{\_\_main\_\_.py --- Interface CLI}
+
+Point d'entrée de l'application, ce fichier (~1\,400 lignes) implémente
+l'intégralité de l'interface en ligne de commande. Il s'appuie sur une
+configuration déclarative par sport (\code{\_make\_sports\_config()}) qui
+associe à chaque sport ses fonctionnalités et leurs paramètres d'entrée.
+
+\subsection{Diagramme de packages}
+
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}[
+  pkg/.style={draw, fill=yellow!10, font=\small\ttfamily,
+              minimum width=2.8cm, minimum height=0.8cm, align=center},
+  arr/.style={->, thick, >=Stealth, dashed}
+]
+  \node[pkg] (main)     at (0,    4)   {\_\_main\_\_.py};
+  \node[pkg] (analysis) at (-3,   2)   {src.Analysis};
+  \node[pkg] (parsers)  at (0,    2)   {src.Parsers};
+  \node[pkg] (model)    at (3,    2)   {src.Model};
+  \node[pkg] (common)   at (-3,   0)   {src.Common};
+  \node[pkg] (data)     at (0,    0)   {data/};
+
+  \draw[arr] (main) -- (analysis);
+  \draw[arr] (main) -- (parsers);
+  \draw[arr] (analysis) -- (parsers);
+  \draw[arr] (analysis) -- (common);
+  \draw[arr] (parsers) -- (model);
+  \draw[arr] (parsers) -- (data);
+\end{tikzpicture}
+\caption{Diagramme de packages de l'application.}
+\label{fig:packages}
+\end{figure}
+
+% ------------------------------------------------------------
+\section{Modélisation orientée objet}
+\label{sec:model}
+% ------------------------------------------------------------
+
+\subsection{Principes de conception}
+
+Les classes du modèle suivent deux principes fondamentaux :
+
+\begin{enumerate}
+  \item \textbf{Généricité par configuration} : plutôt que de sous-classer pour
+        chaque sport, les classes acceptent en paramètre les noms des colonnes
+        correspondant à leurs attributs (\code{col\_nom}, \code{col\_id}, etc.).
+        Cela évite l'explosion du nombre de classes.
+  \item \textbf{Encapsulation des DataFrames} : les classes \textit{wrappent}
+        des \code{pd.DataFrame} et \code{pd.Series} plutôt que de les remplacer,
+        préservant la puissance de pandas tout en exposant une API orientée
+        objet cohérente.
+\end{enumerate}
+
+\subsection{Diagramme de classes}
+
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}[
+  cls/.style={draw, fill=white, font=\footnotesize\ttfamily,
+              minimum width=3.2cm, align=center},
+  inh/.style={->, >=open triangle 90, thick},
+  agg/.style={->, >=diamond, thick},
+  >=Stealth
+]
+  % Joueur
+  \node[cls, minimum height=2.5cm] (joueur) at (-4, 0) {
+    \textbf{Joueur}\\[2pt]
+    \rule{3cm}{0.3pt}\\
+    id, nom, naissance\\age, equipe, taille\\[2pt]
+    \rule{3cm}{0.3pt}\\
+    \_\_getitem\_\_()\\to\_dict()
+  };
+
+  % Joueurs
+  \node[cls, minimum height=2.5cm] (joueurs) at (-4, -4.5) {
+    \textbf{Joueurs}\\[2pt]
+    \rule{3cm}{0.3pt}\\
+    \_df : DataFrame\\[2pt]
+    \rule{3cm}{0.3pt}\\
+    get\_par\_id/nom/equipe()\\filtrer(), ages()\\age\_moyen(), resume()
+  };
+
+  % Match
+  \node[cls, minimum height=2.5cm] (match) at (0.5, 0) {
+    \textbf{Match}\\[2pt]
+    \rule{3cm}{0.3pt}\\
+    id, date, equipe\_1/2\\score\_1/2, gagnant\\[2pt]
+    \rule{3cm}{0.3pt}\\
+    \_\_getitem\_\_()\\to\_dict()
+  };
+
+  % Matchs
+  \node[cls, minimum height=2.5cm] (matchs) at (0.5, -4.5) {
+    \textbf{Matchs}\\[2pt]
+    \rule{3cm}{0.3pt}\\
+    \_df : DataFrame\\[2pt]
+    \rule{3cm}{0.3pt}\\
+    get\_par\_equipe/date()\\victoires(), bilan()\\classement(), score\_moyen()
+  };
+
+  % Equipe
+  \node[cls, minimum height=2.5cm] (equipe) at (5, 0) {
+    \textbf{Equipe}\\[2pt]
+    \rule{3cm}{0.3pt}\\
+    id, nom\\abreviation, ville\\[2pt]
+    \rule{3cm}{0.3pt}\\
+    get\_joueurs(joueurs)
+  };
+
+  % Equipes
+  \node[cls, minimum height=2.5cm] (equipes) at (5, -4.5) {
+    \textbf{Equipes}\\[2pt]
+    \rule{3cm}{0.3pt}\\
+    \_df : DataFrame\\[2pt]
+    \rule{3cm}{0.3pt}\\
+    get\_par\_id/nom()\\filtrer()\\get\_joueurs()
+  };
+
+  % Flèches composition (collection → élément)
+  \draw[agg] (joueurs) -- node[right, font=\tiny] {contient} (joueur);
+  \draw[agg] (matchs)  -- node[right, font=\tiny] {contient} (match);
+  \draw[agg] (equipes) -- node[right, font=\tiny] {contient} (equipe);
+
+  % Lien Equipe → Joueurs
+  \draw[->, dashed, thick] (equipe.south) to[out=-90, in=90]
+    node[right, font=\tiny\itshape, pos=0.5] {get\_joueurs()} (joueurs.north);
+\end{tikzpicture}
+\caption{Diagramme de classes simplifié du modèle objet.}
+\label{fig:classes}
+\end{figure}
+
+\subsection{La classe Joueur}
+
+La classe \classe{Joueur} encapsule une \code{pd.Series} représentant une ligne
+du DataFrame joueurs. Ses propriétés principales sont :
+
+\begin{itemize}
+  \item \code{id}, \code{nom} : identifiant et nom du joueur.
+  \item \code{naissance} : date de naissance sous forme de \code{pd.Timestamp}.
+  \item \code{age} : calculé dynamiquement à partir de la date du jour.
+  \item \code{equipe} : équipe d'appartenance (optionnel selon le sport).
+  \item \code{taille} : taille en cm (optionnel selon le sport).
+\end{itemize}
+
+La classe \classe{Joueurs} est la collection correspondante. Elle supporte
+l'itération Python (\code{\_\_iter\_\_}), l'indexation (\code{\_\_getitem\_\_})
+et expose des méthodes statistiques : \code{age\_moyen()},
+\code{taille\_moyenne()}, \code{resume()}.
+
+\subsection{La classe Match}
+
+\classe{Match} encapsule une ligne de DataFrame matchs. La propriété
+\code{gagnant} applique la logique suivante (par ordre de priorité) :
+\begin{enumerate}
+  \item Si une colonne \code{col\_gagnant} est configurée, elle est utilisée
+        directement.
+  \item Sinon, le gagnant est déduit automatiquement en comparant
+        \code{score\_1} et \code{score\_2}.
+  \item En cas d'égalité ou de données manquantes, \code{None} est retourné.
+\end{enumerate}
+
+\classe{Matchs} expose notamment \code{bilan(equipe\_id)},
+\code{classement()} et \code{score\_moyen()}, permettant des analyses
+statistiques directement sur la collection.
+
+\subsection{BaseLoader et pattern Template Method}
+
+\classe{BaseLoader} est une classe abstraite (ABC Python) qui définit
+l'infrastructure commune à tous les loaders. Elle implémente le
+\textbf{patron de conception Template Method} : les sous-classes n'ont
+qu'à déclarer \code{SPORT\_FOLDER} et à implémenter les méthodes
+\code{load\_X()}, tout le reste (construction du chemin, lecture CSV, parsing
+des dates) étant géré par la classe mère.
+
+\begin{lstlisting}[caption={BaseLoader.py -- classe de base pour tous les loaders}]
+class BaseLoader(ABC):
+    _DATA_ROOT: Path = Path(__file__).parent.parent.parent / "data"
+    SPORT_FOLDER: str = ""
+
+    @property
+    def root(self) -> Path:
+        return self._DATA_ROOT / self.SPORT_FOLDER
+
+    def _load_csv(self, filename, dtype=None, date_cols=None):
+        df = pd.read_csv(self.root / filename, dtype=dtype or {})
+        for col in (date_cols or []):
+            if col in df.columns:
+                df[col] = pd.to_datetime(df[col], errors="coerce")
+        return df
+\end{lstlisting}
+
+% ------------------------------------------------------------
+\section{Fonctionnalités de l'application}
+\label{sec:fonct}
+% ------------------------------------------------------------
+
+\subsection{Interface utilisateur}
+
+L'application s'exécute en ligne de commande via \code{python \_\_main\_\_.py}.
+L'utilisateur navigue dans des menus hiérarchiques numérotés. La figure
+ci-dessous schématise le flux de navigation principal.
+
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw, rounded corners, fill=blue!8, font=\small,
+              minimum width=3.5cm, minimum height=0.9cm, align=center},
+  arr/.style={->, thick, >=Stealth}
+]
+  \node[box] (start) at (0, 0)    {Lancement\\(\_\_main\_\_.py)};
+  \node[box] (menu1) at (0, -1.8) {Menu principal\\(choix du sport)};
+  \node[box] (menu2) at (0, -3.6) {Menu du sport\\(équipe / joueurs / stats)};
+  \node[box] (input) at (0, -5.4) {Saisie ou sélection\\paginée};
+  \node[box] (result)at (0, -7.2) {Affichage du résultat};
+  \node[box] (export)at (4, -7.2) {Export CSV};
+  \node[box] (retour)at (0, -9.0) {Retour au menu};
+
+  \draw[arr] (start)  -- (menu1);
+  \draw[arr] (menu1)  -- (menu2);
+  \draw[arr] (menu2)  -- (input);
+  \draw[arr] (input)  -- (result);
+  \draw[arr] (result) -- node[right, font=\footnotesize] {[e]} (export);
+  \draw[arr] (result) -- (retour);
+  \draw[arr] (retour.west) to[out=180, in=180, distance=2cm] (menu1.west);
+\end{tikzpicture}
+\caption{Flux de navigation de l'interface CLI.}
+\label{fig:flux}
+\end{figure}
+
+\subsection{Sélecteur paginé}
+
+Pour les fonctionnalités nécessitant de choisir parmi une longue liste (joueurs,
+équipes, tournois), un \textbf{sélecteur paginé} a été implémenté. Il affiche
+20 éléments par page et propose les commandes suivantes :
+
+\begin{center}
+\begin{tabular}{cl}
+  \toprule
+  \textbf{Touche} & \textbf{Action} \\
+  \midrule
+  \code{<} & Page précédente \\
+  \code{>} & Page suivante \\
+  \code{f} & Appliquer un filtre (catégorie, année, ou recherche textuelle) \\
+  \code{r} & Réinitialiser les filtres \\
+  numéro   & Sélectionner l'élément correspondant \\
+  \code{0} & Annuler et revenir au menu \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+Le filtre de recherche supporte la \textbf{correspondance par préfixe de mot} :
+une recherche sur \code{"leb"} renverra par exemple \textit{LeBron James}.
+
+\subsection{Export CSV}
+
+Après tout affichage de résultat tabulaire, l'utilisateur peut appuyer sur
+\code{[e]} pour exporter le tableau au format CSV. Le fichier est créé dans
+le répertoire courant avec un nom automatique :
+
+\begin{center}
+  \code{\{label\_nettoyé\}\_YYYYMMDD\_HHMMSS.csv}
+\end{center}
+
+L'encodage utilisé est \code{utf-8-sig} (compatible avec Microsoft Excel).
+
+\subsection{Fonctionnalités par sport}
+
+Le tableau~\ref{tab:fonct} liste les fonctionnalités disponibles pour chacun
+des neuf sports.
+
+\begin{center}
+\begin{longtable}{lp{9cm}}
+  \caption{Fonctionnalités par sport.}
+  \label{tab:fonct}\\
+  \toprule
+  \textbf{Sport} & \textbf{Fonctionnalités} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \textbf{Sport} & \textbf{Fonctionnalités} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+  Basketball &
+    Top équipes offensives · Stats d'une équipe · Roster ·
+    Classement défensif · Fiche joueur · Liste joueurs · Classement par points \\
+  Football UCL &
+    Classement par points (groupes) · Bracket des phases finales ·
+    Stats d'une équipe · Fiche joueur · Liste joueurs \\
+  Football ligues &
+    Classement par ligue · Stats d'une équipe · Fiche joueur · Liste joueurs \\
+  League of Legends &
+    Stats d'une équipe · Champions picks/bans · Roster ·
+    Fiche joueur · Liste joueurs · Classement points \\
+  CS2 &
+    Stats d'une équipe · Classement · Roster ·
+    Fiche joueur · Liste joueurs \\
+  Tennis ATP/WTA &
+    Classement par victoires · Stats d'un joueur ·
+    Bracket d'un tournoi · Fiche joueur · Liste joueurs \\
+  Volleyball &
+    Classement (H/F) · Stats d'une équipe · Roster ·
+    Fiche joueur · Liste joueurs \\
+  StarCraft~II &
+    Classement joueurs · Stats d'un joueur ·
+    Bracket d'un tournoi · Fiche joueur · Liste joueurs \\
+  Badminton &
+    Classement · Stats d'un joueur · Bracket ·
+    Fiche joueur · Liste joueurs \\
+  Échecs &
+    Classement · Stats d'un joueur · Bracket ·
+    Fiche joueur · Liste joueurs \\
+\end{longtable}
+\end{center}
+
+\subsection{Agenda multi-sport}
+
+La fonction \code{agenda\_recents(sources, n)} est accessible depuis le menu
+principal. Elle agrège les derniers matchs de tous les sports sélectionnés et
+les affiche dans un tableau unifié :
+
+\begin{center}
+\begin{tabular}{cllcc}
+  \toprule
+  \textbf{Sport} & \textbf{Date} & \textbf{Équipe 1} & \textbf{Équipe 2} & \textbf{Score} \\
+  \midrule
+  Basketball & 2023-04-07 & Los Angeles Lakers & Boston Celtics & 115 -- 112 \\
+  Tennis ATP  & 2024-01-28 & Jannik Sinner & Alexander Zverev & 2 -- 0 \\
+  LoL        & 2024-03-15 & G2 Esports & Fnatic & 1 -- 0 \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Fonction générique \code{afficher\_classement}}
+
+Toutes les fonctionnalités de classement reposent sur la même fonction
+partagée \code{afficher\_classement()} du module \fichier{générique.py}.
+Elle calcule les points selon la règle standard (3~pts victoire, 1~pt nul,
+0~pt défaite) et supporte optionnellement l'affichage d'un séparateur
+de qualification (\code{top\_qualifies}).
+
+\subsection{Bracket de tournoi}
+
+La fonction \code{afficher\_bracket()} affiche les confrontations tour par tour
+sous forme ASCII, avec les gagnants mis en évidence en vert (code ANSI).
+Elle supporte les compétitions à aller-retour (deux manches) via le paramètre
+\code{deux\_manches}.
+
+% ------------------------------------------------------------
+\section{Tests et validation}
+\label{sec:tests}
+% ------------------------------------------------------------
+
+\subsection{Organisation des tests}
+
+Les tests sont organisés dans le répertoire \fichier{test/} selon la même
+structure que le code source :
+
+\begin{itemize}
+  \item \fichier{test/Analysis/} --- 10 fichiers, un par module sport et
+        pour \fichier{générique.py}.
+  \item \fichier{test/Model/} --- 5 fichiers (Joueur, Joueurs, Match, Matchs,
+        Equipe/Equipes).
+  \item \fichier{test/Parsers/} --- 1 fichier (BaseLoader).
+  \item \fichier{test/Common/} --- 1 fichier (utils.py).
+\end{itemize}
+
+\subsection{Exécution des tests}
+
+Les tests s'exécutent via la commande :
+
+\begin{lstlisting}[language=bash, numbers=none]
+python -m pytest --cov=src --cov-report=term-missing
+\end{lstlisting}
+
+\subsection{Exemples de tests}
+
+Les tests du modèle vérifient la logique métier indépendamment des données
+réelles, en construisant des DataFrames de test minimaux :
+
+\begin{lstlisting}[caption={Extrait de test pour la classe Matchs}]
+import pandas as pd
+from src.Model.match import Matchs
+
+def test_bilan_equipe():
+    df = pd.DataFrame({
+        "equipe1": ["A", "A", "B"],
+        "equipe2": ["B", "C", "C"],
+        "score1":  [2,   1,   0],
+        "score2":  [1,   2,   3],
+    })
+    matchs = Matchs(df, col_equipe1="equipe1", col_equipe2="equipe2",
+                    col_score1="score1", col_score2="score2")
+    bilan = matchs.bilan("A")
+    assert bilan["victoires"] == 1
+    assert bilan["defaites"] == 1
+    assert bilan["joues"] == 2
+\end{lstlisting}
+
+\subsection{Formatage et linting}
+
+L'ensemble du code est formaté avec \textbf{black} (version 25.1.0) et vérifié
+avec \textbf{Flake8}. Le respect de ces outils garantit une cohérence stylistique
+sur l'ensemble du projet.
+
+% ------------------------------------------------------------
+\section{Résultats et démonstration}
+\label{sec:resultats}
+% ------------------------------------------------------------
+
+Cette section présente quelques captures d'écran illustrant le fonctionnement
+de l'application.
+
+\subsection{Menu principal}
+
+\screenshot{Menu principal de l'application}{
+  L'utilisateur sélectionne le sport désiré parmi les options numérotées.
+  Une option « Agenda » permet de consulter les derniers matchs toutes
+  disciplines confondues.
+}
+
+\subsection{Sélecteur de joueurs paginé}
+
+\screenshot{Sélecteur paginé avec filtre de recherche}{
+  Exemple de sélection d'un joueur NBA : la liste est paginée (20 éléments
+  par page) et un filtre par préfixe permet de retrouver rapidement un joueur.
+  La barre de navigation [<] Préc. | [>] Suiv. | [f] Filtrer | [r] Reset
+  est visible en bas de l'écran.
+}
+
+\subsection{Fiche d'un joueur}
+
+\screenshot{Fiche individuelle d'un joueur NBA}{
+  La fiche d'un joueur NBA affiche ses informations complètes : nom, poste,
+  numéro de maillot, date de naissance, nationalité et taille.
+  L'option [e] Exporter en CSV est disponible après chaque résultat.
+}
+
+\subsection{Classement NBA}
+
+\screenshot{Classement NBA par points (Regular Season 2022--2023)}{
+  Le classement est calculé depuis les scores des matchs (3 pts victoire,
+  1 pt nul, 0 pt défaite) et affiché sous forme de tableau trié.
+}
+
+\subsection{Bracket de tennis}
+
+\screenshot{Bracket du tournoi de Roland-Garros 2024 (ATP)}{
+  Les rounds sont affichés de gauche à droite (R128 → F).
+  Le vainqueur de chaque match est mis en évidence en vert dans le terminal.
+}
+
+\subsection{Statistiques d'équipe LoL}
+
+\screenshot{Statistiques de l'équipe G2 Esports (EMEA LEC)}{
+  Les statistiques moyennes par match incluent : kills, assists, morts, or
+  total, tourelles, dragons, barons et durée moyenne de la partie en minutes.
+}
+
+\subsection{Agenda multi-sport}
+
+\screenshot{Agenda des 20 derniers matchs toutes disciplines confondues}{
+  L'agenda agrège et trie chronologiquement les matchs de tous les sports
+  disponibles. Chaque ligne indique le sport, la date, les deux équipes/joueurs
+  et le score.
+}
+
+% ------------------------------------------------------------
+\section{Conclusion}
+\label{sec:conclusion}
+% ------------------------------------------------------------
+
+Ce projet a permis de développer une application complète de traitement de
+données sportives couvrant dix disciplines, depuis l'ingestion de fichiers CSV
+hétérogènes jusqu'à l'affichage interactif en ligne de commande.
+
+\subsection{Bilan technique}
+
+Du point de vue technique, le projet a atteint ses objectifs : la séparation
+en couches indépendantes (Model, Parsers, Analysis, Common) garantit la
+maintenabilité du code et facilite l'ajout de nouveaux sports. Le pattern
+\textit{lazy loading} des loaders assure des performances satisfaisantes,
+même avec des jeux de données volumineux. La couverture par tests unitaires
+protège les composants critiques du modèle objet.
+
+L'interface paginée avec filtres représente une amélioration significative de
+l'expérience utilisateur, notamment pour les sports avec de nombreux joueurs
+(NBA : 431 joueurs ; Tennis : plusieurs milliers de joueurs ATP/WTA).
+
+\subsection{Difficultés rencontrées}
+
+La principale difficulté a résidé dans l'\textbf{hétérogénéité des données} :
+chaque source CSV utilise des conventions différentes (noms de colonnes, formats
+de dates, représentation des scores). La mise en place d'une abstraction
+suffisamment générique pour couvrir tous les sports --- tout en restant simple
+à utiliser dans les modules d'analyse --- a nécessité plusieurs itérations
+de conception.
+
+La gestion des données manquantes (valeurs NaN dans certains jeux de données)
+a également demandé une attention particulière, en particulier pour les calculs
+statistiques et l'affichage.
+
+\subsection{Perspectives d'amélioration}
+
+Plusieurs extensions seraient envisageables :
+\begin{itemize}
+  \item Ajout d'une interface graphique (Tkinter ou interface web) pour
+        améliorer l'accessibilité.
+  \item Intégration de données en temps réel via des API sportives publiques.
+  \item Implémentation de visualisations graphiques (histogrammes, courbes
+        de progression) avec matplotlib.
+  \item Extension à de nouveaux sports ou compétitions (Formule~1, rugby, etc.).
+\end{itemize}
+
+\bigskip
+
+Ce projet de première année à l'ENSAI nous a permis de consolider nos
+compétences en programmation Python orientée objet, en manipulation de données
+avec pandas, et en génie logiciel (tests, versionnage, documentation). Il
+illustre concrètement comment une architecture en couches permet de gérer la
+complexité d'une application de taille réelle.
+
+% ------------------------------------------------------------
+% RÉFÉRENCES
+% ------------------------------------------------------------
+\newpage
+\begin{thebibliography}{9}
+  \bibitem{pandas}
+    McKinney, W. (2010).
+    \textit{Data Structures for Statistical Computing in Python}.
+    Proceedings of the 9th Python in Science Conference.
+
+  \bibitem{pep8}
+    van Rossum, G., Warsaw, B., Coghlan, A. (2001).
+    \textit{PEP 8 -- Style Guide for Python Code}.
+    Python Software Foundation.
+
+  \bibitem{pytest}
+    Krekel, H. et al. (2004--2024).
+    \textit{pytest: helps you write better programs}.
+    \url{https://docs.pytest.org/}
+
+  \bibitem{kaggle_nba}
+    Jeu de données NBA 2022--2023.
+    Kaggle (source publique).
+
+  \bibitem{kaggle_tennis}
+    Jeu de données Tennis ATP/WTA 2024.
+    Jeff Sackmann, Tennis Abstract.
+\end{thebibliography}
+
+% ============================================================
+% ANNEXES
+% ============================================================
+\newpage
+\appendix
+\section*{Annexes}
+\addcontentsline{toc}{section}{Annexes}
+
+% -----------------------------------------------
+\subsection*{Annexe A --- Bilan personnel de Jade Colin}
+\addcontentsline{toc}{subsection}{Annexe A --- Bilan personnel de Jade Colin}
+
+\begin{tcolorbox}[colback=gray!5, colframe=gray!50, title=Bilan personnel]
+  \textit{[À compléter par Jade Colin]}
+
+  \medskip
+  \textbf{Compétences acquises :} \\
+  \ldots
+
+  \medskip
+  \textbf{Difficultés rencontrées :} \\
+  \ldots
+
+  \medskip
+  \textbf{Ce que j'aurais fait différemment :} \\
+  \ldots
+\end{tcolorbox}
+
+% -----------------------------------------------
+\subsection*{Annexe B --- Bilan personnel de Mathias Douillard}
+\addcontentsline{toc}{subsection}{Annexe B --- Bilan personnel de Mathias Douillard}
+
+\begin{tcolorbox}[colback=gray!5, colframe=gray!50, title=Bilan personnel]
+  \textit{[À compléter par Mathias Douillard]}
+
+  \medskip
+  \textbf{Compétences acquises :} \\
+  \ldots
+
+  \medskip
+  \textbf{Difficultés rencontrées :} \\
+  \ldots
+
+  \medskip
+  \textbf{Ce que j'aurais fait différemment :} \\
+  \ldots
+\end{tcolorbox}
+
+% -----------------------------------------------
+\subsection*{Annexe C --- Bilan personnel d'Adam [Nom]}
+\addcontentsline{toc}{subsection}{Annexe C --- Bilan personnel d'Adam [Nom]}
+
+\begin{tcolorbox}[colback=gray!5, colframe=gray!50, title=Bilan personnel]
+  \textit{[À compléter par Adam [Nom]]}
+
+  \medskip
+  \textbf{Compétences acquises :} \\
+  \ldots
+
+  \medskip
+  \textbf{Difficultés rencontrées :} \\
+  \ldots
+
+  \medskip
+  \textbf{Ce que j'aurais fait différemment :} \\
+  \ldots
+\end{tcolorbox}
+
+% -----------------------------------------------
+\subsection*{Annexe D --- Bilan personnel de Mohamed Fouad Chaabane}
+\addcontentsline{toc}{subsection}{Annexe D --- Bilan personnel de Mohamed Fouad Chaabane}
+
+\begin{tcolorbox}[colback=gray!5, colframe=gray!50, title=Bilan personnel]
+  \textit{[À compléter par Mohamed Fouad Chaabane]}
+
+  \medskip
+  \textbf{Compétences acquises :} \\
+  \ldots
+
+  \medskip
+  \textbf{Difficultés rencontrées :} \\
+  \ldots
+
+  \medskip
+  \textbf{Ce que j'aurais fait différemment :} \\
+  \ldots
+\end{tcolorbox}
+
+% -----------------------------------------------
+\subsection*{Annexe E --- Structure des répertoires}
+\addcontentsline{toc}{subsection}{Annexe E --- Structure des répertoires}
+
+\begin{Verbatim}[fontsize=\small, frame=single]
+Projet-1A-2026/
+├── __main__.py           # Point d'entrée CLI (~1400 lignes)
+├── requirements.txt      # pandas, pytest, pytest-cov, black
+├── README.md
+├── AUTHORS.md
+├── data/
+│   ├── Basketball/       # game.csv, player.csv, team.csv
+│   ├── tennis/           # atp_matches_2024.csv, wta_*
+│   ├── Lol/              # match.csv, player.csv, coach.csv, team.csv
+│   ├── counter_strike_2/ # match.csv, player.csv, coach.csv, team.csv
+│   ├── volleyball/       # match_men/women.csv, player_men/women.csv
+│   ├── football_champions_league/
+│   ├── Football/
+│   ├── starcraft_2/
+│   ├── badminton/
+│   └── chess/
+├── src/
+│   ├── Model/            # Joueur, Match, Equipe, Sport
+│   ├── Parsers/          # BaseLoader + 10 loaders
+│   ├── Analysis/         # générique.py + 9 modules sport
+│   └── Common/           # utils.py
+└── test/
+    ├── Analysis/         # 10 fichiers de tests
+    ├── Model/            # 5 fichiers de tests
+    ├── Parsers/          # 1 fichier de tests
+    └── Common/           # 1 fichier de tests
+\end{Verbatim}
+
+\end{document}
