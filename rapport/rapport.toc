@@ -1,0 +1,41 @@
+\babel@toc {french}{}\relax 
+\contentsline {section}{\numberline {1}Introduction}{1}{section.1}%
+\contentsline {section}{\numberline {2}Cahier des charges}{1}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Diagramme de cas d'utilisation}{2}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Diagramme de classes}{3}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Sports couverts et classification}{3}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Fonctionnalités par sport}{4}{subsection.2.4}%
+\contentsline {subsection}{\numberline {2.5}Architecture générale}{4}{subsection.2.5}%
+\contentsline {section}{\numberline {3}Répartition des rôles}{4}{section.3}%
+\contentsline {section}{\numberline {4}Gestion des données}{6}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Sources et formats des données}{6}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Chargement et normalisation (Parsers)}{6}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Nettoyage et validation}{7}{subsection.4.3}%
+\contentsline {section}{\numberline {5}Structure du code}{7}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Organisation des packages}{7}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Le fichier \_\_main\_\_.py}{8}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Le moteur de navigation CLI}{8}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Le module générique (générique.py)}{9}{subsection.5.4}%
+\contentsline {section}{\numberline {6}Programmation orientée objet}{10}{section.6}%
+\contentsline {subsection}{\numberline {6.1}La classe Sport et les enums de classification}{10}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Les classes Joueur et Joueurs}{10}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Les classes Equipe et Equipes}{11}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}Les classes Match et Matchs}{11}{subsection.6.4}%
+\contentsline {subsection}{\numberline {6.5}La classe abstraite StatsSport}{11}{subsection.6.5}%
+\contentsline {subsection}{\numberline {6.6}Le pattern BaseLoader}{11}{subsection.6.6}%
+\contentsline {section}{\numberline {7}Tests et validation}{12}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Stratégie de test}{12}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Couverture}{13}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}Formatage et linting}{13}{subsection.7.3}%
+\contentsline {section}{\numberline {8}Résultats}{13}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Scénario 1 : Navigation et filtrage des sports}{13}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Scénario 2 : Fiche joueur avec sélecteur paginé}{14}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3}Scénario 3 : Bracket de tournoi}{15}{subsection.8.3}%
+\contentsline {subsection}{\numberline {8.4}Scénario 4 : Statistiques d'équipe e-sport}{15}{subsection.8.4}%
+\contentsline {subsection}{\numberline {8.5}Scénario 5 : Export CSV}{16}{subsection.8.5}%
+\contentsline {section}{\numberline {9}Conclusion}{16}{section.9}%
+\contentsline {section}{Annexes}{19}{section.9}%
+\contentsline {subsection}{Annexe A --- Bilan personnel de Jade Colin}{19}{section*.1}%
+\contentsline {subsection}{Annexe B --- Bilan personnel de Mathias Douillard}{19}{section*.1}%
+\contentsline {subsection}{Annexe C --- Bilan personnel de Mohammed-Adam Lakhrissi}{20}{section*.1}%
+\contentsline {subsection}{Annexe D --- Bilan personnel de Mohamed Fouad Chaabane}{21}{section*.1}%
