@@ -1,8 +1,3 @@
-"""
-Tests for src/Analysis/badminton.py
-
-Pure functions tested directly; global state monkeypatched.
-"""
 
 import pytest
 import pandas as pd
@@ -10,10 +5,6 @@ import pandas as pd
 import src.Analysis.badminton as badminton_mod
 from src.Analysis.badminton import _compter_jeux
 
-
-# ---------------------------------------------------------------------------
-# Fixtures
-# ---------------------------------------------------------------------------
 
 @pytest.fixture
 def mock_players():
@@ -55,9 +46,6 @@ def inject_mock_data(monkeypatch, mock_players, mock_matches):
     monkeypatch.setattr(badminton_mod, "_matches", mock_matches)
 
 
-# ---------------------------------------------------------------------------
-# _compter_jeux (pure function)
-# ---------------------------------------------------------------------------
 
 class TestCompterJeux:
     def test_straight_games_player1(self):
@@ -109,10 +97,6 @@ class TestCompterJeux:
         assert _compter_jeux(row) == (1, 0)
 
 
-# ---------------------------------------------------------------------------
-# bilan_joueur_badminton
-# ---------------------------------------------------------------------------
-
 class TestBilanJoueurBadminton:
     def test_returns_dataframe(self):
         result = badminton_mod.bilan_joueur_badminton("Axelsen")
@@ -149,9 +133,6 @@ class TestBilanJoueurBadminton:
         assert 0 <= wr <= 100
 
 
-# ---------------------------------------------------------------------------
-# get_agenda_data
-# ---------------------------------------------------------------------------
 
 class TestGetAgendaData:
     def test_returns_dataframe(self):

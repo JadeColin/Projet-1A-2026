@@ -3,7 +3,6 @@ from Projet_fouad.visualize import CompetitionVisualizer, EventVisualizer
 from Projet_fouad.visualizeMatch import MatchVisualizer
 
 
-# ── Liste des sports disponibles ────────────────────────────────────────────
 supported_sports = SPORTS
 
 print("\nSports disponibles :")
@@ -21,7 +20,6 @@ if matched_sport is None:
 selected_sport = matched_sport
 
 
-# ── Compétitions ────────────────────────────────────────────────────────────
 competitions = CompetitionVisualizer.display_all_competitions(selected_sport)
 if not competitions:
     raise ValueError(f"Aucune compétition trouvée pour le sport '{selected_sport.nom}'.")
@@ -40,7 +38,6 @@ if matched_competition is None:
 selected_competition = matched_competition
 
 
-# ── Événements ──────────────────────────────────────────────────────────────
 events = EventVisualizer.display_all_events(selected_competition)
 if not events:
     raise ValueError(f"Aucun événement trouvé pour la compétition '{selected_competition}'.")
@@ -59,7 +56,6 @@ if matched_event is None:
 selected_event = matched_event
 
 
-# ── Matchs ──────────────────────────────────────────────────────────────────
 matches = selected_event.matchs
 if not matches:
     raise ValueError(f"Aucun match trouvé pour l'événement '{selected_event}'.")
@@ -78,7 +74,6 @@ if matched_match is None:
 selected_match = matched_match
 
 
-# ── Joueurs / Participations ────────────────────────────────────────────────
 print(f"\nParticipations pour le match sélectionné :")
 for p in selected_match.participations:
     print(f"  - {p}")

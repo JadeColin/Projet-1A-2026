@@ -55,8 +55,7 @@ class Sport:
     type_competition: TypeCompetition
     couleur: str
 
-    # ── Propriétés de type ───────────────────────────────────────────────────
-
+  
     @property
     def est_individuel(self) -> bool:
         return self.type_sport == TypeSport.INDIVIDUEL
@@ -85,14 +84,6 @@ class Sport:
         return self.nom
 
 
-# ── Registre des sports disponibles ─────────────────────────────────────────
-#
-# type_competition :
-#   POINTS       → uniquement une phase de classement par points
-#   ELIMINATOIRE → uniquement des phases éliminatoires
-#   MIXTE        → phase de groupes (points) + phase éliminatoire
-#
-# Pour les sports MIXTE, les filtres POINTS et ELIMINATOIRE s'appliquent tous les deux.
 
 SPORTS: list[Sport] = [
     Sport(
@@ -164,14 +155,12 @@ SPORTS: list[Sport] = [
 SPORTS_PAR_NOM: dict[str, Sport] = {s.nom: s for s in SPORTS}
 
 
-# ── Accès par nom ────────────────────────────────────────────────────────────
 
 def get_sport(nom: str) -> Sport | None:
     """Retourne le Sport correspondant au nom, ou None s'il n'existe pas."""
     return SPORTS_PAR_NOM.get(nom)
 
 
-# ── Filtres individuels ──────────────────────────────────────────────────────
 
 def filtrer_par_type(type_sport: TypeSport) -> list[Sport]:
     """Retourne les sports filtrés par type (individuel / collectif)."""
@@ -195,7 +184,6 @@ def filtrer_par_competition(type_competition: TypeCompetition) -> list[Sport]:
     return [s for s in SPORTS if s.type_competition == TypeCompetition.MIXTE]
 
 
-# ── Filtre combiné (logique ET) ──────────────────────────────────────────────
 
 def filtrer(
     type_sport: TypeSport | None = None,

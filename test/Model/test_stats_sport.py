@@ -1,8 +1,3 @@
-"""
-Tests du module src/Model/stats_sport.py.
-
-Couvre : StatsSport (classe abstraite), resume(), est_collectif().
-"""
 
 import pandas as pd
 import pytest
@@ -10,7 +5,6 @@ import pytest
 from src.Model.stats_sport import StatsSport
 
 
-# ── Implémentations minimales pour les tests ──────────────────────────────────
 
 
 class SportIndividuelMinimal(StatsSport):
@@ -48,7 +42,6 @@ class SportCollectifMinimal(StatsSport):
         return pd.DataFrame({"joueur": ["Joueur1", "Joueur2"]})
 
 
-# ── StatsSport est abstraite ──────────────────────────────────────────────────
 
 
 class TestStatsSportAbstraite:
@@ -66,7 +59,6 @@ class TestStatsSportAbstraite:
             Incomplete()
 
 
-# ── resume() ─────────────────────────────────────────────────────────────────
 
 
 class TestResume:
@@ -82,7 +74,6 @@ class TestResume:
         assert r["matchs"] == 120
 
 
-# ── est_collectif() ───────────────────────────────────────────────────────────
 
 
 class TestEstCollectif:

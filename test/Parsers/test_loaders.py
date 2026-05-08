@@ -1,11 +1,3 @@
-"""
-Tests des loaders de données sportives.
-
-Deux niveaux de tests :
-    - Tests unitaires : transformations pures (méthodes statiques) sans I/O.
-    - Tests d'intégration : chargement réel des CSV pour vérifier structure et
-      colonnes calculées.
-"""
 
 import pandas as pd
 import pytest
@@ -21,8 +13,6 @@ from src.Parsers.Starcraft2Loader import Starcraft2Loader
 from src.Parsers.TennisLoader import TennisLoader
 from src.Parsers.VolleyballLoader import VolleyballLoader
 
-
-# ── BasketballLoader ──────────────────────────────────────────────────────────
 
 
 class TestBasketballLoaderHeightToCm:
@@ -98,8 +88,6 @@ class TestBasketballLoaderIntegration:
             loader.get_team_roster(players, teams, "TeamQuiNExistePas")
 
 
-# ── ChessLoader ───────────────────────────────────────────────────────────────
-
 
 class TestChessLoaderIntegration:
 
@@ -132,7 +120,6 @@ class TestChessLoaderIntegration:
             assert isinstance(df, pd.DataFrame)
 
 
-# ── TennisLoader ──────────────────────────────────────────────────────────────
 
 
 class TestTennisLoaderParseDob:
@@ -200,7 +187,6 @@ class TestTennisLoaderIntegration:
             assert isinstance(df, pd.DataFrame)
 
 
-# ── LolLoader ─────────────────────────────────────────────────────────────────
 
 
 class TestLolLoaderIntegration:
@@ -230,7 +216,6 @@ class TestLolLoaderIntegration:
         assert len(result) == 4
 
 
-# ── VolleyballLoader ──────────────────────────────────────────────────────────
 
 
 class TestVolleyballLoaderIntegration:
@@ -283,9 +268,6 @@ class TestVolleyballLoaderIntegration:
             assert isinstance(df, pd.DataFrame)
 
 
-# ── BadmintonLoader ───────────────────────────────────────────────────────────
-
-
 class TestBadmintonLoaderIntegration:
 
     @pytest.fixture(scope="class")
@@ -326,9 +308,6 @@ class TestBadmintonLoaderIntegration:
         assert len(result) == 2
         for df in result:
             assert isinstance(df, pd.DataFrame)
-
-
-# ── Cs2Loader ─────────────────────────────────────────────────────────────────
 
 
 class TestCs2LoaderIntegration:
@@ -384,8 +363,6 @@ class TestCs2LoaderIntegration:
             assert isinstance(df, pd.DataFrame)
 
 
-# ── FootballChampionsLeagueLoader ─────────────────────────────────────────────
-
 
 class TestFootballChampionsLeagueLoaderIntegration:
 
@@ -440,8 +417,6 @@ class TestFootballChampionsLeagueLoaderIntegration:
             assert isinstance(df, pd.DataFrame)
 
 
-# ── FootballLoader ────────────────────────────────────────────────────────────
-
 
 class TestFootballLoaderIntegration:
 
@@ -486,8 +461,6 @@ class TestFootballLoaderIntegration:
         for df in result:
             assert isinstance(df, pd.DataFrame)
 
-
-# ── Starcraft2Loader ──────────────────────────────────────────────────────────
 
 
 class TestStarcraft2LoaderIntegration:

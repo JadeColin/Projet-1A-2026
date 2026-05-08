@@ -43,9 +43,6 @@ def _country_name(code: str) -> str:
     return row.iloc[0]["country"] if not row.empty else code
 
 
-# ---------------------------------------------------------------------------
-# 1. Classement
-# ---------------------------------------------------------------------------
 
 def classement(genre: str = "hommes") -> pd.DataFrame:
     """Classement des équipes JO Paris 2024 par victoires."""
@@ -85,10 +82,6 @@ def classement(genre: str = "hommes") -> pd.DataFrame:
     return classement_df[["Pays", "Victoires", "Défaites", "Matchs joués", "Sets gagnés"]]
 
 
-# ---------------------------------------------------------------------------
-# 2. Bilan d'une équipe
-# ---------------------------------------------------------------------------
-
 def bilan_equipe(team_code: str, genre: str = "hommes") -> pd.DataFrame:
     """Bilan détaillé d'une équipe (code IOC, ex: 'FRA')."""
     _load()
@@ -124,9 +117,6 @@ def bilan_equipe(team_code: str, genre: str = "hommes") -> pd.DataFrame:
     }])
 
 
-# ---------------------------------------------------------------------------
-# 3. Roster d'équipe (Joueurs et Coachs)
-# ---------------------------------------------------------------------------
 
 def roster_equipe(team_code: str, genre: str = "hommes") -> pd.DataFrame:
     """Roster d'une équipe de volleyball : joueurs et coachs avec nom, nationalité, naissance."""
@@ -163,9 +153,6 @@ _LABELS_VB = {
 }
 
 
-# ---------------------------------------------------------------------------
-# 4. Fiche individuelle d'un joueur
-# ---------------------------------------------------------------------------
 
 def fiche_joueur_volleyball(nom: str, genre: str = "hommes") -> pd.DataFrame:
     """Fiche complète d'un joueur de volleyball (toutes les données disponibles)."""
@@ -189,9 +176,6 @@ def liste_joueurs(genre: str = "hommes", equipe: str | None = None) -> pd.DataFr
     return lister_joueurs(df, col_nom="name", col_equipe="country_code", col_labels=_LABELS_VB)
 
 
-# ---------------------------------------------------------------------------
-# 5. Données agenda
-# ---------------------------------------------------------------------------
 
 def get_agenda_data() -> pd.DataFrame:
     """Retourne les matchs Volleyball (hommes + femmes) au format standard pour l'agenda."""
@@ -214,9 +198,6 @@ def get_agenda_data() -> pd.DataFrame:
     ], ignore_index=True)
 
 
-# ---------------------------------------------------------------------------
-# 6. Classement par points (phase de groupes)
-# ---------------------------------------------------------------------------
 
 def classement_groupes(genre: str = "hommes", top_qualifies: int = 2) -> None:
     """

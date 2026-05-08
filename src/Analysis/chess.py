@@ -15,10 +15,6 @@ def _load():
         _players, _matches = _loader.load_all()
 
 
-# ---------------------------------------------------------------------------
-# 1. Classement Elo
-# ---------------------------------------------------------------------------
-
 def classement_elo(mode: str = "standard", n: int = 20) -> pd.DataFrame:
     """Top N joueurs par classement Elo (standard / rapid / blitz)."""
     _load()
@@ -41,9 +37,6 @@ _LABELS_CHESS = {
 }
 
 
-# ---------------------------------------------------------------------------
-# 2. Fiche individuelle d'un joueur
-# ---------------------------------------------------------------------------
 
 def fiche_joueur_chess(nom: str) -> pd.DataFrame:
     """Fiche complète d'un joueur d'échecs (toutes les données disponibles)."""
@@ -55,10 +48,6 @@ def fiche_joueur_chess(nom: str) -> pd.DataFrame:
         col_labels=_LABELS_CHESS,
     )
 
-
-# ---------------------------------------------------------------------------
-# 3. Bilan d'un joueur
-# ---------------------------------------------------------------------------
 
 def bilan_joueur(player_name: str) -> pd.DataFrame:
     """Bilan victoires/défaites/nuls d'un joueur (recherche insensible à la casse)."""
@@ -99,9 +88,6 @@ def bilan_joueur(player_name: str) -> pd.DataFrame:
     }])
 
 
-# ---------------------------------------------------------------------------
-# 4. Stats par titre FIDE
-# ---------------------------------------------------------------------------
 
 def stats_par_titre() -> pd.DataFrame:
     """Nombre de joueurs et Elo moyen (standard) par titre FIDE."""

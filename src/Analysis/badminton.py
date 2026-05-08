@@ -40,9 +40,6 @@ _LABELS_BADMINTON = {
 }
 
 
-# ---------------------------------------------------------------------------
-# 1. Fiche individuelle d'un joueur
-# ---------------------------------------------------------------------------
 
 def fiche_joueur_badminton(nom: str) -> pd.DataFrame:
     """Fiche complète d'un joueur de badminton (toutes les données disponibles)."""
@@ -55,9 +52,6 @@ def fiche_joueur_badminton(nom: str) -> pd.DataFrame:
     )
 
 
-# ---------------------------------------------------------------------------
-# 2. Bilan victoires/défaites d'un joueur
-# ---------------------------------------------------------------------------
 
 def bilan_joueur_badminton(nom: str) -> pd.DataFrame:
     """Bilan victoires/défaites d'un joueur de badminton sur la saison."""
@@ -94,9 +88,6 @@ def bilan_joueur_badminton(nom: str) -> pd.DataFrame:
     return pd.DataFrame(rows, columns=["Statistique", name])
 
 
-# ---------------------------------------------------------------------------
-# 3. Données agenda
-# ---------------------------------------------------------------------------
 
 _BRACKET_ROUNDS = ["Round of 32", "Round of 16", "Quarter final", "Semi final", "Final"]
 

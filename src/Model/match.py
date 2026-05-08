@@ -47,10 +47,7 @@ class Match:
         self._col_score2 = col_score2
         self._col_gagnant = col_gagnant
 
-    # ------------------------------------------------------------------ #
-    #  Propriétés principales                                              #
-    # ------------------------------------------------------------------ #
-
+ 
     @property
     def id(self):
         """Identifiant du match."""
@@ -129,10 +126,6 @@ class Match:
             return False
         return s1 == s2
 
-    # ------------------------------------------------------------------ #
-    #  Accès brut                                                          #
-    # ------------------------------------------------------------------ #
-
     def __getitem__(self, colonne: str):
         """Accès direct à n'importe quelle colonne brute : match['surface']."""
         return self._data[colonne]
@@ -147,9 +140,6 @@ class Match:
         s1, s2 = self.score_1, self.score_2
         score = f" {s1}-{s2}" if s1 is not None else ""
         return f"Match({e1!r} vs {e2!r}{score}, date={date})"
-
-
-# --------------------------------------------------------------------------- #
 
 
 class Matchs:
@@ -208,9 +198,6 @@ class Matchs:
         self._col_score2 = col_score2
         self._col_gagnant = col_gagnant
 
-    # ------------------------------------------------------------------ #
-    #  Filtres                                                             #
-    # ------------------------------------------------------------------ #
 
     def get_par_equipe(self, equipe_id) -> "Matchs":
         """Retourne tous les matchs impliquant l'équipe donnée (domicile ou extérieur)."""
@@ -257,10 +244,7 @@ class Matchs:
             df = df[df[col] == val]
         return self._copie(df)
 
-    # ------------------------------------------------------------------ #
-    #  Statistiques par équipe                                             #
-    # ------------------------------------------------------------------ #
-
+  
     def victoires(self, equipe_id) -> int:
         """Nombre de victoires de l'équipe dans cette collection."""
         gagnants = self._serie_gagnants()
@@ -328,9 +312,6 @@ class Matchs:
             .reset_index(drop=True)
         )
 
-    # ------------------------------------------------------------------ #
-    #  Interface Python standard                                           #
-    # ------------------------------------------------------------------ #
 
     def to_dataframe(self) -> pd.DataFrame:
         """Retourne le DataFrame brut sous-jacent (copie)."""
@@ -353,9 +334,6 @@ class Matchs:
         e2 = self._col_equipe2 or "?"
         return f"Matchs({len(self)} matchs | {e1} vs {e2})"
 
-    # ------------------------------------------------------------------ #
-    #  Helpers internes                                                    #
-    # ------------------------------------------------------------------ #
 
     def _serie_gagnants(self) -> pd.Series:
         """

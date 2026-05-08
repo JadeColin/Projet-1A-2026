@@ -3,10 +3,6 @@ import pytest
 from src.Common.utils import parse_boolean, print_timings
 
 
-# ---------------------------------------------------------------------------
-# parse_boolean
-# ---------------------------------------------------------------------------
-
 class TestParseBoolean:
     # String truthy values
     def test_lowercase_true(self):
@@ -48,9 +44,6 @@ class TestParseBoolean:
         assert parse_boolean(False) is False
 
 
-# ---------------------------------------------------------------------------
-# print_timings
-# ---------------------------------------------------------------------------
 
 class TestPrintTimings:
     def test_decorator_returns_function_result(self):

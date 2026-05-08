@@ -21,9 +21,6 @@ def _load():
         _players, _teams, _matches = _loader.load_all()
 
 
-# ---------------------------------------------------------------------------
-# 1. Meilleurs buteurs
-# ---------------------------------------------------------------------------
 
 def meilleurs_buteurs(n: int = 10) -> pd.DataFrame:
     """Top N joueurs par nombre de buts avec % de tirs cadrés."""
@@ -44,10 +41,6 @@ def meilleurs_buteurs(n: int = 10) -> pd.DataFrame:
     })
 
 
-# ---------------------------------------------------------------------------
-# 2. Meilleurs passeurs
-# ---------------------------------------------------------------------------
-
 def meilleurs_passeurs(n: int = 10) -> pd.DataFrame:
     """Top N joueurs par nombre de passes décisives."""
     _load()
@@ -59,10 +52,6 @@ def meilleurs_passeurs(n: int = 10) -> pd.DataFrame:
         "position": "Poste", "assists": "Passes déc.",
     })
 
-
-# ---------------------------------------------------------------------------
-# 3. Stats d'une équipe (joueurs)
-# ---------------------------------------------------------------------------
 
 def stats_equipe(team_name: str) -> pd.DataFrame:
     """Statistiques collectives d'une équipe (somme sur tous les joueurs)."""
@@ -88,9 +77,6 @@ def stats_equipe(team_name: str) -> pd.DataFrame:
     return pd.DataFrame([row])
 
 
-# ---------------------------------------------------------------------------
-# 4. Statistiques complètes d'un joueur
-# ---------------------------------------------------------------------------
 
 def stats_joueur(player_name: str) -> pd.DataFrame:
     """Statistiques complètes d'un joueur de la Champions League."""
@@ -123,9 +109,6 @@ def stats_joueur(player_name: str) -> pd.DataFrame:
     return pd.DataFrame([row])
 
 
-# ---------------------------------------------------------------------------
-# 6. Statistiques des gardiens
-# ---------------------------------------------------------------------------
 
 def stats_gardiens(n: int = 10) -> pd.DataFrame:
     """Statistiques des meilleurs gardiens de la Champions League."""
@@ -167,10 +150,6 @@ _LABELS_FCL = {
     "cleansheets": "Clean sheets", "saved_penalties": "Pénaltys arrêtés",
 }
 
-# ---------------------------------------------------------------------------
-# 7. Fiche individuelle d'un joueur
-# ---------------------------------------------------------------------------
-
 
 def fiche_joueur_fcl(nom: str) -> pd.DataFrame:
     """Fiche complète d'un joueur de la Champions League (toutes les données disponibles)."""
@@ -194,9 +173,6 @@ def liste_joueurs(club: str | None = None) -> pd.DataFrame:
     )
 
 
-# ---------------------------------------------------------------------------
-# 8. Classement de la phase de groupes
-# ---------------------------------------------------------------------------
 
 def classement_groupes(top_qualifies: int = 2) -> None:
     """
@@ -222,9 +198,6 @@ def classement_groupes(top_qualifies: int = 2) -> None:
     )
 
 
-# ---------------------------------------------------------------------------
-# 9. Données agenda
-# ---------------------------------------------------------------------------
 
 def get_agenda_data() -> pd.DataFrame:
     """Retourne les matchs Football CL au format standard pour l'agenda."""
@@ -239,10 +212,6 @@ def get_agenda_data() -> pd.DataFrame:
         "Score 2": m["score_team_away"].astype(int).astype(str),
     })
 
-
-# ---------------------------------------------------------------------------
-# 8. Bracket de la phase éliminatoire
-# ---------------------------------------------------------------------------
 
 _ORDRE_ROUNDS_KNOCKOUT = ["RO16", "RO8", "RO4", "RO2"]
 

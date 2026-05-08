@@ -1,8 +1,3 @@
-"""
-Tests for src/Analysis/basketball.py
-
-Module-level globals are monkeypatched with in-memory DataFrames.
-"""
 
 import pytest
 import pandas as pd
@@ -10,9 +5,6 @@ import pandas as pd
 import src.Analysis.basketball as bball_mod
 
 
-# ---------------------------------------------------------------------------
-# Fixtures
-# ---------------------------------------------------------------------------
 
 @pytest.fixture
 def mock_teams():
@@ -82,9 +74,6 @@ def inject_mock_data(monkeypatch, mock_players, mock_teams, mock_matches):
     monkeypatch.setattr(bball_mod, "_matches", mock_matches)
 
 
-# ---------------------------------------------------------------------------
-# top_equipes_offensives
-# ---------------------------------------------------------------------------
 
 class TestTopEquipesOffensives:
     def test_returns_dataframe(self):
@@ -108,10 +97,6 @@ class TestTopEquipesOffensives:
         result = bball_mod.top_equipes_offensives()
         assert result.index[0] == 1
 
-
-# ---------------------------------------------------------------------------
-# stats_equipe
-# ---------------------------------------------------------------------------
 
 class TestStatsEquipe:
     def test_returns_dataframe(self):
@@ -143,9 +128,6 @@ class TestStatsEquipe:
         assert result.iloc[0]["Équipe"] == "Los Angeles Lakers"
 
 
-# ---------------------------------------------------------------------------
-# classement_defensif
-# ---------------------------------------------------------------------------
 
 class TestClassementDefensif:
     def test_returns_dataframe(self):
@@ -173,10 +155,6 @@ class TestClassementDefensif:
         assert result.index[0] == 1
 
 
-# ---------------------------------------------------------------------------
-# get_agenda_data
-# ---------------------------------------------------------------------------
-
 class TestGetAgendaData:
     def test_returns_dataframe(self):
         result = bball_mod.get_agenda_data()
@@ -201,9 +179,6 @@ class TestGetAgendaData:
                "Los Angeles Lakers" in result["Équipe 2"].values
 
 
-# ---------------------------------------------------------------------------
-# liste_joueurs
-# ---------------------------------------------------------------------------
 
 class TestListeJoueurs:
     def test_returns_all_players(self):

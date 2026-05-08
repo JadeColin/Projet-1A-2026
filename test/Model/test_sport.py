@@ -1,10 +1,3 @@
-"""
-Tests du module src/Model/sport.py.
-
-Couvre : TypeSport, CategorieSport, TypeCompetition, Sport,
-         SPORTS, SPORTS_PAR_NOM, get_sport, filtrer_par_type,
-         filtrer_par_categorie, filtrer_par_competition, filtrer.
-"""
 
 import pytest
 
@@ -23,7 +16,6 @@ from src.Model.sport import (
 )
 
 
-# ── Enums ─────────────────────────────────────────────────────────────────────
 
 
 class TestEnumsStr:
@@ -41,7 +33,6 @@ class TestEnumsStr:
         assert str(TypeCompetition.MIXTE) == "Mixte"
 
 
-# ── Sport (propriétés) ────────────────────────────────────────────────────────
 
 
 @pytest.fixture
@@ -98,7 +89,6 @@ class TestSportProperties:
         assert str(sport_collectif_sport_points) == "Basketball"
 
 
-# ── Registre SPORTS ───────────────────────────────────────────────────────────
 
 
 class TestRegistreSports:
@@ -117,7 +107,6 @@ class TestRegistreSports:
             assert sport.couleur
 
 
-# ── get_sport ─────────────────────────────────────────────────────────────────
 
 
 class TestGetSport:
@@ -151,7 +140,6 @@ class TestFiltrerParType:
         assert len(collectifs) + len(individuels) == len(SPORTS)
 
 
-# ── filtrer_par_categorie ─────────────────────────────────────────────────────
 
 
 class TestFiltrerParCategorie:
@@ -169,7 +157,6 @@ class TestFiltrerParCategorie:
         assert len(sports) + len(esports) == len(SPORTS)
 
 
-# ── filtrer_par_competition ───────────────────────────────────────────────────
 
 
 class TestFiltrerParCompetition:
@@ -188,8 +175,6 @@ class TestFiltrerParCompetition:
         assert all(s.type_competition == TypeCompetition.MIXTE for s in result)
         assert len(result) > 0
 
-
-# ── filtrer (combiné) ─────────────────────────────────────────────────────────
 
 
 class TestFiltrer:

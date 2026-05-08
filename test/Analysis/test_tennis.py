@@ -1,9 +1,3 @@
-"""
-Tests for src/Analysis/tennis.py
-
-Pure functions are tested directly.
-Functions relying on global state are tested via monkeypatching.
-"""
 
 import pytest
 import pandas as pd
@@ -12,9 +6,6 @@ import src.Analysis.tennis as tennis_mod
 from src.Analysis.tennis import _compter_sets, _standardiser_tennis
 
 
-# ---------------------------------------------------------------------------
-# Fixtures: in-memory mock data
-# ---------------------------------------------------------------------------
 
 @pytest.fixture
 def mock_players():
@@ -50,9 +41,7 @@ def inject_mock_data(monkeypatch, mock_players, mock_matches):
     monkeypatch.setattr(tennis_mod, "_wta_matches", mock_matches)
 
 
-# ---------------------------------------------------------------------------
-# _compter_sets (pure function)
-# ---------------------------------------------------------------------------
+
 
 class TestCompterSets:
     def test_straight_sets(self):
@@ -75,9 +64,6 @@ class TestCompterSets:
         assert _compter_sets("4-6 5-7") == (0, 2)
 
 
-# ---------------------------------------------------------------------------
-# classement_victoires
-# ---------------------------------------------------------------------------
 
 class TestClassementVictoires:
     def test_returns_dataframe(self):
@@ -105,9 +91,6 @@ class TestClassementVictoires:
         assert result.index[0] == 1
 
 
-# ---------------------------------------------------------------------------
-# stats_joueur
-# ---------------------------------------------------------------------------
 
 class TestStatsJoueur:
     def test_returns_dataframe(self):
@@ -132,9 +115,6 @@ class TestStatsJoueur:
         assert result.iloc[0]["Joueur"] == "Carlos Alcaraz"
 
 
-# ---------------------------------------------------------------------------
-# _standardiser_tennis
-# ---------------------------------------------------------------------------
 
 class TestStandardiserTennis:
     def test_columns(self, mock_matches, mock_players):
@@ -150,9 +130,6 @@ class TestStandardiserTennis:
         assert len(result) == len(mock_matches)
 
 
-# ---------------------------------------------------------------------------
-# get_agenda_data
-# ---------------------------------------------------------------------------
 
 class TestGetAgendaData:
     def test_returns_dataframe(self):

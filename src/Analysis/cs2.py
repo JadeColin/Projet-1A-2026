@@ -23,10 +23,6 @@ def _load():
         _players, _coaches, _teams, _matches = _loader.load_all()
 
 
-# ---------------------------------------------------------------------------
-# 1. Classement de la phase de groupes (victoires)
-# ---------------------------------------------------------------------------
-
 def classement() -> pd.DataFrame:
     """Classement des équipes CS2 par victoires sur l'ensemble de la compétition."""
     _load()
@@ -55,9 +51,6 @@ def classement() -> pd.DataFrame:
     return classement_df[["Équipe", "Victoires", "Défaites", "Matchs joués", "% Victoires"]]
 
 
-# ---------------------------------------------------------------------------
-# 2. Stats d'une équipe
-# ---------------------------------------------------------------------------
 
 def stats_equipe(team_name: str) -> pd.DataFrame:
     """Statistiques d'une équipe CS2 : maps jouées, gagnées, perdues, % victoires."""
@@ -103,9 +96,6 @@ def stats_equipe(team_name: str) -> pd.DataFrame:
     }])
 
 
-# ---------------------------------------------------------------------------
-# 3. Roster d'une équipe (joueurs + coachs)
-# ---------------------------------------------------------------------------
 
 def roster_equipe(team_name: str) -> pd.DataFrame:
     """Roster d'une équipe CS2 : joueurs et coachs avec pseudo, nom, nationalité, naissance."""
@@ -133,9 +123,6 @@ _LABELS_CS2 = {
     "birthdate": "Date de naissance", "role": "Rôle", "team": "Équipe",
 }
 
-# ---------------------------------------------------------------------------
-# 4. Fiche individuelle d'un joueur
-# ---------------------------------------------------------------------------
 
 
 def fiche_joueur_cs2(nom: str) -> pd.DataFrame:
@@ -159,13 +146,6 @@ def liste_joueurs(equipe: str | None = None) -> pd.DataFrame:
     return lister_joueurs(df, col_nom="name", col_equipe="team", col_labels=_LABELS_CS2)
 
 
-# ---------------------------------------------------------------------------
-# 5. Bracket des PlayOffs
-# ---------------------------------------------------------------------------
-
-# ---------------------------------------------------------------------------
-# 5. Données agenda
-# ---------------------------------------------------------------------------
 
 def get_agenda_data() -> pd.DataFrame:
     """Retourne les matchs CS2 au format standard pour l'agenda."""
@@ -205,10 +185,6 @@ def bracket() -> None:
         deux_manches=False,
     )
 
-
-# ---------------------------------------------------------------------------
-# 7. Classement par points (phases de groupes)
-# ---------------------------------------------------------------------------
 
 
 def classement_stages(top_qualifies: int | None = None) -> None:
