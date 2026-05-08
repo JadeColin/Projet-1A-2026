@@ -1,9 +1,3 @@
-"""
-Tests du module src/Model/equipe.py.
-
-Couvre : Equipe (propriétés, relations, accès brut) et Equipes (filtres, relations).
-Tous les tests utilisent des DataFrames in-memory — aucune lecture de fichier.
-"""
 
 import pandas as pd
 import pytest
@@ -12,7 +6,6 @@ from src.Model.equipe import Equipe, Equipes
 from src.Model.joueur import Joueurs
 
 
-# ── Fixtures ──────────────────────────────────────────────────────────────────
 
 
 @pytest.fixture
@@ -65,7 +58,6 @@ def equipe_lakers(df_teams):
     )
 
 
-# ── Equipe : propriétés ───────────────────────────────────────────────────────
 
 
 class TestEquipeProprietes:
@@ -114,7 +106,6 @@ class TestEquipeAccesBrut:
         assert "LAL" in repr(equipe_lakers)
 
 
-# ── Equipes : filtres ─────────────────────────────────────────────────────────
 
 
 class TestEquipesFiltres:
@@ -148,7 +139,6 @@ class TestEquipesFiltres:
         assert len(result) == 1
 
 
-# ── Equipes : relations ───────────────────────────────────────────────────────
 
 
 class TestEquipesRelations:
@@ -166,7 +156,6 @@ class TestEquipesRelations:
         assert len(roster) == 2
 
 
-# ── Equipes : interface Python ────────────────────────────────────────────────
 
 
 class TestEquipesInterface:

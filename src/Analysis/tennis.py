@@ -26,10 +26,6 @@ def _players(circuit: str) -> pd.DataFrame:
     return _atp_players if circuit.upper() == "ATP" else _wta_players
 
 
-# ---------------------------------------------------------------------------
-# 1. Classement par victoires ATP / WTA
-# ---------------------------------------------------------------------------
-
 def classement_victoires(circuit: str = "ATP", n: int = 20) -> pd.DataFrame:
     """Top N joueurs par victoires sur la saison 2024."""
     _load()
@@ -51,9 +47,6 @@ def classement_victoires(circuit: str = "ATP", n: int = 20) -> pd.DataFrame:
     return result[["Joueur", "Victoires", "Défaites", "Matchs joués", "% Victoires"]]
 
 
-# ---------------------------------------------------------------------------
-# 2. Stats d'un joueur
-# ---------------------------------------------------------------------------
 
 def stats_joueur(player_name: str, circuit: str = "ATP") -> pd.DataFrame:
     """Statistiques d'un joueur sur la saison 2024."""
@@ -96,9 +89,6 @@ _LABELS_TENNIS = {
 }
 
 
-# ---------------------------------------------------------------------------
-# 5. Fiche individuelle d'un joueur
-# ---------------------------------------------------------------------------
 
 def fiche_joueur_tennis(nom: str, circuit: str = "ATP") -> pd.DataFrame:
     """Fiche complète d'un joueur de tennis (toutes les données disponibles)."""
@@ -119,10 +109,6 @@ def liste_joueurs(circuit: str = "ATP") -> pd.DataFrame:
     p = _atp_players if circuit.upper() == "ATP" else _wta_players
     return lister_joueurs(p, col_nom="full_name", col_labels=_LABELS_TENNIS)
 
-
-# ---------------------------------------------------------------------------
-# 6. Données agenda
-# ---------------------------------------------------------------------------
 
 def _compter_sets(score: str) -> tuple[int, int]:
     """Retourne (sets_gagnant, sets_perdant) depuis une chaîne de score tennis.
@@ -184,9 +170,6 @@ def get_agenda_data() -> pd.DataFrame:
     ], ignore_index=True)
 
 
-# ---------------------------------------------------------------------------
-# Bracket
-# ---------------------------------------------------------------------------
 
 _BRACKET_ROUNDS = ["R128", "R64", "R32", "R16", "QF", "SF", "F"]
 

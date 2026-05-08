@@ -8,8 +8,6 @@ from Projet_Mathias.load import load
 from datetime import date
 
 
-# ── Configuration par sport ─────────────────────────────────────────────────
-# Relie chaque sport (nom) à sa clé loader, ses tables, et ses colonnes
 
 SPORT_CONFIG = {
     "Basketball": {
@@ -96,7 +94,6 @@ SPORT_CONFIG = {
 }
 
 
-# ── Cache pour éviter de recharger les données à chaque appel ───────────────
 _cache_competitions = {}
 
 
@@ -116,7 +113,6 @@ def _build_competitions(sport: Sport):
     loader_key = config["loader_key"]
     match_table = config["match_table"]
 
-    # Charger le DataFrame des matchs
     try:
         df = load(loader_key, match_table)
     except Exception as e:
@@ -124,7 +120,6 @@ def _build_competitions(sport: Sport):
         _cache_competitions[sport.nom] = []
         return []
 
-    # Colonnes de mapping
     col_eq1 = config.get("col_equipe1")
     col_eq2 = config.get("col_equipe2")
     col_s1 = config.get("col_score1")
@@ -135,7 +130,6 @@ def _build_competitions(sport: Sport):
     competitions = []
 
     for comp_info in config["competitions"]:
-        # Créer la compétition
         comp = Competition(
             comp_info["id"],
             comp_info["name"],
@@ -144,7 +138,6 @@ def _build_competitions(sport: Sport):
             comp_info["fin"],
         )
 
-        # Créer un événement principal pour cette compétition
         event = Evenement(
             id_evenement=comp_info["id"] * 10,
             sport=sport.nom,
@@ -152,9 +145,7 @@ def _build_competitions(sport: Sport):
             id_competition=comp.id_competition,
         )
 
-        # Peupler l'événement avec les matchs du DataFrame
         for idx, row in df.iterrows():
-            # Récupérer la date du match
             match_date = None
             if col_date and col_date in df.columns:
                 try:
@@ -162,7 +153,6 @@ def _build_competitions(sport: Sport):
                 except (ValueError, TypeError):
                     match_date = date.today()
 
-            # Créer le match 
             match =Match(
                 id_match=int(idx),
                 date_match=match_date or date.today(),
@@ -170,15 +160,12 @@ def _build_competitions(sport: Sport):
                 id_evenement=event.id_evenement,
             )
 
-            # Récupérer les noms/IDs des équipes
             equipe1 = str(row[col_eq1]) if col_eq1 and col_eq1 in df.columns else "?"
             equipe2 = str(row[col_eq2]) if col_eq2 and col_eq2 in df.columns else "?"
 
-            # Récupérer les scores
             score1 = row.get(col_s1) if col_s1 else None
             score2 = row.get(col_s2) if col_s2 else None
 
-            # Déterminer le gagnant
             if col_gagnant and col_gagnant in df.columns:
                 gagnant = str(row[col_gagnant])
                 status1 = "victoire" if gagnant == equipe1 else "defaite"
@@ -196,7 +183,6 @@ def _build_competitions(sport: Sport):
             else:
                 status1, status2 = "inconnu", "inconnu"
 
-            # Créer les participations
             p1 = Participation(
                 id_participation=int(idx) * 2,
                 id_match=match.id_match,
@@ -208,7 +194,6 @@ def _build_competitions(sport: Sport):
                 status=status2,
             )
 
-            # Stocker le nom de l'équipe sur la participation pour l'affichage
             p1.nom_equipe = equipe1
             p1.score = score1
             p2.nom_equipe = equipe2
@@ -217,7 +202,6 @@ def _build_competitions(sport: Sport):
             match.ajouter_participation(p1)
             match.ajouter_participation(p2)
 
-            # Stocker aussi les infos d'affichage directement sur le match
             match.equipe_1 = equipe1
             match.equipe_2 = equipe2
             match.score_1 = score1
@@ -231,7 +215,6 @@ def _build_competitions(sport: Sport):
     _cache_competitions[sport.nom] = competitions
     return competitions
 
-#  Classes de visualisation
 
 
 class SportVisualizer():
@@ -264,7 +247,6 @@ class EventVisualizer():
             print("Aucun match dans cet événement.")
             return None
 
-        # Compter les victoires par équipe
         victoires = {}
         for match in event.matchs:
             for p in match.participations:

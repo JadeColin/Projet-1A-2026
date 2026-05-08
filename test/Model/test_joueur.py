@@ -1,9 +1,3 @@
-"""
-Tests du module src/Model/joueur.py.
-
-Couvre : Joueur (propriétés, accès brut) et Joueurs (filtres, statistiques).
-Tous les tests utilisent des DataFrames in-memory — aucune lecture de fichier.
-"""
 
 import pandas as pd
 import pytest
@@ -11,7 +5,6 @@ import pytest
 from src.Model.joueur import Joueur, Joueurs
 
 
-# ── Fixtures ──────────────────────────────────────────────────────────────────
 
 
 @pytest.fixture
@@ -51,7 +44,6 @@ def joueur_lebron(df_joueurs):
     )
 
 
-# ── Joueur : propriétés ───────────────────────────────────────────────────────
 
 
 class TestJoueurProprietes:
@@ -103,7 +95,6 @@ class TestJoueurAccesBrut:
         assert "LeBron James" in repr(joueur_lebron)
 
 
-# ── Joueurs : filtres ─────────────────────────────────────────────────────────
 
 
 class TestJoueursFiltres:
@@ -147,7 +138,6 @@ class TestJoueursFiltres:
         assert result[0].nom == "Stephen Curry"
 
 
-# ── Joueurs : statistiques ────────────────────────────────────────────────────
 
 
 class TestJoueursStats:
@@ -180,7 +170,6 @@ class TestJoueursStats:
         assert "height_cm" in df.columns
 
 
-# ── Joueurs : interface Python ────────────────────────────────────────────────
 
 
 class TestJoueursInterface:

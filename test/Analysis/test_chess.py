@@ -1,8 +1,3 @@
-"""
-Tests for src/Analysis/chess.py
-
-Module-level globals are monkeypatched with in-memory DataFrames.
-"""
 
 import pytest
 import pandas as pd
@@ -10,9 +5,6 @@ import pandas as pd
 import src.Analysis.chess as chess_mod
 
 
-# ---------------------------------------------------------------------------
-# Fixtures
-# ---------------------------------------------------------------------------
 
 @pytest.fixture
 def mock_players():
@@ -50,10 +42,6 @@ def inject_mock_data(monkeypatch, mock_players, mock_matches):
     monkeypatch.setattr(chess_mod, "_players", mock_players)
     monkeypatch.setattr(chess_mod, "_matches", mock_matches)
 
-
-# ---------------------------------------------------------------------------
-# classement_elo
-# ---------------------------------------------------------------------------
 
 class TestClassementElo:
     def test_standard_mode_returns_dataframe(self):
@@ -97,10 +85,6 @@ class TestClassementElo:
         assert result.iloc[0]["Joueur"] == "Magnus Carlsen"
 
 
-# ---------------------------------------------------------------------------
-# bilan_joueur
-# ---------------------------------------------------------------------------
-
 class TestBilanJoueur:
     def test_returns_dataframe(self):
         result = chess_mod.bilan_joueur("Carlsen")
@@ -135,9 +119,6 @@ class TestBilanJoueur:
         assert result.iloc[0]["Joueur"] == "Magnus Carlsen"
 
 
-# ---------------------------------------------------------------------------
-# stats_par_titre
-# ---------------------------------------------------------------------------
 
 class TestStatsParTitre:
     def test_returns_dataframe(self):

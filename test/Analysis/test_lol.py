@@ -1,8 +1,4 @@
-"""
-Tests for src/Analysis/lol.py
 
-Module-level globals are monkeypatched with in-memory DataFrames.
-"""
 
 import pytest
 import pandas as pd
@@ -10,9 +6,6 @@ import pandas as pd
 import src.Analysis.lol as lol_mod
 
 
-# ---------------------------------------------------------------------------
-# Fixtures
-# ---------------------------------------------------------------------------
 
 @pytest.fixture
 def mock_players():
@@ -89,9 +82,6 @@ def inject_mock_data(monkeypatch, mock_players, mock_coaches, mock_teams, mock_m
     monkeypatch.setattr(lol_mod, "_matches", mock_matches)
 
 
-# ---------------------------------------------------------------------------
-# stats_equipe
-# ---------------------------------------------------------------------------
 
 class TestStatsEquipe:
     def test_returns_dataframe(self):
@@ -117,9 +107,6 @@ class TestStatsEquipe:
         assert result.iloc[0]["Durée moy. (min)"] == pytest.approx(32.5, abs=0.5)
 
 
-# ---------------------------------------------------------------------------
-# champions_picks_bans
-# ---------------------------------------------------------------------------
 
 class TestChampionsPicksBans:
     def test_returns_dataframe(self):
@@ -151,9 +138,6 @@ class TestChampionsPicksBans:
         assert result.index[0] == 1
 
 
-# ---------------------------------------------------------------------------
-# liste_joueurs
-# ---------------------------------------------------------------------------
 
 class TestListeJoueurs:
     def test_returns_all_players(self):
@@ -174,9 +158,6 @@ class TestListeJoueurs:
         assert result.index[0] == 1
 
 
-# ---------------------------------------------------------------------------
-# get_agenda_data
-# ---------------------------------------------------------------------------
 
 class TestGetAgendaData:
     def test_returns_dataframe(self):

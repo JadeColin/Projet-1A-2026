@@ -13,8 +13,7 @@ from src.Model.sport import (
 )
 
 
-# ── Configuration des stats par sport ────────────────────────────────────────
-#
+# Configuration des stats par sport 
 # Chaque sport possède :
 #   collectif : bool  — True → propose Équipe / Joueurs
 #   genre     : bool  — True → propose Hommes / Femmes en premier
@@ -32,7 +31,7 @@ from src.Model.sport import (
 #
 # Pour un sport individuel avec genre :
 #   {"collectif": False, "genre": True, "hommes": [...], "femmes": [...]}
-#
+
 
 
 def _make_sports_config() -> dict:
@@ -654,7 +653,6 @@ def _make_sports_config() -> dict:
     }
 
 
-# ── Affichage ─────────────────────────────────────────────────────────────────
 
 _SEP = "─" * 54
 
@@ -719,16 +717,6 @@ def _extract_year(val) -> int | None:
     return None
 
 
-# ── Moteur de navigation ──────────────────────────────────────────────────────
-#
-# Chaque "page" est un callable() → str | callable | None
-#   callable  → naviguer vers cette nouvelle page
-#   'back'    → reculer dans l'historique
-#   'forward' → avancer dans l'historique
-#   'quit'    → quitter l'application
-#   None      → rester sur la page (réafficher)
-#
-
 
 class CLI:
     def __init__(self):
@@ -741,7 +729,6 @@ class CLI:
         }
         self._config: dict | None = None
 
-    # ── Boucle principale ─────────────────────────────────────────────────────
 
     def run(self) -> None:
         self._config = _make_sports_config()
@@ -769,7 +756,6 @@ class CLI:
                 current = result
             # None → rester sur la page courante (réafficher)
 
-    # ── Utilitaires ───────────────────────────────────────────────────────────
 
     def _sports_visibles(self) -> list:
         """Retourne les sports filtrés ET disponibles dans la config."""
@@ -784,7 +770,6 @@ class CLI:
         vals = [str(v) for v in self._filters.values() if v is not None]
         return ", ".join(vals) if vals else "Aucun"
 
-    # ── Page : accueil ────────────────────────────────────────────────────────
 
     def _page_accueil(self):
         sports = self._sports_visibles()
@@ -813,7 +798,6 @@ class CLI:
             print("  Commande non reconnue.")
         return None
 
-    # ── Page : filtres ────────────────────────────────────────────────────────
 
     def _page_filtres(self):
         f = self._filters
@@ -869,7 +853,6 @@ class CLI:
             print("  Commande non reconnue.")
         return None
 
-    # ── Page : sport (routeur) ────────────────────────────────────────────────
 
     def _make_page_sport(self, sport):
         config = self._config[sport.nom]
@@ -883,7 +866,6 @@ class CLI:
         else:
             return self._make_page_stats(sport.nom, config["stats"])
 
-    # ── Page : sélection du genre ─────────────────────────────────────────────
 
     def _make_page_genre(self, titre, config):
         collectif = config.get("collectif", False)
@@ -922,7 +904,6 @@ class CLI:
 
         return page
 
-    # ── Page : sélection Équipe / Joueurs ─────────────────────────────────────
 
     def _make_page_cat(self, titre, stats_equipe, stats_joueurs):
         def page():
@@ -947,7 +928,6 @@ class CLI:
 
         return page
 
-    # ── Page : liste des fonctionnalités ──────────────────────────────────────
 
     def _make_page_stats(self, titre, stats):
         def page():
@@ -974,7 +954,6 @@ class CLI:
 
         return page
 
-    # ── Page : exécution d'une stat ───────────────────────────────────────────
 
     def _make_page_stat(self, stat):
         # Si le sélecteur utilise un DataFrame (pagination + filtres), déléguer
@@ -1036,7 +1015,6 @@ class CLI:
         return page
 
 
-    # ── Page : sélecteur paginé avec filtres ──────────────────────────────────
 
     def _make_page_selector_paged(self, sel, stat):
         """
@@ -1185,7 +1163,6 @@ class CLI:
 
         return page
 
-    # ── Page : choix du filtre ─────────────────────────────────────────────────
 
     def _make_page_filter(self, state, filters_cfg, df):
         """Page listant les filtres disponibles. Retourne automatiquement après application."""
@@ -1270,7 +1247,6 @@ class CLI:
 
         return page
 
-    # ── Page : sélection d'une valeur catégorielle ────────────────────────────
 
     def _make_page_filter_category(self, state, fconf, df):
         """Page paginée pour sélectionner une valeur de filtre catégoriel."""
@@ -1327,7 +1303,6 @@ class CLI:
 
         return page
 
-    # ── Export CSV ────────────────────────────────────────────────────────────
 
     def _attendre_apres_resultat(self, result, stat_label: str):
         """
@@ -1384,7 +1359,6 @@ class CLI:
             print(f"  Erreur lors de l'export : {e}")
 
 
-# ── Point d'entrée ────────────────────────────────────────────────────────────
 
 
 def main() -> None:

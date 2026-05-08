@@ -1,8 +1,3 @@
-"""
-Tests for src/Analysis/générique.py
-
-All tests use in-memory DataFrames — no file I/O.
-"""
 
 import pytest
 import pandas as pd
@@ -18,9 +13,6 @@ from src.Analysis.générique import (
 )
 
 
-# ---------------------------------------------------------------------------
-# ResultatMatch
-# ---------------------------------------------------------------------------
 
 class TestResultatMatch:
     def test_equipe1_wins(self):
@@ -70,9 +62,6 @@ class TestResultatMatch:
         assert m.gagnant is None
 
 
-# ---------------------------------------------------------------------------
-# _agreger_deux_manches
-# ---------------------------------------------------------------------------
 
 class TestAgregerDeuxManches:
     @pytest.fixture
@@ -112,9 +101,6 @@ class TestAgregerDeuxManches:
         assert rounds == ["RO4", "RO8"]
 
 
-# ---------------------------------------------------------------------------
-# formater_roster
-# ---------------------------------------------------------------------------
 
 class TestFormaterRoster:
     @pytest.fixture
@@ -182,9 +168,6 @@ class TestFormaterRoster:
         assert len(result) == 2
 
 
-# ---------------------------------------------------------------------------
-# agenda_recents
-# ---------------------------------------------------------------------------
 
 class TestAgendaRecents:
     @pytest.fixture
@@ -248,9 +231,6 @@ class TestAgendaRecents:
         assert list(result.columns) == expected
 
 
-# ---------------------------------------------------------------------------
-# _calculer_classement
-# ---------------------------------------------------------------------------
 
 class TestCalculerClassement:
     @pytest.fixture
@@ -308,9 +288,6 @@ class TestCalculerClassement:
             assert "%" in val or val == "N/A"
 
 
-# ---------------------------------------------------------------------------
-# fiche_joueur
-# ---------------------------------------------------------------------------
 
 class TestFicheJoueur:
     @pytest.fixture
@@ -360,9 +337,6 @@ class TestFicheJoueur:
         assert len(result) == 1
 
 
-# ---------------------------------------------------------------------------
-# lister_joueurs
-# ---------------------------------------------------------------------------
 
 class TestListerJoueurs:
     @pytest.fixture

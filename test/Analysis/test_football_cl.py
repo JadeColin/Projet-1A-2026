@@ -1,8 +1,3 @@
-"""
-Tests for src/Analysis/football_cl.py
-
-Module-level globals are monkeypatched with in-memory DataFrames.
-"""
 
 import pytest
 import pandas as pd
@@ -10,9 +5,6 @@ import pandas as pd
 import src.Analysis.football_cl as fcl_mod
 
 
-# ---------------------------------------------------------------------------
-# Fixtures
-# ---------------------------------------------------------------------------
 
 @pytest.fixture
 def mock_players():
@@ -95,9 +87,6 @@ def inject_mock_data(monkeypatch, mock_players, mock_teams, mock_matches):
     monkeypatch.setattr(fcl_mod, "_matches", mock_matches)
 
 
-# ---------------------------------------------------------------------------
-# meilleurs_buteurs
-# ---------------------------------------------------------------------------
 
 class TestMeilleursButeurs:
     def test_returns_dataframe(self):
@@ -127,9 +116,6 @@ class TestMeilleursButeurs:
         assert result.index[0] == 1
 
 
-# ---------------------------------------------------------------------------
-# meilleurs_passeurs
-# ---------------------------------------------------------------------------
 
 class TestMeilleursPasseurs:
     def test_returns_dataframe(self):
@@ -155,9 +141,6 @@ class TestMeilleursPasseurs:
         assert result.iloc[0]["Joueur"] == "Toni Kroos"
 
 
-# ---------------------------------------------------------------------------
-# stats_equipe
-# ---------------------------------------------------------------------------
 
 class TestStatsEquipe:
     def test_returns_dataframe(self):
@@ -181,9 +164,6 @@ class TestStatsEquipe:
         assert "Buts" in result.columns
 
 
-# ---------------------------------------------------------------------------
-# stats_joueur
-# ---------------------------------------------------------------------------
 
 class TestStatsJoueur:
     def test_returns_dataframe(self):
@@ -204,9 +184,6 @@ class TestStatsJoueur:
         assert result.iloc[0]["Joueur"] == "Erling Haaland"
 
 
-# ---------------------------------------------------------------------------
-# stats_gardiens
-# ---------------------------------------------------------------------------
 
 class TestStatsGardiens:
     def test_returns_dataframe(self):
@@ -237,9 +214,6 @@ class TestStatsGardiens:
         assert result.index[0] == 1
 
 
-# ---------------------------------------------------------------------------
-# liste_joueurs
-# ---------------------------------------------------------------------------
 
 class TestListeJoueurs:
     def test_returns_all_players(self):
@@ -261,9 +235,6 @@ class TestListeJoueurs:
         assert result.index[0] == 1
 
 
-# ---------------------------------------------------------------------------
-# get_agenda_data
-# ---------------------------------------------------------------------------
 
 class TestGetAgendaData:
     def test_returns_dataframe(self):

@@ -36,10 +36,7 @@ class Joueur:
         self._col_equipe = col_equipe
         self._col_taille = col_taille
 
-    # ------------------------------------------------------------------ #
-    #  Propriétés principales                                              #
-    # ------------------------------------------------------------------ #
-
+    
     @property
     def id(self):
         """Identifiant du joueur."""
@@ -83,10 +80,7 @@ class Joueur:
         val = self._data.get(self._col_taille)
         return None if pd.isna(val) else val
 
-    # ------------------------------------------------------------------ #
-    #  Accès brut                                                          #
-    # ------------------------------------------------------------------ #
-
+ 
     def __getitem__(self, colonne: str):
         """Accès direct à n'importe quelle colonne brute : joueur['position']."""
         return self._data[colonne]
@@ -97,9 +91,6 @@ class Joueur:
 
     def __repr__(self) -> str:
         return f"Joueur({self.nom!r}, id={self.id!r})"
-
-
-# --------------------------------------------------------------------------- #
 
 
 class Joueurs:
@@ -142,10 +133,7 @@ class Joueurs:
         self._col_equipe = col_equipe
         self._col_taille = col_taille
 
-    # ------------------------------------------------------------------ #
-    #  Filtres                                                             #
-    # ------------------------------------------------------------------ #
-
+   
     def get_par_id(self, joueur_id) -> Joueur | None:
         """Retourne le Joueur correspondant à l'identifiant, ou None."""
         mask = self._df[self._col_id] == joueur_id
@@ -187,9 +175,6 @@ class Joueurs:
             df = df[df[col] == val]
         return self._copie(df)
 
-    # ------------------------------------------------------------------ #
-    #  Statistiques                                                        #
-    # ------------------------------------------------------------------ #
 
     def ages(self, date_ref: pd.Timestamp | None = None) -> pd.Series:
         """
@@ -231,10 +216,7 @@ class Joueurs:
         cols_present = [c for c in cols if c in self._df.columns]
         return self._df[cols_present].reset_index(drop=True)
 
-    # ------------------------------------------------------------------ #
-    #  Interface Python standard                                           #
-    # ------------------------------------------------------------------ #
-
+ 
     def to_dataframe(self) -> pd.DataFrame:
         """Retourne le DataFrame brut sous-jacent (copie)."""
         return self._df.copy()
@@ -254,9 +236,6 @@ class Joueurs:
     def __repr__(self) -> str:
         return f"Joueurs({len(self)} joueurs | id='{self._col_id}', nom='{self._col_nom}')"
 
-    # ------------------------------------------------------------------ #
-    #  Helpers internes                                                    #
-    # ------------------------------------------------------------------ #
 
     def _make_joueur(self, row: pd.Series) -> Joueur:
         return Joueur(

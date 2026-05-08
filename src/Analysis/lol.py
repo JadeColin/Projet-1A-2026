@@ -22,9 +22,6 @@ def _load():
         _players, _coaches, _teams, _matches = _loader.load_all()
 
 
-# ---------------------------------------------------------------------------
-# 1. Stats d'une équipe
-# ---------------------------------------------------------------------------
 
 def stats_equipe(team_name: str) -> pd.DataFrame:
     """Statistiques moyennes par match pour une équipe LoL, incluant la durée moyenne."""
@@ -69,9 +66,6 @@ def stats_equipe(team_name: str) -> pd.DataFrame:
     return pd.DataFrame([row])
 
 
-# ---------------------------------------------------------------------------
-# 3. Champions les plus pickés / bannés
-# ---------------------------------------------------------------------------
 
 def champions_picks_bans(n: int = 10) -> pd.DataFrame:
     """Top N champions par nombre de picks et de bans."""
@@ -93,9 +87,6 @@ def champions_picks_bans(n: int = 10) -> pd.DataFrame:
     return result[["Champion", "Picks", "Bans"]]
 
 
-# ---------------------------------------------------------------------------
-# 4. Roster d'une équipe (joueurs + coachs)
-# ---------------------------------------------------------------------------
 
 def roster_equipe(team_name: str) -> pd.DataFrame:
     """Roster d'une équipe LoL : joueurs et coachs avec nom, pseudo, nationalité, naissance."""
@@ -118,9 +109,6 @@ def roster_equipe(team_name: str) -> pd.DataFrame:
     )
 
 
-# ---------------------------------------------------------------------------
-# 5. Fiche individuelle d'un joueur
-# ---------------------------------------------------------------------------
 
 _LABELS_LOL = {
     "pseudo": "Pseudo", "name": "Nom complet",
@@ -150,10 +138,6 @@ def liste_joueurs(equipe: str | None = None) -> pd.DataFrame:
     return lister_joueurs(df, col_nom="name", col_equipe="team", col_labels=_LABELS_LOL)
 
 
-# ---------------------------------------------------------------------------
-# 6. Données agenda
-# ---------------------------------------------------------------------------
-
 def get_agenda_data() -> pd.DataFrame:
     """Retourne les matchs LoL au format standard pour l'agenda.
 
@@ -172,10 +156,6 @@ def get_agenda_data() -> pd.DataFrame:
         "Score 2": score2,
     })
 
-
-# ---------------------------------------------------------------------------
-# 7. Classement par points
-# ---------------------------------------------------------------------------
 
 def classement_points(top_qualifies: int | None = None) -> None:
     """

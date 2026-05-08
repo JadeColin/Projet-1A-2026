@@ -1,8 +1,3 @@
-"""
-Tests for src/Analysis/badminton.py
-
-Pure functions tested directly; global state monkeypatched.
-"""
 
 import pytest
 import pandas as pd

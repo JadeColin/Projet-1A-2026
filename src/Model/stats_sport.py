@@ -61,9 +61,6 @@ class StatsSport(ABC):
         Individuels : Tennis, Échecs, Badminton, StarCraft II
     """
 
-    # ------------------------------------------------------------------ #
-    #  Interface obligatoire                                               #
-    # ------------------------------------------------------------------ #
 
     @abstractmethod
     def classement(self, n: int = 10) -> pd.DataFrame:
@@ -103,10 +100,6 @@ class StatsSport(ABC):
         """
         ...
 
-    # ------------------------------------------------------------------ #
-    #  Interface optionnelle — sports collectifs                          #
-    # ------------------------------------------------------------------ #
-
     def roster(self, nom_equipe: str) -> pd.DataFrame:
         """
         Roster d'une équipe : liste des joueurs (et staff si disponible).
@@ -125,9 +118,6 @@ class StatsSport(ABC):
             f"(sport individuel ou données non disponibles)."
         )
 
-    # ------------------------------------------------------------------ #
-    #  Méthodes concrètes                                                  #
-    # ------------------------------------------------------------------ #
 
     def resume(self) -> dict:
         """

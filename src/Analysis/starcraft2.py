@@ -21,9 +21,6 @@ _LABELS_SC2 = {
 }
 
 
-# ---------------------------------------------------------------------------
-# 1. Fiche individuelle d'un joueur
-# ---------------------------------------------------------------------------
 
 def fiche_joueur_sc2(nom: str) -> pd.DataFrame:
     """Fiche complète d'un joueur StarCraft II (toutes les données disponibles)."""
@@ -37,9 +34,6 @@ def fiche_joueur_sc2(nom: str) -> pd.DataFrame:
     )
 
 
-# ---------------------------------------------------------------------------
-# 2. Bilan victoires/défaites d'un joueur
-# ---------------------------------------------------------------------------
 
 def bilan_joueur_sc2(nom: str) -> pd.DataFrame:
     """Bilan victoires/défaites d'un joueur StarCraft II sur la saison."""
@@ -73,10 +67,6 @@ def bilan_joueur_sc2(nom: str) -> pd.DataFrame:
     ]
     return pd.DataFrame(rows, columns=["Statistique", name])
 
-
-# ---------------------------------------------------------------------------
-# 3. Données agenda
-# ---------------------------------------------------------------------------
 
 def get_agenda_data() -> pd.DataFrame:
     """Retourne les matchs StarCraft II au format standard pour l'agenda."""

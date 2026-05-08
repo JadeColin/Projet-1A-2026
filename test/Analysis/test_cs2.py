@@ -1,8 +1,3 @@
-"""
-Tests for src/Analysis/cs2.py
-
-Module-level globals are monkeypatched with in-memory DataFrames.
-"""
 
 import pytest
 import pandas as pd
@@ -10,9 +5,6 @@ import pandas as pd
 import src.Analysis.cs2 as cs2_mod
 
 
-# ---------------------------------------------------------------------------
-# Fixtures
-# ---------------------------------------------------------------------------
 
 @pytest.fixture
 def mock_players():
@@ -70,9 +62,6 @@ def inject_mock_data(monkeypatch, mock_players, mock_coaches, mock_teams, mock_m
     monkeypatch.setattr(cs2_mod, "_matches", mock_matches)
 
 
-# ---------------------------------------------------------------------------
-# classement
-# ---------------------------------------------------------------------------
 
 class TestClassement:
     def test_returns_dataframe(self):
@@ -98,10 +87,6 @@ class TestClassement:
         assert "G2" in teams
         assert "Vitality" in teams
 
-
-# ---------------------------------------------------------------------------
-# stats_equipe
-# ---------------------------------------------------------------------------
 
 class TestStatsEquipe:
     def test_returns_dataframe(self):
@@ -133,9 +118,6 @@ class TestStatsEquipe:
         assert row["Victoires"] >= 1
 
 
-# ---------------------------------------------------------------------------
-# liste_joueurs
-# ---------------------------------------------------------------------------
 
 class TestListeJoueurs:
     def test_returns_all_players(self):
@@ -159,9 +141,7 @@ class TestListeJoueurs:
         assert result.index[0] == 1
 
 
-# ---------------------------------------------------------------------------
-# get_agenda_data
-# ---------------------------------------------------------------------------
+
 
 class TestGetAgendaData:
     def test_returns_dataframe(self):

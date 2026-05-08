@@ -1,9 +1,3 @@
-"""
-Tests du module src/Model/match.py.
-
-Couvre : Match (propriétés, logique gagnant) et Matchs (filtres, statistiques).
-Tous les tests utilisent des DataFrames in-memory — aucune lecture de fichier.
-"""
 
 import pandas as pd
 import pytest
@@ -11,7 +5,6 @@ import pytest
 from src.Model.match import Match, Matchs
 
 
-# ── Fixtures ──────────────────────────────────────────────────────────────────
 
 
 @pytest.fixture
@@ -72,7 +65,6 @@ def match_fra_vs_ita(df_matchs):
     )
 
 
-# ── Match : propriétés ────────────────────────────────────────────────────────
 
 
 class TestMatchProprietes:
@@ -153,8 +145,6 @@ class TestMatchAccesBrut:
         assert "ITA" in r
 
 
-# ── Matchs : filtres ──────────────────────────────────────────────────────────
-
 
 class TestMatchsFiltres:
     def test_get_par_equipe_retourne_les_matchs_de_l_equipe(self, matchs_avec_gagnant):
@@ -183,8 +173,6 @@ class TestMatchsFiltres:
         result = matchs_avec_gagnant.filtrer(winner="USA")
         assert len(result) == 2
 
-
-# ── Matchs : statistiques ─────────────────────────────────────────────────────
 
 
 class TestMatchsStats:
@@ -236,8 +224,6 @@ class TestMatchsStats:
         equipes = set(df["equipe"].tolist())
         assert {"FRA", "USA", "BRA", "ITA", "POL"}.issubset(equipes)
 
-
-# ── Matchs : interface Python ─────────────────────────────────────────────────
 
 
 class TestMatchsInterface:

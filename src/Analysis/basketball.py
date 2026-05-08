@@ -21,9 +21,6 @@ def _load():
         _players, _teams, _matches = _loader.load_all()
 
 
-# ---------------------------------------------------------------------------
-# 1. Top équipes offensives (points marqués en moyenne)
-# ---------------------------------------------------------------------------
 
 def top_equipes_offensives(n: int = 10) -> pd.DataFrame:
     """Top N équipes par moyenne de points marqués par match."""
@@ -53,9 +50,6 @@ def top_equipes_offensives(n: int = 10) -> pd.DataFrame:
     return result[["Équipe", "Abrév.", "Moy. pts/match"]]
 
 
-# ---------------------------------------------------------------------------
-# 3. Stats d'une équipe
-# ---------------------------------------------------------------------------
 
 def stats_equipe(team_name: str) -> pd.DataFrame:
     """Statistiques moyennes par match pour une équipe (recherche insensible à la casse)."""
@@ -100,9 +94,6 @@ def stats_equipe(team_name: str) -> pd.DataFrame:
     return pd.DataFrame([row])
 
 
-# ---------------------------------------------------------------------------
-# 4. Roster d'une équipe
-# ---------------------------------------------------------------------------
 
 def roster_equipe(team_name: str) -> pd.DataFrame:
     """Roster d'une équipe NBA : nom complet, nationalité, date de naissance."""
@@ -116,10 +107,6 @@ def roster_equipe(team_name: str) -> pd.DataFrame:
         est_esport=False,
     )
 
-
-# ---------------------------------------------------------------------------
-# 5. Classement défensif
-# ---------------------------------------------------------------------------
 
 def classement_defensif(n: int = 10) -> pd.DataFrame:
     """Top N équipes les plus défensives (points encaissés, blocks, interceptions)."""
@@ -167,9 +154,6 @@ def classement_defensif(n: int = 10) -> pd.DataFrame:
     return result[["Équipe", "Pts encaissés/match", "Blocks/match", "Interceptions/match"]]
 
 
-# ---------------------------------------------------------------------------
-# 6. Fiche individuelle d'un joueur
-# ---------------------------------------------------------------------------
 
 _LABELS_BASKETBALL = {
     "full_name": "Nom complet", "first_name": "Prénom", "last_name": "Nom",
@@ -208,9 +192,6 @@ def liste_joueurs(equipe: str | None = None) -> pd.DataFrame:
     return lister_joueurs(df, col_nom="full_name", col_labels=_LABELS_BASKETBALL)
 
 
-# ---------------------------------------------------------------------------
-# 7. Données agenda
-# ---------------------------------------------------------------------------
 
 def get_agenda_data() -> pd.DataFrame:
     """Retourne les matchs Basketball au format standard pour l'agenda."""
@@ -227,9 +208,6 @@ def get_agenda_data() -> pd.DataFrame:
     })
 
 
-# ---------------------------------------------------------------------------
-# 8. Classement par points
-# ---------------------------------------------------------------------------
 
 def classement_points(saison: str | None = None, top_qualifies: int | None = None) -> None:
     """

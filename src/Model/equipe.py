@@ -35,10 +35,7 @@ class Equipe:
         self._col_abrev = col_abrev
         self._col_ville = col_ville
 
-    # ------------------------------------------------------------------ #
-    #  Propriétés principales                                              #
-    # ------------------------------------------------------------------ #
-
+    
     @property
     def id(self):
         """Identifiant de l'équipe."""
@@ -63,10 +60,7 @@ class Equipe:
             return None
         return self._data.get(self._col_ville)
 
-    # ------------------------------------------------------------------ #
-    #  Relations                                                           #
-    # ------------------------------------------------------------------ #
-
+    
     def get_joueurs(self, joueurs: Joueurs) -> Joueurs:
         """
         Retourne les joueurs de cette équipe depuis une collection Joueurs.
@@ -75,10 +69,7 @@ class Equipe:
         """
         return joueurs.get_par_equipe(self.id)
 
-    # ------------------------------------------------------------------ #
-    #  Accès brut                                                          #
-    # ------------------------------------------------------------------ #
-
+    
     def __getitem__(self, colonne: str):
         """Accès direct à n'importe quelle colonne brute."""
         return self._data[colonne]
@@ -92,7 +83,6 @@ class Equipe:
         return f"Equipe({self.nom!r}{abrev})"
 
 
-# --------------------------------------------------------------------------- #
 
 
 class Equipes:
@@ -140,9 +130,6 @@ class Equipes:
         self._col_abrev = col_abrev
         self._col_ville = col_ville
 
-    # ------------------------------------------------------------------ #
-    #  Filtres                                                             #
-    # ------------------------------------------------------------------ #
 
     def get_par_id(self, equipe_id) -> Equipe | None:
         """Retourne l'Equipe correspondant à l'identifiant, ou None."""
@@ -176,9 +163,6 @@ class Equipes:
             df = df[df[col] == val]
         return self._copie(df)
 
-    # ------------------------------------------------------------------ #
-    #  Relations                                                           #
-    # ------------------------------------------------------------------ #
 
     def get_joueurs(self, joueurs: Joueurs) -> Joueurs:
         """
@@ -193,9 +177,6 @@ class Equipes:
         mask = joueurs.to_dataframe()[joueurs._col_equipe].isin(ids)
         return joueurs._copie(joueurs.to_dataframe()[mask])
 
-    # ------------------------------------------------------------------ #
-    #  Interface Python standard                                           #
-    # ------------------------------------------------------------------ #
 
     def to_dataframe(self) -> pd.DataFrame:
         """Retourne le DataFrame brut sous-jacent (copie)."""
@@ -216,9 +197,6 @@ class Equipes:
     def __repr__(self) -> str:
         return f"Equipes({len(self)} équipes | id='{self._col_id}', nom='{self._col_nom}')"
 
-    # ------------------------------------------------------------------ #
-    #  Helpers internes                                                    #
-    # ------------------------------------------------------------------ #
 
     def _make_equipe(self, row: pd.Series) -> Equipe:
         return Equipe(row, self._col_id, self._col_nom, self._col_abrev, self._col_ville)

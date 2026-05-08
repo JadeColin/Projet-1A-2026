@@ -118,9 +118,6 @@ def formater_roster(
     return result
 
 
-# ---------------------------------------------------------------------------
-# Bracket d'élimination
-# ---------------------------------------------------------------------------
 
 _VERT = "\033[32m"
 _RESET = "\033[0m"
@@ -277,14 +274,7 @@ def afficher_bracket(
         while len(rounds[r]) < attendu:
             rounds[r].append(ResultatMatch("???", "???", None, None))
 
-    # -------------------------------------------------------------------------
-    # Rendu ASCII ligne par ligne
-    # La hauteur d'un matchup dans le premier round = 3 lignes
-    # (ligne equipe1, ligne séparateur, ligne equipe2)
-    # Entre deux matchups du même round : 1 ligne vide
-    # Chaque round suivant double l'espacement vertical
-    # -------------------------------------------------------------------------
-
+  
     nb_rounds = len(ordre_rounds)
     # Hauteur totale en lignes pour le premier round
     n_matchups_r0 = len(rounds[ordre_rounds[0]])
@@ -417,9 +407,6 @@ def afficher_bracket(
     print()
 
 
-# ---------------------------------------------------------------------------
-# Agenda des matchs récents
-# ---------------------------------------------------------------------------
 
 _COLS_AGENDA = ["Sport", "Date", "Équipe 1", "Équipe 2", "Score 1", "Score 2"]
 
@@ -462,9 +449,6 @@ def agenda_recents(sources: list[pd.DataFrame], n: int = 10) -> pd.DataFrame:
     return combined[_COLS_AGENDA]
 
 
-# ---------------------------------------------------------------------------
-# Classement par points
-# ---------------------------------------------------------------------------
 
 def _calculer_classement(
     df: pd.DataFrame,
@@ -615,9 +599,6 @@ def afficher_classement(
         _afficher_table_classement(classement, top_qualifies)
 
 
-# ---------------------------------------------------------------------------
-# Fiche individuelle d'un joueur
-# ---------------------------------------------------------------------------
 
 def fiche_joueur(
     df_joueurs: pd.DataFrame,

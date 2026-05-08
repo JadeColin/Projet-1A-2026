@@ -1,8 +1,3 @@
-"""
-Tests for src/Analysis/volleyball.py
-
-Module-level globals are monkeypatched with in-memory DataFrames.
-"""
 
 import pytest
 import pandas as pd
@@ -10,9 +5,6 @@ import pandas as pd
 import src.Analysis.volleyball as vb_mod
 
 
-# ---------------------------------------------------------------------------
-# Fixtures
-# ---------------------------------------------------------------------------
 
 @pytest.fixture
 def mock_countries():
@@ -99,9 +91,6 @@ def inject_mock_data(
     monkeypatch.setattr(vb_mod, "_matches_women", mock_matches_women)
 
 
-# ---------------------------------------------------------------------------
-# classement
-# ---------------------------------------------------------------------------
 
 class TestClassement:
     def test_returns_dataframe(self):
@@ -132,9 +121,6 @@ class TestClassement:
         assert len(result_f) == len(result_w)
 
 
-# ---------------------------------------------------------------------------
-# bilan_equipe
-# ---------------------------------------------------------------------------
 
 class TestBilanEquipe:
     def test_returns_dataframe(self):
@@ -160,9 +146,6 @@ class TestBilanEquipe:
         assert result.iloc[0]["Matchs joués"] == 2
 
 
-# ---------------------------------------------------------------------------
-# roster_equipe
-# ---------------------------------------------------------------------------
 
 class TestRosterEquipe:
     def test_returns_dataframe(self):
@@ -186,9 +169,6 @@ class TestRosterEquipe:
         assert result.index[0] == 1
 
 
-# ---------------------------------------------------------------------------
-# liste_joueurs
-# ---------------------------------------------------------------------------
 
 class TestListeJoueurs:
     def test_returns_all_men_players(self):
@@ -212,10 +192,6 @@ class TestListeJoueurs:
         result = vb_mod.liste_joueurs(genre="hommes")
         assert result.index[0] == 1
 
-
-# ---------------------------------------------------------------------------
-# get_agenda_data
-# ---------------------------------------------------------------------------
 
 class TestGetAgendaData:
     def test_returns_dataframe(self):

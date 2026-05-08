@@ -1,8 +1,3 @@
-"""
-Tests for src/Analysis/starcraft2.py
-
-Module-level globals are monkeypatched with in-memory DataFrames.
-"""
 
 import pytest
 import pandas as pd
@@ -10,9 +5,6 @@ import pandas as pd
 import src.Analysis.starcraft2 as sc2_mod
 
 
-# ---------------------------------------------------------------------------
-# Fixtures
-# ---------------------------------------------------------------------------
 
 @pytest.fixture
 def mock_players():
@@ -47,9 +39,6 @@ def inject_mock_data(monkeypatch, mock_players, mock_matches):
     monkeypatch.setattr(sc2_mod, "_matches", mock_matches)
 
 
-# ---------------------------------------------------------------------------
-# bilan_joueur_sc2
-# ---------------------------------------------------------------------------
 
 class TestBilanJoueurSc2:
     def test_returns_dataframe(self):
@@ -97,9 +86,6 @@ class TestBilanJoueurSc2:
         assert 0 <= wr <= 100
 
 
-# ---------------------------------------------------------------------------
-# get_agenda_data
-# ---------------------------------------------------------------------------
 
 class TestGetAgendaData:
     def test_returns_dataframe(self):
