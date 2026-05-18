@@ -1,0 +1,535 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{geometry}
+\usepackage{titlesec}
+\usepackage{parskip}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{booktabs}
+\usepackage{array}
+
+\geometry{margin=2.5cm}
+
+\definecolor{codeblue}{RGB}{0,70,150}
+\definecolor{codered}{RGB}{180,0,0}
+\definecolor{codegray}{RGB}{100,100,100}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Application de statistiques sportives}
+\lhead{Module \texttt{src/Analysis}}
+\cfoot{\thepage}
+
+\titleformat{\section}{\large\bfseries\color{codeblue}}{}{0em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries\color{codered}}{}{0em}{}
+\titleformat{\subsubsection}{\normalsize\itshape}{}{0em}{}
+
+\newcommand{\fonction}[1]{\textbf{\texttt{#1}}}
+\newcommand{\module}[1]{\textit{\texttt{#1}}}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vspace*{3cm}
+    {\huge\bfseries Documentation technique\\[0.5em]}
+    {\Large\bfseries Module \texttt{src/Analysis}\\[2em]}
+    {\large Application de statistiques sportives\\[1em]}
+    {\normalsize Projet 1A — 2026\\[3em]}
+    \hrule
+    \vspace{1em}
+    {\small Ce document décrit l'ensemble des classes et fonctions du dossier
+    \texttt{src/Analysis}, responsable du calcul des statistiques et de
+    l'affichage des résultats pour chaque sport.}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+% ============================================================
+\section{Architecture générale}
+
+Le dossier \texttt{src/Analysis} organise chaque sport dans un module dédié.
+Tous les modules suivent le même pattern structurel~:
+
+\begin{enumerate}
+    \item Des variables globales \texttt{\_loader}, \texttt{\_players},
+    \texttt{\_matches} (etc.) initialisées à \texttt{None}.
+    \item Une fonction \texttt{\_load()} qui charge les données
+    \textbf{une seule fois} (cache dit \textit{lazy loading}).
+    \item Des fonctions d'analyse qui appellent \texttt{\_load()} en première
+    instruction.
+    \item Une fonction \texttt{get\_agenda\_data()} qui formate les matchs dans
+    un format standard pour l'agenda.
+\end{enumerate}
+
+Le fichier \texttt{générique.py} est le \textbf{socle partagé} entre tous
+les modules~: il fournit les fonctions d'affichage (bracket, classement),
+de formatage (roster, fiche joueur) et d'agrégation (agenda).
+
+% ============================================================
+\section{\texttt{générique.py} — Le moteur commun}
+
+\textbf{Fichier~:} \texttt{src/Analysis/générique.py}
+
+Ce fichier ne traite aucun sport en particulier. Il définit les briques
+réutilisables utilisées par l'ensemble des modules sportifs.
+
+\subsection{Classe \texttt{ResultatMatch}}
+
+Classe utilitaire qui encapsule le résultat d'un match à partir de deux scores.
+
+\subsubsection{Constructeur \texttt{\_\_init\_\_(equipe1, equipe2, score1, score2)}}
+Calcule automatiquement les attributs~:
+\begin{itemize}
+    \item \texttt{joue} (bool) — \texttt{True} si les deux scores sont disponibles
+    et non \texttt{NaN}. La détection du NaN utilise la technique Python
+    \texttt{score != score} (un float NaN n'est jamais égal à lui-même).
+    \item \texttt{gagnant} — nom de l'équipe gagnante, ou \texttt{None} si le
+    match n'est pas joué ou en cas d'égalité.
+    \item \texttt{perdant} — nom de l'équipe perdante, ou \texttt{None}.
+\end{itemize}
+
+\subsubsection{Méthode \texttt{label\_equipe(equipe)}}
+Retourne la chaîne \texttt{"score1-score2"} si le match est joué, sinon
+\texttt{"???"}.
+
+\subsection{\texttt{formater\_roster(df\_joueurs, col\_nom, ...)}}
+
+Formate le roster d'une équipe selon la spécification standard~:
+\texttt{Rôle | Nom complet | Pseudo* | Nationalité | Date de naissance}.
+
+\begin{itemize}
+    \item Les coachs apparaissent en tête de liste, puis les joueurs.
+    \item La colonne \texttt{Pseudo} n'est incluse que si \texttt{est\_esport=True}.
+    \item Les colonnes absentes des données sont affichées comme \texttt{"N/A"}.
+    \item Les dates sont formatées en \texttt{JJ/MM/AAAA}.
+\end{itemize}
+
+\subsection{\texttt{\_agreger\_deux\_manches(df, ...)}}
+
+Fonction privée. Pour les compétitions aller/retour (ex~: Champions League),
+additionne les scores des deux matchs entre les mêmes équipes en un seul
+résultat. Utilise \texttt{tuple(sorted([eq1, eq2]))} pour identifier une paire
+indépendamment du sens domicile/extérieur.
+
+\subsection{\texttt{afficher\_bracket(df, col\_equipe1, col\_equipe2, ...)}}
+
+Affiche un bracket d'élimination directe en \textbf{ASCII colorisé} dans le
+terminal. Construit une grille 2D de chaînes, puis des colonnes de connecteurs
+entre les rounds. Le chemin du gagnant est affiché en vert via les codes ANSI.
+Le paramètre \texttt{deux\_manches} déclenche l'agrégation aller/retour avant
+affichage.
+
+\subsection{\texttt{\_calculer\_classement(df, ...)}}
+
+Fonction privée. Calcule un classement par points à partir d'un DataFrame de
+matchs.
+\begin{itemize}
+    \item Règles~: 3~pts victoire, 1~pt nul, 0~pt défaite.
+    \item Tri~: Points décroissants, puis différence de buts/scores décroissante.
+    \item Rang~: classement standard (ex-æquo = même rang, le suivant saute
+    des places).
+\end{itemize}
+Retourne les colonnes \texttt{Rang | Équipe | MJ | V | N | D | Pts | Diff |
+Winrate}.
+
+\subsection{\texttt{\_afficher\_table\_classement(df, top\_qualifies, titre)}}
+
+Fonction privée. Affiche un tableau de classement avec une ligne séparatrice
+optionnelle après les \texttt{top\_qualifies} premières équipes
+(ex~: \texttt{─── TOP 2 ───}).
+
+\subsection{\texttt{afficher\_classement(df, col\_equipe1, col\_equipe2, ...)}}
+
+Orchestre \texttt{\_calculer\_classement} et \texttt{\_afficher\_table\_classement}.
+Si \texttt{col\_groupe} est fourni, itère sur chaque groupe et affiche un
+tableau de classement par groupe.
+
+\subsection{\texttt{fiche\_joueur(df\_joueurs, col\_nom, nom\_joueur, ...)}}
+
+Retourne la fiche complète d'un joueur sous forme \texttt{Statistique | Valeur}.
+\begin{itemize}
+    \item Recherche insensible à la casse, accepte les noms partiels.
+    \item Lève \texttt{ValueError} si aucun résultat.
+    \item Lève \texttt{ValueError} si plusieurs joueurs correspondent
+    (liste les correspondances pour affiner la recherche).
+    \item Les colonnes sont renommées selon le dictionnaire \texttt{col\_labels}.
+\end{itemize}
+
+\subsection{\texttt{lister\_joueurs(df\_joueurs, col\_nom, ...)}}
+
+Retourne la liste simple de tous les joueurs d'un sport, triée par nom.
+Colonnes~: \texttt{Nom} (et \texttt{Équipe} si la colonne est fournie).
+
+\subsection{\texttt{agenda\_recents(sources, n=10)}}
+
+Agrège les DataFrames de plusieurs sports au format standard
+\texttt{Sport | Date | Équipe 1 | Équipe 2 | Score 1 | Score 2}, trie par
+date décroissante, et retourne les \texttt{n} matchs les plus récents.
+
+% ============================================================
+\section{\texttt{badminton.py}}
+
+\textbf{Fichier~:} \texttt{src/Analysis/badminton.py}
+
+\subsection{\texttt{\_load()}}
+Cache lazy~: instancie \texttt{BadmintonLoader} et charge joueurs + matchs
+une seule fois dans les variables globales du module.
+
+\subsection{\texttt{\_compter\_jeux(row)}}
+Fonction privée. Parse les colonnes \texttt{game\_1\_score},
+\texttt{game\_2\_score}, \texttt{game\_3\_score} au format \texttt{"21-15"}
+et retourne un tuple \texttt{(wins\_joueur1, wins\_joueur2)}. Gère les sets
+non joués (NaN ou chaîne vide).
+
+\subsection{\texttt{fiche\_joueur\_badminton(nom)}}
+Délègue à \texttt{générique.fiche\_joueur}. Affiche nom, pays, continent.
+
+\subsection{\texttt{bilan\_joueur\_badminton(nom)}}
+Calcule victoires et défaites en cherchant le joueur comme \texttt{player\_1}
+ET comme \texttt{player\_2} dans les matchs. Utilise \texttt{\_compter\_jeux}
+pour déterminer le gagnant. Retourne un DataFrame
+\texttt{Statistique | Nom du joueur}.
+
+\subsection{\texttt{bracket(tournament\_name)}}
+Filtre les matchs d'un tournoi sur les rounds bracket (\texttt{Round of 32}
+jusqu'à \texttt{Final}), calcule les scores avec \texttt{\_compter\_jeux},
+puis délègue à \texttt{générique.afficher\_bracket}.
+
+\subsection{\texttt{get\_agenda\_data()}}
+Retourne les matchs au format standard agenda, avec le nombre de jeux gagnés
+comme score.
+
+% ============================================================
+\section{\texttt{basketball.py}}
+
+\textbf{Fichier~:} \texttt{src/Analysis/basketball.py}
+
+\subsection{\texttt{\_load()}}
+Cache lazy~: charge joueurs, équipes et matchs NBA.
+
+\subsection{\texttt{top\_equipes\_offensives(n=10)}}
+Fusionne les colonnes \texttt{pts\_home} et \texttt{pts\_away} en un format
+neutre \texttt{team\_id / pts}, calcule la moyenne de points par match par
+équipe, trie par ordre décroissant.
+
+\subsection{\texttt{stats\_equipe(team\_name)}}
+Recherche l'équipe par nom complet, abréviation ou surnom. Fusionne les matchs
+à domicile et à l'extérieur (en supprimant les suffixes \texttt{\_home} et
+\texttt{\_away}). Calcule la moyenne de 12 statistiques (points, rebonds,
+passes, tirs, lancers francs, interceptions, contres, pertes de balle).
+
+\subsection{\texttt{roster\_equipe(team\_name)}}
+Appelle \texttt{BasketballLoader.get\_team\_roster()} puis délègue à
+\texttt{générique.formater\_roster}.
+
+\subsection{\texttt{classement\_defensif(n=10)}}
+Calcule les points encaissés, blocks et interceptions moyens par équipe.
+Trie par points encaissés croissants (moins on en prend, meilleure est la
+défense).
+
+\subsection{\texttt{fiche\_joueur\_basketball(nom)}}
+Délègue à \texttt{générique.fiche\_joueur} avec les labels en français.
+
+\subsection{\texttt{liste\_joueurs(equipe=None)}}
+Liste tous les joueurs NBA, ou uniquement ceux d'une équipe si un nom est
+précisé.
+
+\subsection{\texttt{get\_agenda\_data()}}
+Mappe les identifiants d'équipes (\texttt{team\_id}) vers les noms complets,
+retourne le format standard agenda.
+
+\subsection{\texttt{classement\_points(saison=None, top\_qualifies=None)}}
+Filtre sur \texttt{Regular Season}, mappe les identifiants d'équipes vers
+les noms, délègue à \texttt{générique.afficher\_classement}.
+
+% ============================================================
+\section{\texttt{chess.py}}
+
+\textbf{Fichier~:} \texttt{src/Analysis/chess.py}
+
+\subsection{\texttt{\_load()}}
+Cache lazy~: charge joueurs et matchs d'échecs.
+
+\subsection{\texttt{classement\_elo(mode="standard", n=20)}}
+Accepte les modes \texttt{"standard"}, \texttt{"rapid"} ou \texttt{"blitz"}.
+Mappe vers la colonne Elo correspondante, supprime les NaN, trie et retourne
+les N premiers joueurs avec leur fédération et titre FIDE.
+
+\subsection{\texttt{fiche\_joueur\_chess(nom)}}
+Délègue à \texttt{générique.fiche\_joueur} avec labels~: Nom, Fédération,
+Titre FIDE, Elos standard/rapid/blitz.
+
+\subsection{\texttt{bilan\_joueur(player\_name)}}
+Cherche le joueur comme \texttt{player\_1} et comme \texttt{player\_2}.
+Utilise \texttt{pd.to\_numeric(..., errors="coerce")} pour convertir les
+scores (pouvant contenir \texttt{"Bye"}). Un score de~\texttt{1} = victoire,
+\texttt{0.5} = nul, \texttt{0} = défaite. Retourne aussi le score total
+(victoires + 0,5 × nuls), fidèle aux règles des échecs.
+
+\subsection{\texttt{stats\_par\_titre()}}
+Groupe les joueurs par titre FIDE (\texttt{GM}, \texttt{IM}, etc.) et calcule
+le nombre de joueurs ainsi que l'Elo moyen dans chaque catégorie
+(standard, rapid, blitz).
+
+% ============================================================
+\section{\texttt{cs2.py}}
+
+\textbf{Fichier~:} \texttt{src/Analysis/cs2.py}
+
+\subsection{\texttt{\_load()}}
+Cache lazy~: charge joueurs, coachs, équipes et matchs CS2.
+
+\subsection{\texttt{classement()}}
+Calcule victoires et matchs joués par équipe sur l'ensemble de la compétition.
+Détermine le gagnant de chaque match par comparaison directe des scores.
+
+\subsection{\texttt{stats\_equipe(team\_name)}}
+Calcule matchs joués, victoires, défaites, et \textbf{maps gagnées et perdues}
+(cumul des scores). La distinction matchs/maps est propre au CS2~: un score
+de \texttt{2-1} signifie 2 maps à 1.
+
+\subsection{\texttt{roster\_equipe(team\_name)}}
+Combine joueurs et coachs filtrés par équipe, délègue à
+\texttt{générique.formater\_roster} avec \texttt{est\_esport=True}
+(inclut la colonne Pseudo).
+
+\subsection{\texttt{fiche\_joueur\_cs2(nom)}}
+Délègue à \texttt{générique.fiche\_joueur}.
+
+\subsection{\texttt{liste\_joueurs(equipe=None)}}
+Liste tous les joueurs CS2, filtrables par équipe.
+
+\subsection{\texttt{get\_agenda\_data()}}
+Retourne le format standard agenda avec les scores en nombre de maps.
+
+\subsection{\texttt{bracket()}}
+Filtre les matchs de stage \texttt{"PlayOffs"} et délègue à
+\texttt{générique.afficher\_bracket} avec \texttt{deux\_manches=False}
+(pas d'aller/retour en CS2).
+
+\subsection{\texttt{classement\_stages(top\_qualifies=None)}}
+Affiche un classement par phase de groupes (stages 1, 2, 3). Crée une colonne
+\texttt{stage\_label} et exclut les PlayOffs avant de déléguer à
+\texttt{générique.afficher\_classement}.
+
+% ============================================================
+\section{\texttt{football\_cl.py}}
+
+\textbf{Fichier~:} \texttt{src/Analysis/football\_cl.py}
+
+\subsection{\texttt{\_load()}}
+Cache lazy~: charge joueurs, équipes et matchs Champions League.
+
+\subsection{\texttt{meilleurs\_buteurs(n=10)}}
+Trie les joueurs par buts et calcule le pourcentage de tirs cadrés
+(\texttt{on\_target / total\_attempts}).
+
+\subsection{\texttt{meilleurs\_passeurs(n=10)}}
+Trie les joueurs par nombre de passes décisives.
+
+\subsection{\texttt{stats\_equipe(team\_name)}}
+Agrège les statistiques de tous les joueurs d'un club (somme totale) en
+buts, passes décisives, minutes jouées, cartons jaunes et cartons rouges.
+
+\subsection{\texttt{stats\_joueur(player\_name)}}
+Retourne toutes les statistiques individuelles d'un joueur de la Champions
+League (buts, passes, dribbles, tacles, cartons, passes tentées/réussies,
+minutes).
+
+\subsection{\texttt{stats\_gardiens(n=10)}}
+Filtre les joueurs dont la position contient \texttt{Goalkeeper},
+\texttt{GK} ou \texttt{Gardien}, trie par nombre d'arrêts. Retourne arrêts,
+buts encaissés, clean sheets, pénaltys arrêtés.
+
+\subsection{\texttt{fiche\_joueur\_fcl(nom)}}
+Délègue à \texttt{générique.fiche\_joueur} avec un dictionnaire de labels
+très détaillé (20 colonnes).
+
+\subsection{\texttt{liste\_joueurs(club=None)}}
+Liste tous les joueurs de la CL, filtrables par club.
+
+\subsection{\texttt{classement\_groupes(top\_qualifies=2)}}
+Filtre les matchs de phase \texttt{"group"} et délègue à
+\texttt{générique.afficher\_classement} avec \texttt{col\_groupe="group"}.
+
+\subsection{\texttt{get\_agenda\_data()}}
+Retourne le format standard agenda.
+
+\subsection{\texttt{bracket()}}
+Filtre les matchs de phase \texttt{"knockout"} et délègue à
+\texttt{générique.afficher\_bracket} avec \texttt{deux\_manches=True}
+(aller/retour en Champions League).
+
+% ============================================================
+\section{\texttt{lol.py}}
+
+\textbf{Fichier~:} \texttt{src/Analysis/lol.py}
+
+\subsection{\texttt{\_load()}}
+Cache lazy~: charge joueurs, coachs, équipes et matchs LoL.
+
+\subsection{\texttt{stats\_equipe(team\_name)}}
+Cherche l'équipe dans les colonnes \texttt{team\_blue} et \texttt{team\_red},
+fusionne les matchs en renommant les suffixes \texttt{\_team\_blue} et
+\texttt{\_team\_red}. Calcule la moyenne de kills, assists, deaths, gold,
+turrets, dragons, barons, et la \textbf{durée moyenne en minutes}.
+
+\subsection{\texttt{champions\_picks\_bans(n=10)}}
+Identifie toutes les colonnes commençant par \texttt{pick\_} et \texttt{ban\_},
+aplatit leurs valeurs, compte les occurrences de chaque champion. Retourne
+un top~N par picks et bans.
+
+\subsection{\texttt{roster\_equipe(team\_name)}}
+Combine joueurs et coachs, délègue à \texttt{générique.formater\_roster}
+avec \texttt{est\_esport=True}.
+
+\subsection{\texttt{fiche\_joueur\_lol(nom)}}
+Délègue à \texttt{générique.fiche\_joueur}.
+
+\subsection{\texttt{liste\_joueurs(equipe=None)}}
+Liste les joueurs LoL, filtrables par équipe.
+
+\subsection{\texttt{get\_agenda\_data()}}
+Le score est \texttt{1} pour le gagnant, \texttt{0} pour le perdant.
+
+\subsection{\texttt{classement\_points(top\_qualifies=None)}}
+Crée des colonnes \texttt{score\_blue} et \texttt{score\_red} à partir de la
+colonne \texttt{winner}, puis délègue à \texttt{générique.afficher\_classement}.
+
+% ============================================================
+\section{\texttt{starcraft2.py}}
+
+\textbf{Fichier~:} \texttt{src/Analysis/starcraft2.py}
+
+\subsection{\texttt{\_load()}}
+Cache lazy~: charge joueurs et matchs SC2.
+
+\subsection{\texttt{fiche\_joueur\_sc2(nom)}}
+Délègue à \texttt{générique.fiche\_joueur}. Inclut la colonne \texttt{race}
+(Terran / Zerg / Protoss), spécifique à StarCraft~II.
+
+\subsection{\texttt{bilan\_joueur\_sc2(nom)}}
+Cherche le joueur comme \texttt{player\_1} et comme \texttt{player\_2}.
+Compare directement \texttt{score\_player\_1 > score\_player\_2} pour
+déterminer le gagnant.
+
+\subsection{\texttt{get\_agenda\_data()}}
+Retourne le format standard agenda avec les scores en nombre de maps.
+
+% ============================================================
+\section{\texttt{tennis.py}}
+
+\textbf{Fichier~:} \texttt{src/Analysis/tennis.py}
+
+\subsection{\texttt{\_load()}}
+Cache lazy~: charge les quatre tables ATP et WTA.
+
+\subsection{\texttt{\_matches(circuit)} / \texttt{\_players(circuit)}}
+Fonctions helpers privées qui retournent la bonne table selon
+\texttt{"ATP"} ou \texttt{"WTA"}.
+
+\subsection{\texttt{classement\_victoires(circuit="ATP", n=20)}}
+Compte victoires (\texttt{winner\_id}) et défaites (\texttt{loser\_id})
+par identifiant joueur, joint les noms complets, trie et retourne les
+N meilleurs.
+
+\subsection{\texttt{stats\_joueur(player\_name, circuit="ATP")}}
+Retourne victoires, défaites, pourcentage de victoires, nombre de tournois,
+et la durée moyenne d'un match si la colonne \texttt{minutes} est disponible.
+
+\subsection{\texttt{fiche\_joueur\_tennis(nom, circuit="ATP")}}
+Délègue à \texttt{générique.fiche\_joueur}.
+
+\subsection{\texttt{liste\_joueurs(circuit="ATP")}}
+Liste tous les joueurs du circuit sélectionné.
+
+\subsection{\texttt{\_compter\_sets(score)}}
+Fonction privée. Parse une chaîne de score tennis comme
+\texttt{"7-6(5) 6-4"}. Utilise \texttt{re.sub(r'\textbackslash(\textbackslash d+\textbackslash)', '', ...)}
+pour supprimer les scores de tie-break avant de compter les sets.
+
+\subsection{\texttt{\_standardiser\_tennis(matches, players, label)}}
+Fonction privée. Mappe les \texttt{winner\_id} et \texttt{loser\_id} vers les
+noms complets, calcule les sets via \texttt{\_compter\_sets}, retourne le
+format agenda standard.
+
+\subsection{\texttt{get\_agenda\_data()}}
+Concatène les matchs ATP et WTA standardisés. Le score correspond aux
+sets gagnés (gagnant / perdant).
+
+\subsection{\texttt{bracket(tourney\_name, circuit="ATP")}}
+Filtre les matchs d'un tournoi, mappe les identifiants en noms, calcule les
+sets, filtre sur les rounds bracket (\texttt{R128} jusqu'à \texttt{F}),
+délègue à \texttt{générique.afficher\_bracket}.
+
+% ============================================================
+\section{\texttt{volleyball.py}}
+
+\textbf{Fichier~:} \texttt{src/Analysis/volleyball.py}
+
+\subsection{\texttt{\_load()}}
+Cache lazy~: charge les sept tables de volleyball.
+
+\subsection{\texttt{\_matches(genre)} / \texttt{\_players(genre)} / \texttt{\_country\_name(code)}}
+Helpers privés pour sélectionner la bonne table par genre
+(\texttt{"hommes"} ou \texttt{"femmes"}), et pour résoudre un code IOC
+en nom de pays complet.
+
+\subsection{\texttt{classement(genre="hommes")}}
+Calcule victoires, défaites et \textbf{sets gagnés} (critère de départage
+en volleyball). Enrichit le résultat avec les noms complets de pays via
+la table \texttt{\_countries}.
+
+\subsection{\texttt{bilan\_equipe(team\_code, genre="hommes")}}
+Calcule le bilan d'une équipe identifiée par un code IOC (ex~: \texttt{"FRA"}),
+avec sets gagnés et sets perdus.
+
+\subsection{\texttt{roster\_equipe(team\_code, genre="hommes")}}
+Filtre par code IOC exact (pas de recherche partielle, les codes sont
+standardisés), combine joueurs et coachs, délègue à
+\texttt{générique.formater\_roster}.
+
+\subsection{\texttt{fiche\_joueur\_volleyball(nom, genre="hommes")}}
+Délègue à \texttt{générique.fiche\_joueur}. Inclut \texttt{height},
+\texttt{birth\_place} et \texttt{nickname}.
+
+\subsection{\texttt{liste\_joueurs(genre="hommes", equipe=None)}}
+Liste les joueurs d'un genre, filtrables par code pays.
+
+\subsection{\texttt{get\_agenda\_data()}}
+Mappe les codes IOC vers les noms complets de pays. Concatène les matchs
+hommes et femmes.
+
+\subsection{\texttt{classement\_groupes(genre="hommes", top\_qualifies=2)}}
+Extrait la lettre de poule depuis la colonne \texttt{stage} via le regex
+\texttt{Pool ([A-Z])}, puis délègue à \texttt{générique.afficher\_classement}.
+
+% ============================================================
+\section{Synthèse des patterns communs}
+
+\begin{center}
+\begin{tabular}{>{\ttfamily}p{4.5cm} p{9cm}}
+\toprule
+\textbf{Pattern} & \textbf{Description} \\
+\midrule
+Lazy loading & Les données ne sont chargées qu'au premier appel de \_load(),
+puis mises en cache dans les variables globales du module \\
+get\_agenda\_data() & Chaque module expose cette fonction au format standard,
+permettant l'agrégation multi-sport via générique.agenda\_recents() \\
+Délégation à générique & Les fonctions d'affichage (bracket, classement, fiche,
+roster) sont centralisées dans générique.py et appelées par tous les modules \\
+Recherche partielle & Toutes les recherches par nom acceptent des noms partiels
+et sont insensibles à la casse \\
+ValueError explicite & Si aucun résultat ou si la recherche est ambiguë,
+une ValueError est levée avec un message lisible \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\end{document}

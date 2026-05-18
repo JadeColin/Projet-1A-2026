@@ -1,0 +1,434 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{geometry}
+\usepackage{titlesec}
+\usepackage{parskip}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{booktabs}
+\usepackage{array}
+
+\geometry{margin=2.5cm}
+
+\definecolor{codeblue}{RGB}{0,70,150}
+\definecolor{codered}{RGB}{180,0,0}
+\definecolor{codegray}{RGB}{100,100,100}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Application de statistiques sportives}
+\lhead{Module \texttt{src/Parsers}}
+\cfoot{\thepage}
+
+\titleformat{\section}{\large\bfseries\color{codeblue}}{}{0em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries\color{codered}}{}{0em}{}
+\titleformat{\subsubsection}{\normalsize\itshape}{}{0em}{}
+
+\newcommand{\fonction}[1]{\textbf{\texttt{#1}}}
+\newcommand{\module}[1]{\textit{\texttt{#1}}}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vspace*{3cm}
+    {\huge\bfseries Documentation technique\\[0.5em]}
+    {\Large\bfseries Module \texttt{src/Parsers}\\[2em]}
+    {\large Application de statistiques sportives\\[1em]}
+    {\normalsize Projet 1A — 2026\\[3em]}
+    \hrule
+    \vspace{1em}
+    {\small Ce document décrit l'ensemble des classes et fonctions du dossier
+    \texttt{src/Parsers}, responsable du chargement et du nettoyage des données
+    sportives depuis les fichiers CSV.}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+% ============================================================
+\section{Architecture générale}
+
+Le dossier \texttt{src/Parsers} repose sur un pattern d'héritage unique~:
+une classe mère \texttt{BaseLoader} centralise toute la mécanique commune,
+et chaque sport hérite d'elle en ajoutant uniquement ce qui lui est spécifique.
+
+\begin{center}
+\begin{tabular}{l l}
+\toprule
+\textbf{Classe} & \textbf{Sport couvert} \\
+\midrule
+\texttt{BaseLoader} & Classe abstraite — socle commun \\
+\texttt{BadmintonLoader} & BWF World Tour \\
+\texttt{BasketballLoader} & NBA 2022-2023 \\
+\texttt{ChessLoader} & FIDE (Échecs) \\
+\texttt{Cs2Loader} & Counter-Strike 2 \\
+\texttt{FootballLoader} & Ligues européennes 2008-2016 \\
+\texttt{FootballChampionsLeagueLoader} & UEFA Champions League \\
+\texttt{LolLoader} & League of Legends EMEA 2025 \\
+\texttt{Starcraft2Loader} & StarCraft II \\
+\texttt{TennisLoader} & ATP et WTA 2024 \\
+\texttt{VolleyballLoader} & JO Paris 2024 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Le fichier \texttt{\_\_init\_\_.py} expose les dix loaders comme imports directs
+du package, permettant d'écrire \texttt{from src.Parsers import BasketballLoader}
+plutôt que le chemin complet.
+
+% ============================================================
+\section{\texttt{BaseLoader} — Classe mère abstraite}
+
+\textbf{Fichier~:} \texttt{src/Parsers/BaseLoader.py}
+
+\texttt{BaseLoader} hérite de \texttt{ABC} (classe abstraite Python), ce qui
+interdit de l'instancier directement. Toutes les sous-classes doivent déclarer
+l'attribut \texttt{SPORT\_FOLDER}.
+
+\subsection{Attributs de classe}
+
+\begin{itemize}[leftmargin=1.5cm]
+    \item \fonction{\_DATA\_ROOT} — Chemin absolu vers le dossier \texttt{data/},
+    calculé dynamiquement depuis l'emplacement du fichier via
+    \texttt{Path(\_\_file\_\_).parent.parent.parent / "data"}.
+    Ce calcul garantit le fonctionnement quel que soit le répertoire de lancement.
+    \item \fonction{SPORT\_FOLDER} — Chaîne vide par défaut.
+    Doit être redéfinie dans chaque sous-classe (ex~: \texttt{"Basketball"},
+    \texttt{"tennis"}).
+\end{itemize}
+
+\subsection{Propriété \texttt{root}}
+
+Retourne le chemin complet vers le dossier de données du sport~:
+\texttt{\_DATA\_ROOT / SPORT\_FOLDER}. Déclarée comme \texttt{@property},
+elle s'utilise sans parenthèses (\texttt{self.root}).
+
+\subsection{Méthode \texttt{\_load\_csv(filename, dtype, date\_cols)}}
+
+Méthode privée centrale du loader. Elle~:
+\begin{enumerate}
+    \item Lit le fichier CSV via \texttt{pd.read\_csv()} en appliquant les types
+    fournis dans \texttt{dtype}.
+    \item Convertit automatiquement chaque colonne listée dans \texttt{date\_cols}
+    via \texttt{pd.to\_datetime(..., errors="coerce")}~: une date malformée
+    devient \texttt{NaT} sans lever d'exception.
+\end{enumerate}
+
+% ============================================================
+\section{\texttt{BadmintonLoader}}
+
+\textbf{Fichier~:} \texttt{src/Parsers/BadmintonLoader.py}\\
+\textbf{Données~:} BWF World Tour — 88 joueurs, 226 matchs.\\
+\textbf{SPORT\_FOLDER~:} \texttt{"badminton"}
+
+\subsection{\texttt{load\_players()}}
+Charge \texttt{player.csv}. Colonnes retournées~: \texttt{name}, \texttt{country},
+\texttt{continent}. Aucune transformation appliquée.
+
+\subsection{\texttt{load\_matches()}}
+Charge \texttt{match.csv} avec conversion de la colonne \texttt{date} en datetime.
+Colonnes~: \texttt{tournament}, \texttt{city}, \texttt{country}, \texttt{date},
+\texttt{tournament\_type}, \texttt{round}, \texttt{player\_1}, \texttt{player\_2},
+\texttt{winner}, \texttt{game\_1\_score}, \texttt{game\_2\_score},
+\texttt{game\_3\_score}.
+
+\subsection{\texttt{load\_all()}}
+Appelle \texttt{load\_players()} et \texttt{load\_matches()} et retourne le
+tuple \texttt{(players, matches)}.
+
+% ============================================================
+\section{\texttt{BasketballLoader}}
+
+\textbf{Fichier~:} \texttt{src/Parsers/BasketballLoader.py}\\
+\textbf{Données~:} NBA saison 2022-2023 — 431 joueurs, 30 équipes.\\
+\textbf{SPORT\_FOLDER~:} \texttt{"Basketball"}
+
+\subsection{\texttt{load\_players()}}
+Charge \texttt{player.csv} et ajoute deux colonnes calculées~:
+\begin{itemize}
+    \item \texttt{full\_name} — concaténation \texttt{first\_name + " " + last\_name}.
+    \item \texttt{height\_cm} — conversion du format américain pieds-pouces
+    (\texttt{"6-8"}) en centimètres via \texttt{\_height\_to\_cm()}.
+\end{itemize}
+
+\subsection{\texttt{load\_teams()}}
+Charge \texttt{team.csv} avec typage forcé \texttt{id → int}. Colonnes~:
+\texttt{id}, \texttt{full\_name}, \texttt{abbreviation}, \texttt{nickname},
+\texttt{city}, \texttt{state}.
+
+\subsection{\texttt{load\_matches()}}
+Charge \texttt{game.csv} avec statistiques complètes par équipe~: points,
+rebonds, passes décisives, tirs, lancers francs, etc.
+
+\subsection{\texttt{load\_all()}}
+Retourne le tuple \texttt{(players, teams, matches)}.
+
+\subsection{\texttt{get\_team\_roster(players, teams, team\_name)}}
+Méthode utilitaire. Recherche une équipe par nom complet, abréviation ou surnom
+(insensible à la casse), puis filtre les joueurs correspondants.
+Lève une \texttt{ValueError} si aucune équipe ne correspond.
+
+\subsection{\texttt{\_height\_to\_cm(height\_str)}}
+Méthode statique privée. Convertit le format pieds-pouces \texttt{"6-8"} en
+centimètres~: \textit{(pieds × 12 + pouces) × 2,54}. Retourne \texttt{None}
+si la valeur est manquante.
+
+% ============================================================
+\section{\texttt{ChessLoader}}
+
+\textbf{Fichier~:} \texttt{src/Parsers/ChessLoader.py}\\
+\textbf{Données~:} FIDE — 206 joueurs, 256 matchs.\\
+\textbf{SPORT\_FOLDER~:} \texttt{"chess"}
+
+\subsection{\texttt{load\_players()}}
+Charge \texttt{player.csv} avec typage \texttt{Int64} (entier nullable) pour les
+colonnes Elo~: \texttt{rating\_standard}, \texttt{rating\_rapid},
+\texttt{rating\_blitz}. Le type nullable gère proprement les joueurs sans
+classement dans une catégorie.
+
+\subsection{\texttt{load\_matches()}}
+Charge \texttt{match.csv}. Particularité~: la colonne \texttt{score\_player\_1}
+peut contenir la valeur textuelle \texttt{"Bye"} (joueur exempt de tour), ce
+qui justifie le typage \texttt{Float64} pour certaines colonnes.
+
+\subsection{\texttt{load\_all()}}
+Retourne le tuple \texttt{(players, matches)}.
+
+% ============================================================
+\section{\texttt{Cs2Loader}}
+
+\textbf{Fichier~:} \texttt{src/Parsers/Cs2Loader.py}\\
+\textbf{Données~:} Counter-Strike 2 — 160 joueurs, 32 coachs, 32 équipes,
+106 matchs.\\
+\textbf{SPORT\_FOLDER~:} \texttt{"counter\_strike\_2"}
+
+\subsection{\texttt{load\_players()}}
+Charge \texttt{player.csv} avec conversion de \texttt{birthdate}.
+Colonnes~: \texttt{pseudo}, \texttt{name}, \texttt{nationality},
+\texttt{birthdate}, \texttt{role}, \texttt{team}.
+
+\subsection{\texttt{load\_coaches()}}
+Charge \texttt{coach.csv} avec conversion de \texttt{birthdate}.
+Structure identique à \texttt{load\_players()}.
+
+\subsection{\texttt{load\_teams()}}
+Charge \texttt{team.csv}. Colonnes~: \texttt{team}, \texttt{team\_abbreviation},
+\texttt{location}, \texttt{region}.
+
+\subsection{\texttt{load\_matches()}}
+Charge \texttt{match.csv} avec conversion de \texttt{date}. Colonnes~:
+\texttt{date}, \texttt{stage}, \texttt{round}, \texttt{best\_of},
+\texttt{team\_1}, \texttt{team\_2}, \texttt{score\_team\_1},
+\texttt{score\_team\_2}.
+
+\subsection{\texttt{load\_all()}}
+Retourne le tuple \texttt{(players, coaches, teams, matches)}.
+
+% ============================================================
+\section{\texttt{FootballLoader}}
+
+\textbf{Fichier~:} \texttt{src/Parsers/FootballLoader.py}\\
+\textbf{Données~:} Ligues européennes — 25\,979 matchs sur les saisons
+2008-2016.\\
+\textbf{SPORT\_FOLDER~:} \texttt{"Football"}
+
+C'est le loader avec le plus grand volume de données. Il charge cinq tables
+distinctes.
+
+\subsection{\texttt{load\_countries()}}
+Charge \texttt{country.csv}. Colonnes~: \texttt{id}, \texttt{name}.
+
+\subsection{\texttt{load\_leagues()}}
+Charge \texttt{league.csv}. Colonnes~: \texttt{id}, \texttt{country\_id},
+\texttt{name}.
+
+\subsection{\texttt{load\_teams()}}
+Charge \texttt{team.csv}. Colonnes~: \texttt{id}, \texttt{team\_api\_id},
+\texttt{team\_long\_name}, \texttt{team\_short\_name}.
+
+\subsection{\texttt{load\_players()}}
+Charge \texttt{player.csv}. Colonnes~: \texttt{id}, \texttt{player\_api\_id},
+\texttt{player\_name}, \texttt{birthday}, \texttt{weight} (kg),
+\texttt{height} (cm).
+
+\subsection{\texttt{load\_matches()}}
+Charge \texttt{match.csv} avec conversion de \texttt{date}. Contient les
+compositions d'équipe complètes (\texttt{home\_player\_1} à
+\texttt{home\_player\_11}).
+
+\subsection{\texttt{load\_all()}}
+Retourne uniquement \texttt{(countries, leagues, matches)}. Les tables joueurs
+et équipes sont disponibles via leurs méthodes dédiées mais non incluses dans
+\texttt{load\_all()}.
+
+% ============================================================
+\section{\texttt{FootballChampionsLeagueLoader}}
+
+\textbf{Fichier~:} \texttt{src/Parsers/FootballChampionsLeagueLoader.py}\\
+\textbf{Données~:} UEFA Champions League — 751 joueurs, 32 équipes,
+125 matchs.\\
+\textbf{SPORT\_FOLDER~:} \texttt{"football\_champions\_league"}
+
+\subsection{\texttt{load\_players()}}
+Charge \texttt{player.csv} et corrige un problème dans le fichier source~:
+deux colonnes portent le même nom \texttt{match\_played}. Le loader les renomme
+en \texttt{match\_played\_field} et \texttt{match\_played} via
+\texttt{rename()}. Des fautes de frappe d'origine
+(\texttt{balls\_recoverd}, \texttt{cross\_complted}) sont conservées
+volontairement pour rester fidèle au fichier source.
+
+\subsection{\texttt{load\_teams()}}
+Charge \texttt{team.csv}. Colonnes~: \texttt{full\_name}, \texttt{short\_name},
+\texttt{year\_founded}, \texttt{country}, \texttt{league}, \texttt{city}.
+
+\subsection{\texttt{load\_matches()}}
+Charge \texttt{match.csv} avec conversion de \texttt{date}. Colonnes~:
+\texttt{date}, \texttt{phase}, \texttt{round}, \texttt{matchday},
+\texttt{group}, \texttt{team\_home}, \texttt{team\_away}, scores.
+
+\subsection{\texttt{load\_all()}}
+Retourne le tuple \texttt{(players, teams, matches)}.
+
+% ============================================================
+\section{\texttt{LolLoader}}
+
+\textbf{Fichier~:} \texttt{src/Parsers/LolLoader.py}\\
+\textbf{Données~:} League of Legends EMEA 2025 — 50 joueurs, 25 coachs,
+10 équipes, 45 matchs.\\
+\textbf{SPORT\_FOLDER~:} \texttt{"Lol"}
+
+\subsection{\texttt{load\_players()}}
+Charge \texttt{player.csv} avec conversion de \texttt{birthdate}. Colonnes~:
+\texttt{pseudo}, \texttt{name}, \texttt{country\_of\_birth}, \texttt{birthdate},
+\texttt{role}, \texttt{team}.
+
+\subsection{\texttt{load\_coaches()}}
+Charge \texttt{coach.csv} avec conversion de \texttt{birthdate}.
+Structure identique à \texttt{load\_players()}.
+
+\subsection{\texttt{load\_teams()}}
+Charge \texttt{team.csv}. Colonnes~: \texttt{team}, \texttt{team\_abbreviation},
+\texttt{location}, \texttt{region}.
+
+\subsection{\texttt{load\_matches()}}
+Charge \texttt{match.csv} et ajoute une colonne calculée \texttt{duration\_s}
+(durée de la partie en secondes), convertie depuis le format texte
+\texttt{HH:MM:SS} via \texttt{pd.to\_timedelta().dt.total\_seconds()}.
+
+\subsection{\texttt{load\_all()}}
+Retourne le tuple \texttt{(players, coaches, teams, matches)}.
+
+% ============================================================
+\section{\texttt{Starcraft2Loader}}
+
+\textbf{Fichier~:} \texttt{src/Parsers/Starcraft2Loader.py}\\
+\textbf{Données~:} StarCraft II — 32 joueurs, 67 matchs.\\
+\textbf{SPORT\_FOLDER~:} \texttt{"starcraft\_2"}
+
+\subsection{\texttt{load\_players()}}
+Charge \texttt{player.csv} avec conversion de \texttt{birthdate}. Colonnes~:
+\texttt{pseudo}, \texttt{name}, \texttt{nationality}, \texttt{birthdate},
+\texttt{race} (Terran / Zerg / Protoss), \texttt{team}.
+
+\subsection{\texttt{load\_matches()}}
+Charge \texttt{match.csv} avec conversion de \texttt{date}. Colonnes~:
+\texttt{date}, \texttt{round}, \texttt{group}, \texttt{best\_of},
+\texttt{player\_1}, \texttt{player\_2}, \texttt{score\_player\_1},
+\texttt{score\_player\_2}.
+
+\subsection{\texttt{load\_all()}}
+Retourne le tuple \texttt{(players, matches)}.
+
+% ============================================================
+\section{\texttt{TennisLoader}}
+
+\textbf{Fichier~:} \texttt{src/Parsers/TennisLoader.py}\\
+\textbf{Données~:} ATP et WTA 2024 — 443 joueurs ATP, 335 joueuses WTA,
+environ 5\,700 matchs au total.\\
+\textbf{SPORT\_FOLDER~:} \texttt{"tennis"}
+
+Seul loader à gérer deux circuits en parallèle (ATP/WTA), ce qui double le
+nombre de méthodes.
+
+\subsection{\texttt{load\_atp\_players()} / \texttt{load\_wta\_players()}}
+Chargent les joueurs/joueuses, convertissent \texttt{dob} (format
+\texttt{YYYYMMDD} stocké comme float) via \texttt{\_parse\_dob()} et ajoutent
+\texttt{full\_name}.
+
+\subsection{\texttt{load\_atp\_matches()} / \texttt{load\_wta\_matches()}}
+Chargent les matchs et convertissent \texttt{tourney\_date} (format
+\texttt{YYYYMMDD} stocké comme int) via \texttt{\_parse\_tourney\_date()}.
+
+\subsection{\texttt{load\_all()}}
+Retourne le tuple \texttt{(atp\_players, wta\_players, atp\_matches,
+wta\_matches)}.
+
+\subsection{\texttt{\_parse\_dob(series)}}
+Méthode statique privée. Convertit un float \texttt{19860504.0} en
+\texttt{datetime(1986, 5, 4)}. Utilise une chaîne
+\texttt{dropna().astype(int).astype(str)} pour éviter de planter sur les
+valeurs manquantes.
+
+\subsection{\texttt{\_parse\_tourney\_date(series)}}
+Méthode statique privée. Même logique que \texttt{\_parse\_dob} mais depuis
+un entier directement.
+
+% ============================================================
+\section{\texttt{VolleyballLoader}}
+
+\textbf{Fichier~:} \texttt{src/Parsers/VolleyballLoader.py}\\
+\textbf{Données~:} JO Paris 2024 — 156 joueurs H, 155 joueuses F, 39 coachs H,
+42 coachs F, 26 matchs H, 26 matchs F.\\
+\textbf{SPORT\_FOLDER~:} \texttt{"volleyball"}
+
+Loader le plus volumineux avec sept tables et une distinction systématique
+hommes/femmes.
+
+\subsection{\texttt{load\_countries()}}
+Charge la table des 224 codes IOC. Colonnes~: \texttt{code}, \texttt{country},
+\texttt{country\_long}.
+
+\subsection{\texttt{load\_players\_men()} / \texttt{load\_players\_women()}}
+Chargent les joueurs/joueuses et ajoutent une colonne \texttt{gender}
+(\texttt{"M"} ou \texttt{"F"}) pour permettre la fusion des deux tables sans
+ambiguïté.
+
+\subsection{\texttt{load\_coaches\_men()} / \texttt{load\_coaches\_women()}}
+Chargent les coachs masculins et féminins avec conversion de \texttt{birth\_date}.
+
+\subsection{\texttt{load\_matches\_men()}}
+Charge \texttt{match\_men.csv} et calcule automatiquement le gagnant en
+comparant \texttt{set\_country\_1} et \texttt{set\_country\_2}.
+
+\subsection{\texttt{load\_matches\_women()}}
+Même logique que pour les hommes, mais le fichier source utilise des noms de
+colonnes différents (\texttt{country\_1} au lieu de \texttt{country\_code\_1}).
+Le loader les renomme pour assurer l'uniformité avec \texttt{load\_matches\_men()}.
+
+\subsection{\texttt{load\_all()}}
+Retourne les sept tables dans l'ordre~: \texttt{(countries, players\_men,
+players\_women, coaches\_men, coaches\_women, matches\_men, matches\_women)}.
+
+% ============================================================
+\section{Synthèse des choix architecturaux}
+
+\begin{center}
+\begin{tabular}{>{\ttfamily}p{5.5cm} p{8cm}}
+\toprule
+\textbf{Choix} & \textbf{Bénéfice} \\
+\midrule
+Héritage de BaseLoader & Zéro duplication pour la lecture CSV et les dates \\
+SPORT\_FOLDER comme attribut de classe & Ajouter un sport = créer une sous-classe, pas modifier BaseLoader \\
+\_DATA\_ROOT calculé dynamiquement & Fonctionne quel que soit le répertoire de lancement \\
+errors="coerce" sur les dates & Données manquantes deviennent NaT sans exception \\
+Méthodes statiques pour les parseurs de dates (Tennis) & Réutilisables sans instanciation, logique isolée et testable \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\end{document}
