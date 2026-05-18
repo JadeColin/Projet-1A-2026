@@ -1,0 +1,396 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{geometry}
+\usepackage{titlesec}
+\usepackage{parskip}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{booktabs}
+\usepackage{array}
+
+\geometry{margin=2.5cm}
+
+\definecolor{codeblue}{RGB}{0,70,150}
+\definecolor{codered}{RGB}{180,0,0}
+\definecolor{codegray}{RGB}{100,100,100}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Application de statistiques sportives}
+\lhead{Fichier \texttt{\_\_main\_\_.py}}
+\cfoot{\thepage}
+
+\titleformat{\section}{\large\bfseries\color{codeblue}}{}{0em}{}[\titlerule]
+\titleformat{\subsection}{\normalsize\bfseries\color{codered}}{}{0em}{}
+\titleformat{\subsubsection}{\normalsize\itshape}{}{0em}{}
+
+\newcommand{\fonction}[1]{\textbf{\texttt{#1}}}
+\newcommand{\module}[1]{\textit{\texttt{#1}}}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vspace*{3cm}
+    {\huge\bfseries Documentation technique\\[0.5em]}
+    {\Large\bfseries Fichier \texttt{\_\_main\_\_.py}\\[2em]}
+    {\large Application de statistiques sportives\\[1em]}
+    {\normalsize Projet 1A — 2026\\[3em]}
+    \hrule
+    \vspace{1em}
+    {\small Ce document décrit l'ensemble des fonctions et de la classe
+    présentes dans le fichier \texttt{\_\_main\_\_.py}, qui constitue le
+    point d'entrée de l'application et implémente l'intégralité de
+    l'interface en ligne de commande.}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+% ============================================================
+\section{Architecture générale}
+
+Le fichier \texttt{\_\_main\_\_.py} est organisé en trois parties
+distinctes~:
+
+\begin{enumerate}
+    \item \textbf{Fonctions utilitaires de niveau module} — fonctions
+    indépendantes pour l'affichage et la lecture du terminal.
+    \item \textbf{Classe \texttt{CLI}} — contient toute la logique de
+    navigation entre les pages de l'application.
+    \item \textbf{Point d'entrée \texttt{main()}} — instancie la CLI
+    et lance la boucle principale.
+\end{enumerate}
+
+La navigation repose sur un \textbf{pattern état-machine}~: chaque
+\textit{page} est une fonction callable retournant soit une autre
+fonction-page (avancer), soit la chaîne \texttt{"back"} (reculer),
+\texttt{"quit"} (quitter) ou \texttt{None} (rester sur la page courante).
+Deux piles \texttt{\_back} et \texttt{\_fwd} maintiennent l'historique,
+à l'image d'un navigateur web.
+
+% ============================================================
+\section{Fonction \texttt{\_make\_sports\_config()}}
+
+\textbf{Type~:} fonction de niveau module.
+
+Construit et retourne le dictionnaire de configuration complet de
+l'application. Tous les modules d'analyse (\texttt{src.Analysis.*})
+sont importés \textbf{à l'intérieur} de cette fonction, de façon à
+retarder leur chargement au premier appel (les données CSV ne sont
+lues qu'à ce moment).
+
+Chaque clé du dictionnaire est le nom affiché d'un sport. La valeur
+associée décrit sa structure~:
+
+\begin{itemize}
+    \item \texttt{collectif} (bool) — détermine si le sport propose
+    une vue Équipe et une vue Joueurs.
+    \item \texttt{genre} (bool) — détermine si une sélection
+    Hommes / Femmes est proposée en premier.
+    \item \texttt{equipe} / \texttt{joueurs} / \texttt{stats} — listes
+    de descripteurs de statistiques. Chaque descripteur contient~:
+    \begin{itemize}
+        \item \texttt{label} — texte affiché dans le menu.
+        \item \texttt{fn} — la fonction d'analyse à appeler.
+        \item \texttt{inputs} — liste de champs libres à saisir (vide
+        dans la plupart des cas).
+        \item \texttt{selector} (optionnel) — décrit comment générer
+        la liste de choix. Deux variantes existent~:
+        \begin{itemize}
+            \item \texttt{options\_fn} — liste simple, affichée en
+            bloc (ex~: liste d'équipes).
+            \item \texttt{options\_df\_fn} — DataFrame avec pagination
+            et filtres (ex~: liste de joueurs).
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+
+% ============================================================
+\section{Fonctions utilitaires d'affichage}
+
+Ces six fonctions sont de simples helpers de terminal, sans état.
+
+\subsection{\texttt{\_titre(texte)}}
+Affiche un titre encadré par une ligne de tirets (\texttt{────}).
+Utilisé en en-tête de chaque page.
+
+\subsection{\texttt{\_option(num, texte)}}
+Affiche une ligne de menu au format \texttt{[N]  texte}.
+
+\subsection{\texttt{\_nav(peut\_reculer, peut\_avancer)}}
+Affiche la barre de navigation contextuelle en bas de page~:
+\texttt{[-] Retour}, \texttt{[+] Suivant}, \texttt{[q] Quitter}.
+Les options retour et suivant sont conditionnées par les paramètres
+booléens.
+
+\subsection{\texttt{\_lire(prompt)}}
+Lit une saisie utilisateur via \texttt{input()} et retourne la chaîne
+nettoyée (\texttt{strip()}). Le prompt par défaut est
+\texttt{"Votre choix~:"}.
+
+\subsection{\texttt{\_afficher\_resultat(result)}}
+Affiche un résultat~: si \texttt{result} est un \texttt{DataFrame}
+non vide, il est converti en texte via \texttt{to\_string(index=False)}.
+Si le DataFrame est vide, affiche \texttt{"(aucun résultat)"}. Si la
+fonction appelée a déjà imprimé directement (ex~: bracket), cette
+fonction ne fait rien.
+
+\subsection{\texttt{\_extract\_year(val)}}
+Extrait une année depuis des formats hétérogènes~:
+\begin{itemize}
+    \item \texttt{datetime} ou \texttt{Timestamp} → attribut \texttt{.year}.
+    \item \texttt{int} ou \texttt{float} supérieur à 19\,000\,000 →
+    format \texttt{YYYYMMDD}, division par 10\,000.
+    \item \texttt{int} ou \texttt{float} inférieur → déjà une année.
+    \item \texttt{str} → lecture des 4 premiers caractères.
+\end{itemize}
+Cette fonction est utilisée par le système de filtres sur les années de
+naissance, où les données proviennent de sources aux formats variés.
+
+% ============================================================
+\section{Classe \texttt{CLI}}
+
+La classe \texttt{CLI} encapsule l'intégralité de la navigation de
+l'application. Elle maintient~:
+\begin{itemize}
+    \item \texttt{\_back} — pile des pages visitées (navigation arrière).
+    \item \texttt{\_fwd} — pile des pages en avant (navigation avant).
+    \item \texttt{\_filters} — dictionnaire des filtres actifs
+    (\texttt{type\_sport}, \texttt{categorie}, \texttt{type\_competition}).
+    \item \texttt{\_config} — la configuration complète des sports,
+    chargée au démarrage.
+\end{itemize}
+
+\subsection{Méthode \texttt{\_\_init\_\_()}}
+Initialise les deux piles de navigation à des listes vides et les
+filtres à \texttt{None}. La configuration \texttt{\_config} est
+initialisée à \texttt{None} et sera remplie lors de l'appel à
+\texttt{run()}.
+
+\subsection{Méthode \texttt{run()}}
+Point de départ de la boucle principale. Charge la configuration via
+\texttt{\_make\_sports\_config()}, puis entre dans une boucle infinie
+qui~:
+\begin{enumerate}
+    \item Appelle la page courante (\texttt{current()}).
+    \item Interprète le résultat~:
+    \begin{itemize}
+        \item \texttt{"quit"} → affiche le message d'au revoir et sort.
+        \item \texttt{"back"} → dépile \texttt{\_back}, empile dans
+        \texttt{\_fwd}, change de page.
+        \item \texttt{"forward"} → dépile \texttt{\_fwd}, empile dans
+        \texttt{\_back}, change de page.
+        \item Un \textit{callable} → empile la page courante dans
+        \texttt{\_back}, vide \texttt{\_fwd}, change de page.
+        \item \texttt{None} → reste sur la page courante (réaffichage).
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Méthode \texttt{\_sports\_visibles()}}
+Appelle \texttt{src.Model.sport.filtrer()} avec les trois filtres actifs
+pour obtenir la liste des sports correspondants, puis la croise avec
+les clés de \texttt{\_config} pour ne retourner que les sports
+effectivement disponibles dans l'application.
+
+\subsection{Méthode \texttt{\_filtres\_str()}}
+Retourne une chaîne lisible des filtres actifs pour l'affichage dans
+le menu principal (ex~: \texttt{"Collectif, E-sport"}). Retourne
+\texttt{"Aucun"} si aucun filtre n'est activé.
+
+% ============================================================
+\section{Pages de navigation de la classe \texttt{CLI}}
+
+\subsection{Méthode \texttt{\_page\_accueil()}}
+Page racine de l'application. Affiche les filtres actifs et la liste
+numérotée des sports visibles. L'option \texttt{[0]} mène à la page
+des filtres, les autres options mènent aux pages des sports. Retourne
+une fonction-page ou une chaîne de contrôle.
+
+\subsection{Méthode \texttt{\_page\_filtres()}}
+Page de configuration des filtres. Propose trois catégories de filtres
+combinables~:
+\begin{itemize}
+    \item \textbf{Format}~: Collectif / Individuel.
+    \item \textbf{Discipline}~: Sport / E-sport.
+    \item \textbf{Compétition}~: Par points / Éliminatoire / Mixte.
+\end{itemize}
+Chaque catégorie dispose d'une option de réinitialisation. Les filtres
+actifs sont indiqués par le symbole \texttt{[✓]} en face de l'option.
+La modification d'un filtre retourne \texttt{None} (la page se
+réaffiche immédiatement avec l'état mis à jour).
+
+% ============================================================
+\section{Factories de pages de la classe \texttt{CLI}}
+
+Ces méthodes ne sont pas elles-mêmes des pages~: elles \textbf{créent
+et retournent} des fonctions-pages (pattern \textit{factory}). Ce
+choix permet de paramétrer dynamiquement le comportement de chaque
+page sans dupliquer de code.
+
+\subsection{Méthode \texttt{\_make\_page\_sport(sport)}}
+Lit la configuration du sport (\texttt{collectif}, \texttt{genre}) et
+délègue vers la factory appropriée~:
+\begin{itemize}
+    \item Avec genre → \texttt{\_make\_page\_genre}.
+    \item Sans genre, collectif → \texttt{\_make\_page\_cat}.
+    \item Individuel → \texttt{\_make\_page\_stats}.
+\end{itemize}
+
+\subsection{Méthode \texttt{\_make\_page\_genre(titre, config)}}
+Crée une page proposant le choix Hommes / Femmes. Selon la valeur de
+\texttt{collectif}, délègue ensuite vers \texttt{\_make\_page\_cat}
+(sport collectif avec genre, ex~: Volleyball) ou
+\texttt{\_make\_page\_stats} (sport individuel avec genre, ex~: Tennis).
+
+\subsection{Méthode \texttt{\_make\_page\_cat(titre, stats\_equipe, stats\_joueurs)}}
+Crée une page proposant le choix Équipe / Joueurs. Chaque choix mène
+vers une page \texttt{\_make\_page\_stats} avec la liste de stats
+correspondante.
+
+\subsection{Méthode \texttt{\_make\_page\_stats(titre, stats)}}
+Crée une page listant toutes les statistiques disponibles pour un sport
+ou une catégorie. Chaque option est un descripteur de stat issu de
+\texttt{\_make\_sports\_config()}.
+
+\subsection{Méthode \texttt{\_make\_page\_stat(stat)}}
+Crée la page d'exécution d'une statistique. Si le descripteur contient
+un sélecteur de type \texttt{options\_df\_fn} (DataFrame paginé),
+délègue vers \texttt{\_make\_page\_selector\_paged}. Sinon, gère~:
+\begin{enumerate}
+    \item Le sélecteur simple (\texttt{options\_fn}) — affiche une liste
+    numérotée et attend un choix.
+    \item Les champs libres (\texttt{inputs}) — demande une saisie
+    pour chaque paramètre.
+    \item L'exécution de la fonction d'analyse (\texttt{fn(**kwargs)}).
+    \item L'affichage du résultat via \texttt{\_afficher\_resultat}.
+    \item Le transfert vers \texttt{\_attendre\_apres\_resultat}.
+\end{enumerate}
+
+\subsection{Méthode \texttt{\_make\_page\_selector\_paged(sel, stat)}}
+Crée une page de sélection paginée (20 éléments par page) avec filtres.
+C'est la page la plus complexe de l'application. Elle maintient un
+dictionnaire d'état local \texttt{state} persistant entre les appels~:
+\begin{itemize}
+    \item \texttt{page} — index de la page courante.
+    \item \texttt{filters} — filtres actifs sur le DataFrame.
+    \item \texttt{df} — DataFrame chargé une seule fois.
+    \item \texttt{\_filter\_applied} — flag de retour automatique après
+    application d'un filtre.
+\end{itemize}
+
+La sous-fonction \texttt{\_apply\_filters(df)} applique les filtres
+de trois types~:
+\begin{itemize}
+    \item \textbf{search} (\texttt{\_\_search\_\_}) — recherche par
+    préfixe sur chaque mot du nom affiché.
+    \item \textbf{category} — égalité exacte sur une colonne.
+    \item \textbf{year} (\texttt{\_\_year\_\_<col>}) — filtre par année
+    exacte ou plage d'années (ex~: \texttt{1990-2000}), via
+    \texttt{\_extract\_year}.
+\end{itemize}
+
+Les commandes disponibles sont \texttt{[<]}/\texttt{[>]} pour la
+pagination, \texttt{[f]} pour ouvrir le menu de filtres, \texttt{[r]}
+pour réinitialiser les filtres, et un numéro pour sélectionner un
+élément.
+
+\subsection{Méthode \texttt{\_make\_page\_filter(state, filters\_cfg, df)}}
+Crée la page listant les filtres disponibles pour un sélecteur paginé.
+Gère les trois types de filtres~:
+\begin{itemize}
+    \item \textbf{search} — saisie libre de lettres initiales.
+    \item \textbf{category} — délègue vers
+    \texttt{\_make\_page\_filter\_category}.
+    \item \textbf{year} — saisie d'une année ou d'une plage
+    (\texttt{1990} ou \texttt{1990-2000}). Valide le format et lève
+    un message d'erreur si invalide.
+\end{itemize}
+Après application d'un filtre, le flag \texttt{\_filter\_applied} est
+levé, ce qui déclenche un retour automatique vers le sélecteur au
+prochain cycle.
+
+\subsection{Méthode \texttt{\_make\_page\_filter\_category(state, fconf, df)}}
+Crée une page paginée (20 valeurs par page) pour sélectionner une
+valeur de filtre catégoriel. Calcule les valeurs uniques de la colonne
+filtrée, les trie et les pagine. La sélection d'une valeur met à jour
+\texttt{state["filters"]}, lève le flag \texttt{\_filter\_applied}
+et retourne \texttt{"back"} pour remonter automatiquement vers le
+sélecteur.
+
+% ============================================================
+\section{Méthodes de fin de parcours de la classe \texttt{CLI}}
+
+\subsection{Méthode \texttt{\_attendre\_apres\_resultat(result, stat\_label)}}
+Boucle d'attente affichée après l'exécution d'une statistique.
+Propose~:
+\begin{itemize}
+    \item \texttt{[e] Exporter CSV} — uniquement si \texttt{result}
+    est un \texttt{DataFrame} non vide.
+    \item \texttt{[+] Suivant} — uniquement si la pile \texttt{\_fwd}
+    n'est pas vide.
+    \item \texttt{[-] Retour} et \texttt{[q] Quitter} — toujours
+    présents.
+\end{itemize}
+La méthode boucle indéfiniment jusqu'à ce que l'utilisateur choisisse
+une action de navigation.
+
+\subsection{Méthode \texttt{\_exporter\_csv(df, stat\_label)}}
+Sauvegarde un \texttt{DataFrame} dans un fichier CSV. Génère un nom
+de fichier par défaut en combinant un slug du label de la stat
+(caractères alphanumériques uniquement via regex
+\texttt{[{\textasciicircum}a-z0-9]+}) et un horodatage au format
+\texttt{YYYYMMDD\_HHMMSS}. L'utilisateur peut accepter ce nom ou en
+saisir un autre. L'encodage utilisé est \texttt{utf-8-sig} (compatible
+avec Excel).
+
+% ============================================================
+\section{Fonction \texttt{main()}}
+
+Point d'entrée de l'application. Instancie la classe \texttt{CLI} et
+appelle \texttt{run()}. Cette fonction est appelée depuis le bloc
+\texttt{if \_\_name\_\_ == "\_\_main\_\_"}, ce qui permet aussi
+d'importer le module sans lancer l'interface.
+
+% ============================================================
+\section{Synthèse du flux de navigation}
+
+\begin{center}
+\begin{tabular}{>{\ttfamily}p{4.5cm} p{9cm}}
+\toprule
+\textbf{Page / Factory} & \textbf{Rôle} \\
+\midrule
+\_page\_accueil & Menu principal avec liste des sports filtrés \\
+\_page\_filtres & Configuration des filtres Sport/Format/Compétition \\
+\_make\_page\_sport & Aiguillage selon le type de sport \\
+\_make\_page\_genre & Sélection Hommes / Femmes \\
+\_make\_page\_cat & Sélection Équipe / Joueurs \\
+\_make\_page\_stats & Liste des statistiques disponibles \\
+\_make\_page\_stat & Exécution d'une statistique (sélecteur simple) \\
+\_make\_page\_selector\_paged & Sélection paginée avec filtres (joueurs) \\
+\_make\_page\_filter & Menu des filtres disponibles \\
+\_make\_page\_filter\_category & Sélection paginée d'une valeur catégorielle \\
+\_attendre\_apres\_resultat & Navigation et export après affichage d'un résultat \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{>{\ttfamily}p{4cm} p{9.5cm}}
+\toprule
+\textbf{Valeur retournée} & \textbf{Effet dans la boucle \texttt{run()}} \\
+\midrule
+callable & Avancer vers la nouvelle page, empiler la courante dans \_back \\
+"back" & Reculer d'une page (dépiler \_back, empiler dans \_fwd) \\
+"forward" & Avancer d'une page (dépiler \_fwd, empiler dans \_back) \\
+"quit" & Terminer l'application \\
+None & Rester sur la page courante (réaffichage) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\end{document}
